@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buda Místico - Galería de PFPs Flotantes</title>
-    <!-- Cargamos la librería p5.js -->
+    <title>Buda Collective Artist - Marcos Personalizados</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
         body {
@@ -25,9 +24,18 @@ let bg;
 let frames = [];
 let maxFrames = 80;
 
+// Variables para tus marcos personalizados PNG
+let marcoCommon, marcoRare, marcoEpic, marcoLegendary;
+
 function preload() {
-  // Carga la imagen del buda (debe estar en la misma carpeta)
+  // Carga el fondo del Buda
   bg = loadImage("obra-background.jpg"); 
+  
+  // Carga tus marcos PNG transparentes (deben estar en tu repositorio)
+  marcoCommon = loadImage("marco-common.png");
+  marcoRare = loadImage("marco-rare.png");
+  marcoEpic = loadImage("marco-epic.png");
+  marcoLegendary = loadImage("marco-legendary.png");
 }
 
 function setup() {
@@ -40,18 +48,17 @@ function initFloatingSystem() {
   
   // Generamos los 50 avatares iniciales abstractos
   for (let i = 0; i < 50; i++) {
-    let tamaño = random(50, 95);
+    let tamaño = random(70, 115); // Un toque más grandes para que luzcan tus marcos
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
     
     frames.push({
       pfp: null, 
       rarity: r,
-      score: rarityScore(r),
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
-      vx: random(-0.2, 0.2), 
+      vx: random(-0.2, 0.2), // Flotado místico ultra lento
       vy: random(-0.2, 0.2), 
       t: random(1000),
       col: color(random(100, 255), random(100, 255), random(220, 255)) 
@@ -59,20 +66,11 @@ function initFloatingSystem() {
   }
 }
 
-function rarityScore(r) {
-  return {
-    common: 1,
-    rare: 2,
-    epic: 3,
-    legendary: 4
-  }[r] || 1;
-}
-
 function draw() {
-  // Fondo de pantalla usando tu obra
+  // Dibujamos el Buda de fondo
   image(bg, 0, 0, width, height);
 
-  // Actualizar y dibujar cada cuadro flotando lento
+  // Actualizamos y dibujamos los elementos flotantes
   for (let f of frames) {
     drawAndMoveFrame(f);
   }
@@ -82,48 +80,55 @@ function drawAndMoveFrame(f) {
   f.x += f.vx;
   f.y += f.vy;
 
+  // Rebote suave en los bordes de la pantalla
   if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
   if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
 
   push();
   translate(f.x, f.y);
 
-  let glow = f.score * 40;
-  let pulse = sin(frameCount * 0.02 + f.t) * 15;
-
-  noFill();
-  stroke(f.pfp ? 255 : f.col, 110 + glow); 
-  strokeWeight(f.score);
-  rect(0, 0, f.size, f.size);
-
+  // 1. DIBUJAR EL CONTENIDO (El Avatar de fondo)
   if (f.pfp) {
-    image(f.pfp, 2, 2, f.size - 4, f.size - 4);
+    // Si ya es un PFP real traído desde el mint de Transient Labs
+    image(f.pfp, 0, 0, f.size, f.size);
   } else {
-    fill(red(f.col), green(f.col), blue(f.col), 20 + pulse);
-    rect(2, 2, f.size - 4, f.size - 4);
-    
-    fill(255, 90 + pulse);
+    // Si es un cuadro generativo inicial, un fondo abstracto que pulsa
+    let pulse = sin(frameCount * 0.02 + f.t) * 15;
+    fill(red(f.col), green(f.col), blue(f.col), 25 + pulse);
     noStroke();
-    if (f.rarity === "legendary") {
-      ellipse(f.size/2, f.size/2, f.size * 0.35); 
-    } else if (f.rarity === "epic") {
-      rect(f.size * 0.35, f.size * 0.35, f.size * 0.3, f.size * 0.3);
+    rect(0, 0, f.size, f.size);
+    
+    // Detalle místico en el centro
+    fill(255, 40 + pulse);
+    if (f.rarity === "legendary" || f.rarity === "epic") {
+      ellipse(f.size/2, f.size/2, f.size * 0.4);
     }
+  }
+
+  // 2. ENMARCAR CON TU PNG TRANSPARENTE (Se dibuja encima de la foto)
+  if (f.rarity === "common") {
+    image(marcoCommon, 0, 0, f.size, f.size);
+  } else if (f.rarity === "rare") {
+    image(marcoRare, 0, 0, f.size, f.size);
+  } else if (f.rarity === "epic") {
+    image(marcoEpic, 0, 0, f.size, f.size);
+  } else if (f.rarity === "legendary") {
+    image(marcoLegendary, 0, 0, f.size, f.size);
   }
 
   pop();
 }
 
+// Esta función se activará automáticamente con la API de Transient Labs
 function addPFP(url, rarity = "common") {
   loadImage(url, (img) => {
     if (frames.length >= maxFrames) {
       frames.shift();
     }
-    let tamaño = random(80, 130);
+    let tamaño = random(90, 140);
     frames.push({
       pfp: img,
       rarity: rarity,
-      score: rarityScore(rarity),
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
