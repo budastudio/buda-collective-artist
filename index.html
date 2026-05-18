@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buda Collective Artist - Live Web3</title>
+    <title>Buda Collective Artist - Live Showcase</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; }
@@ -17,13 +17,19 @@ let bg;
 let frames = [];
 let maxFrames = 80;
 
-// Tu contrato oficial de Transient Labs en Base
-const CONTRACT_ADDRESS = "0x303dd729601a44262f848ecc9950514c97ba3081";
-const CHAIN_ID = 8453; 
-
 // Variables para imágenes fijas
 let marcoCommon, marcoRare, marcoEpic, marcoLegendary, marcoArtist;
 let logoArtista;
+
+// =========================================================================
+// 🔧 CONTROL DE ARTISTAS MANUAL (Configurá acá tus 3 primeros amigos)
+// =========================================================================
+const datosArtistas = [
+  { nombre: "Artista VIP 1", rareza: "rare" },       // Datos para pfp1.png
+  { nombre: "Buda Master",   rareza: "legendary" },  // Datos para pfp2.png
+  { nombre: "Crypto Juan",   rareza: "epic" }        // Datos para pfp3.png
+  // Cuando tengas el 4°, agregás una coma arriba y ponés: { nombre: "Nombre", rareza: "common" }
+];
 
 function preload() {
   // 1. Carga del fondo de la obra
@@ -35,17 +41,23 @@ function preload() {
   marcoEpic = loadImage("marco-epic.png");
   marcoLegendary = loadImage("marco-legendary.png");
   
-// 3. Carga de tu Logotipo y su Marco de Artista en PNG
+  // 3. Carga de tu Logotipo y su Marco de Artista en PNG
   logoArtista = loadImage("logo-artista.png"); 
   marcoArtist = loadImage("marco-artista.png"); 
+  
+  // 4. Carga automática de las PFPs locales según tu lista de arriba
+  for (let i = 0; i < datosArtistas.length; i++) {
+    let indexArchivo = i + 1;
+    datosArtistas[i].imgCargada = loadImage(`pfps/pfp${indexArchivo}.png`);
+  }
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   initFloatingSystem();
   
-  // Conexión Web3 activa
-  fetchTransientNFTs();
+  // Carga los artistas locales al sistema flotante de p5.js
+  cargarArtistasManuales();
 }
 
 function initFloatingSystem() {
@@ -56,6 +68,7 @@ function initFloatingSystem() {
   frames.push({
     pfp: logoArtista, 
     rarity: "artist", 
+    nombre: "Buda Co. Creator",
     isFixed: true, 
     x: random(width * 0.2, width * 0.8), 
     y: random(height * 0.2, height * 0.8),
@@ -65,8 +78,8 @@ function initFloatingSystem() {
     t: random(1000)
   });
 
-  // Los 49 cuadros místicos iniciales genéricos
-  for (let i = 0; i < 49; i++) {
+  // Los cuadros místicos iniciales genéricos de fondo (ajustados a 46 para rellenar)
+  for (let i = 0; i < 46; i++) {
     let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -74,6 +87,7 @@ function initFloatingSystem() {
     frames.push({
       pfp: null, 
       rarity: r,
+      nombre: "", // Los vacíos no muestran cartel
       isFixed: false,
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
@@ -86,35 +100,46 @@ function initFloatingSystem() {
   }
 }
 
-async function fetchTransientNFTs() {
-  try {
-    let response = await fetch(`https://api.transient.xyz/v1/nft/${CHAIN_ID}/${CONTRACT_ADDRESS}/tokens`);
-    if (!response.ok) return;
-    let data = await response.json();
+function cargarArtistasManuales() {
+  // Inyecta tus imágenes locales adentro de los cuadros flotantes activos
+  for (let i = 0; i < datosArtistas.length; i++) {
+    let artista = datosArtistas[i];
+    let tamaño = random(90, 140);
     
-    if (data && data.tokens) {
-      for (let token of data.tokens) {
-        let imageUrl = token.metadata?.image || token.token_uri;
-        if (imageUrl && imageUrl.startsWith("ipfs://")) {
-          imageUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
-        }
-        
-        let rarity = token.metadata?.attributes?.find(a => a.trait_type?.toLowerCase() === 'rarity')?.value || "common";
-        
-        if (imageUrl) {
-          addRealPFP(imageUrl, rarity.toLowerCase());
-        }
-      }
-    }
-  } catch (error) {
-    console.error("Error cargando los PFPs de Transient Labs:", error);
+    frames.push({
+      pfp: artista.imgCargada,
+      rarity: artista.rareza,
+      nombre: artista.nombre,
+      isFixed: false,
+      x: random(0, width - tamaño),
+      y: random(0, height - tamaño),
+      size: tamaño,
+      vx: random(-0.25, 0.25), 
+      vy: random(-0.25, 0.25),
+      t: random(1000)
+    });
   }
 }
 
 function draw() {
   image(bg, 0, 0, width, height);
+  
+  let cuadroInteractuado = null;
+
   for (let f of frames) {
     drawAndMoveFrame(f);
+    
+    // Verifica si el mouse está sobre este cuadro
+    if (mouseX > f.x && mouseX < f.x + f.size && mouseY > f.y && mouseY < f.y + f.size) {
+      if (f.nombre !== "") {
+        cuadroInteractuado = f; // Guarda cuál está tocando el mouse
+      }
+    }
+  }
+
+  // ✨ LOGICA DEL ROLLOVER (Dibuja el cartelito del nombre arriba de todo)
+  if (cuadroInteractuado) {
+    dibujarCartelNombre(cuadroInteractuado.nombre, mouseX, mouseY);
   }
 }
 
@@ -143,9 +168,8 @@ function drawAndMoveFrame(f) {
     }
   }
 
-// 2. Capa de Frente (El marco PNG transparente encima)
+  // 2. Capa de Frente (El marco PNG transparente encima)
   if (f.rarity === "artist") {
-    // Si no encuentra marco-artista.png usa el legendary de respaldo automáticamente
     let marcoParaDibujar = (marcoArtist && marcoArtist.width > 1) ? marcoArtist : marcoLegendary;
     image(marcoParaDibujar, 0, 0, f.size, f.size);
   }
@@ -157,26 +181,33 @@ function drawAndMoveFrame(f) {
   pop();
 }
 
-function addRealPFP(url, rarity = "common") {
-  loadImage(url, (img) => {
-    if (frames.length >= maxFrames) {
-      let indexToRemove = frames.findIndex(f => !f.isFixed);
-      if (indexToRemove !== -1) frames.splice(indexToRemove, 1);
-    }
+// Función estética para el cartel flotante del Rollover
+function dibujarCartelNombre(txt, mx, my) {
+  push();
+  textSize(14);
+  let txtWidth = textWidth(txt) + 20;
+  let txtHeight = 28;
+  
+  // Posición del cartel un poquito al costado del mouse
+  let cx = mx + 15;
+  let cy = my - 15;
+  
+  // Evita que el cartel se salga de la pantalla por la derecha o abajo
+  if (cx + txtWidth > width) cx = mx - txtWidth - 5;
+  if (cy + txtHeight > height) cy = height - txtHeight - 5;
 
-    let tamaño = random(90, 140);
-    frames.push({
-      pfp: img,
-      rarity: rarity,
-      isFixed: false,
-      x: random(0, width - tamaño),
-      y: random(0, height - tamaño),
-      size: tamaño,
-      vx: random(-0.25, 0.25), 
-      vy: random(-0.25, 0.25),
-      t: random(1000)
-    });
-  });
+  // Fondo del cartel (Negro translúcido elegante con borde sutil)
+  fill(15, 15, 18, 230);
+  stroke(255, 255, 255, 40);
+  strokeWeight(1);
+  rect(cx, cy, txtWidth, txtHeight, 6);
+
+  // Texto del nombre
+  noStroke();
+  fill(255);
+  textAlign(CENTER, CENTER);
+  text(txt, cx + txtWidth / 2, cy + txtHeight / 2);
+  pop();
 }
 
 function windowResized() {
