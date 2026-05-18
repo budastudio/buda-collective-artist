@@ -19,31 +19,54 @@ let maxFrames = 80;
 
 // Tu contrato oficial de Transient Labs en Base
 const CONTRACT_ADDRESS = "0x303dd729601a44262f848ecc9950514c97ba3081";
-const CHAIN_ID = 8453; // ID de la red Base
+const CHAIN_ID = 8453; 
 
-// Marcos PNG
-let marcoCommon, marcoRare, marcoEpic, marcoLegendary;
+// Variables para imágenes fijas
+let marcoCommon, marcoRare, marcoEpic, marcoLegendary, marcoArtist;
+let logoArtista;
 
 function preload() {
+  // 1. Carga del fondo de la obra
   bg = loadImage("obra-background.jpg"); 
+  
+  // 2. Carga de los marcos estándar (Deben estar en tu repositorio)
   marcoCommon = loadImage("marco-common.png");
   marcoRare = loadImage("marco-rare.png");
   marcoEpic = loadImage("marco-epic.png");
   marcoLegendary = loadImage("marco-legendary.png");
+  
+  // 3. Carga de tu Logotipo y su Marco de Artista en PNG
+  logoArtista = loadImage("logo-artista.png"); 
+  marcoArtist = loadImage("marco-artist.png"); 
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   initFloatingSystem();
   
-  // 🚀 Llamamos a la API de Transient Labs para cargar los PFPs reales
+  // Conexión Web3 activa
   fetchTransientNFTs();
 }
 
 function initFloatingSystem() {
   frames = [];
-  // Generamos los 50 avatares místicos iniciales por defecto
-  for (let i = 0; i < 50; i++) {
+  
+  // 🎨 TU LOGO FIJO PRINCIPAL (Siempre aparece primero)
+  let tamañoLogo = 140; 
+  frames.push({
+    pfp: logoArtista, 
+    rarity: "artist", 
+    isFixed: true, 
+    x: random(width * 0.2, width * 0.8), 
+    y: random(height * 0.2, height * 0.8),
+    size: tamañoLogo,
+    vx: random(-0.15, 0.15), 
+    vy: random(-0.15, 0.15), 
+    t: random(1000)
+  });
+
+  // Los 49 cuadros místicos iniciales genéricos
+  for (let i = 0; i < 49; i++) {
     let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -51,6 +74,7 @@ function initFloatingSystem() {
     frames.push({
       pfp: null, 
       rarity: r,
+      isFixed: false,
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
@@ -62,25 +86,19 @@ function initFloatingSystem() {
   }
 }
 
-// 🌐 Función que se conecta con Transient Labs
 async function fetchTransientNFTs() {
   try {
-    // Consultamos la API indexadora de Transient Labs para tu contrato en Base
     let response = await fetch(`https://api.transient.xyz/v1/nft/${CHAIN_ID}/${CONTRACT_ADDRESS}/tokens`);
     if (!response.ok) return;
-    
     let data = await response.json();
     
-    // Si hay NFTs minteados, los metemos al lienzo
     if (data && data.tokens) {
       for (let token of data.tokens) {
-        // Obtenemos la imagen que subió el usuario (manejando IPFS si es necesario)
         let imageUrl = token.metadata?.image || token.token_uri;
         if (imageUrl && imageUrl.startsWith("ipfs://")) {
           imageUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
         }
         
-        // Buscamos si el usuario tiene asignada una rareza en sus metadatos (por defecto common)
         let rarity = token.metadata?.attributes?.find(a => a.trait_type?.toLowerCase() === 'rarity')?.value || "common";
         
         if (imageUrl) {
@@ -110,7 +128,7 @@ function drawAndMoveFrame(f) {
   push();
   translate(f.x, f.y);
 
-  // 1. Dibujar el Avatar (Si existe PFP real, sino el fondo abstracto)
+  // 1. Capa de Fondo (Si hay logo/PFP dibuja la imagen, si no, el abstracto)
   if (f.pfp) {
     image(f.pfp, 0, 0, f.size, f.size);
   } else {
@@ -125,8 +143,13 @@ function drawAndMoveFrame(f) {
     }
   }
 
-  // 2. Superponer tu marco PNG
-  if (f.rarity === "common") image(marcoCommon, 0, 0, f.size, f.size);
+  // 2. Capa de Frente (El marco PNG transparente encima)
+  if (f.rarity === "artist") {
+    // Si no encuentra marco-artist.png usa el legendary de respaldo automáticamente
+    let marcoParaDibujar = (marcoArtist && marcoArtist.width > 1) ? marcoArtist : marcoLegendary;
+    image(marcoParaDibujar, 0, 0, f.size, f.size);
+  } 
+  else if (f.rarity === "common") image(marcoCommon, 0, 0, f.size, f.size);
   else if (f.rarity === "rare") image(marcoRare, 0, 0, f.size, f.size);
   else if (f.rarity === "epic") image(marcoEpic, 0, 0, f.size, f.size);
   else if (f.rarity === "legendary") image(marcoLegendary, 0, 0, f.size, f.size);
@@ -134,17 +157,18 @@ function drawAndMoveFrame(f) {
   pop();
 }
 
-// Reemplaza los cuadros vacíos por los comprados reales
 function addRealPFP(url, rarity = "common") {
   loadImage(url, (img) => {
-    // Sacamos un cuadro genérico para hacerle espacio al real
     if (frames.length >= maxFrames) {
-      frames.shift();
+      let indexToRemove = frames.findIndex(f => !f.isFixed);
+      if (indexToRemove !== -1) frames.splice(indexToRemove, 1);
     }
+
     let tamaño = random(90, 140);
     frames.push({
       pfp: img,
       rarity: rarity,
+      isFixed: false,
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
