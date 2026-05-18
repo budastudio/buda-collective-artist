@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buda Collective Artist - Marcos Personalizados</title>
+    <title>Buda Collective Artist - Live Web3</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #0c0c0e;
-        }
-        canvas {
-            display: block;
-        }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
@@ -24,14 +17,15 @@ let bg;
 let frames = [];
 let maxFrames = 80;
 
-// Variables para tus marcos personalizados PNG
+// Tu contrato oficial de Transient Labs en Base
+const CONTRACT_ADDRESS = "0x303dd729601a44262f848ecc9950514c97ba3081";
+const CHAIN_ID = 8453; // ID de la red Base
+
+// Marcos PNG
 let marcoCommon, marcoRare, marcoEpic, marcoLegendary;
 
 function preload() {
-  // Carga el fondo del Buda
   bg = loadImage("obra-background.jpg"); 
-  
-  // Carga tus marcos PNG transparentes (deben estar en tu repositorio)
   marcoCommon = loadImage("marco-common.png");
   marcoRare = loadImage("marco-rare.png");
   marcoEpic = loadImage("marco-epic.png");
@@ -41,14 +35,16 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   initFloatingSystem();
+  
+  // 🚀 Llamamos a la API de Transient Labs para cargar los PFPs reales
+  fetchTransientNFTs();
 }
 
 function initFloatingSystem() {
   frames = [];
-  
-  // Generamos los 50 avatares iniciales abstractos
+  // Generamos los 50 avatares místicos iniciales por defecto
   for (let i = 0; i < 50; i++) {
-    let tamaño = random(70, 115); // Un toque más grandes para que luzcan tus marcos
+    let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
     
@@ -58,7 +54,7 @@ function initFloatingSystem() {
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
-      vx: random(-0.2, 0.2), // Flotado místico ultra lento
+      vx: random(-0.2, 0.2), 
       vy: random(-0.2, 0.2), 
       t: random(1000),
       col: color(random(100, 255), random(100, 255), random(220, 255)) 
@@ -66,11 +62,39 @@ function initFloatingSystem() {
   }
 }
 
-function draw() {
-  // Dibujamos el Buda de fondo
-  image(bg, 0, 0, width, height);
+// 🌐 Función que se conecta con Transient Labs
+async function fetchTransientNFTs() {
+  try {
+    // Consultamos la API indexadora de Transient Labs para tu contrato en Base
+    let response = await fetch(`https://api.transient.xyz/v1/nft/${CHAIN_ID}/${CONTRACT_ADDRESS}/tokens`);
+    if (!response.ok) return;
+    
+    let data = await response.json();
+    
+    // Si hay NFTs minteados, los metemos al lienzo
+    if (data && data.tokens) {
+      for (let token of data.tokens) {
+        // Obtenemos la imagen que subió el usuario (manejando IPFS si es necesario)
+        let imageUrl = token.metadata?.image || token.token_uri;
+        if (imageUrl && imageUrl.startsWith("ipfs://")) {
+          imageUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
+        }
+        
+        // Buscamos si el usuario tiene asignada una rareza en sus metadatos (por defecto common)
+        let rarity = token.metadata?.attributes?.find(a => a.trait_type?.toLowerCase() === 'rarity')?.value || "common";
+        
+        if (imageUrl) {
+          addRealPFP(imageUrl, rarity.toLowerCase());
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error cargando los PFPs de Transient Labs:", error);
+  }
+}
 
-  // Actualizamos y dibujamos los elementos flotantes
+function draw() {
+  image(bg, 0, 0, width, height);
   for (let f of frames) {
     drawAndMoveFrame(f);
   }
@@ -80,48 +104,40 @@ function drawAndMoveFrame(f) {
   f.x += f.vx;
   f.y += f.vy;
 
-  // Rebote suave en los bordes de la pantalla
   if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
   if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
 
   push();
   translate(f.x, f.y);
 
-  // 1. DIBUJAR EL CONTENIDO (El Avatar de fondo)
+  // 1. Dibujar el Avatar (Si existe PFP real, sino el fondo abstracto)
   if (f.pfp) {
-    // Si ya es un PFP real traído desde el mint de Transient Labs
     image(f.pfp, 0, 0, f.size, f.size);
   } else {
-    // Si es un cuadro generativo inicial, un fondo abstracto que pulsa
     let pulse = sin(frameCount * 0.02 + f.t) * 15;
     fill(red(f.col), green(f.col), blue(f.col), 25 + pulse);
     noStroke();
     rect(0, 0, f.size, f.size);
     
-    // Detalle místico en el centro
     fill(255, 40 + pulse);
     if (f.rarity === "legendary" || f.rarity === "epic") {
       ellipse(f.size/2, f.size/2, f.size * 0.4);
     }
   }
 
-  // 2. ENMARCAR CON TU PNG TRANSPARENTE (Se dibuja encima de la foto)
-  if (f.rarity === "common") {
-    image(marcoCommon, 0, 0, f.size, f.size);
-  } else if (f.rarity === "rare") {
-    image(marcoRare, 0, 0, f.size, f.size);
-  } else if (f.rarity === "epic") {
-    image(marcoEpic, 0, 0, f.size, f.size);
-  } else if (f.rarity === "legendary") {
-    image(marcoLegendary, 0, 0, f.size, f.size);
-  }
+  // 2. Superponer tu marco PNG
+  if (f.rarity === "common") image(marcoCommon, 0, 0, f.size, f.size);
+  else if (f.rarity === "rare") image(marcoRare, 0, 0, f.size, f.size);
+  else if (f.rarity === "epic") image(marcoEpic, 0, 0, f.size, f.size);
+  else if (f.rarity === "legendary") image(marcoLegendary, 0, 0, f.size, f.size);
 
   pop();
 }
 
-// Esta función se activará automáticamente con la API de Transient Labs
-function addPFP(url, rarity = "common") {
+// Reemplaza los cuadros vacíos por los comprados reales
+function addRealPFP(url, rarity = "common") {
   loadImage(url, (img) => {
+    // Sacamos un cuadro genérico para hacerle espacio al real
     if (frames.length >= maxFrames) {
       frames.shift();
     }
