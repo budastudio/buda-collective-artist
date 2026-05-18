@@ -56,7 +56,7 @@ function preload() {
   // Carga de las PFPs locales
   for (let i = 0; i < datosArtistas.length; i++) {
     let indexArchivo = i + 1;
-    let rutaPFP = `pfps/pfp${indexArchivo}.png`;
+    let rutaPFP = `pfp${indexArchivo}.png`;
     datosArtistas[i].imgCargada = cargarConSeguridad(rutaPFP);
   }
 }
