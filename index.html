@@ -35,9 +35,9 @@ function preload() {
   marcoEpic = loadImage("marco-epic.png");
   marcoLegendary = loadImage("marco-legendary.png");
   
-  // 3. Carga de tu Logotipo y su Marco de Artista en PNG
+// 3. Carga de tu Logotipo y su Marco de Artista en PNG
   logoArtista = loadImage("logo-artista.png"); 
-  marcoArtist = loadImage("marco-artist.png"); 
+  marcoArtist = loadImage("marco-artista.png"); 
 }
 
 function setup() {
@@ -143,12 +143,12 @@ function drawAndMoveFrame(f) {
     }
   }
 
-  // 2. Capa de Frente (El marco PNG transparente encima)
+// 2. Capa de Frente (El marco PNG transparente encima)
   if (f.rarity === "artist") {
-    // Si no encuentra marco-artist.png usa el legendary de respaldo automáticamente
+    // Si no encuentra marco-artista.png usa el legendary de respaldo automáticamente
     let marcoParaDibujar = (marcoArtist && marcoArtist.width > 1) ? marcoArtist : marcoLegendary;
     image(marcoParaDibujar, 0, 0, f.size, f.size);
-  } 
+  }
   else if (f.rarity === "common") image(marcoCommon, 0, 0, f.size, f.size);
   else if (f.rarity === "rare") image(marcoRare, 0, 0, f.size, f.size);
   else if (f.rarity === "epic") image(marcoEpic, 0, 0, f.size, f.size);
