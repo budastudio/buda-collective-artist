@@ -22,16 +22,16 @@ let logoArtista;
 let archivosRotos = [];
 
 // =========================================================================
-// 🔧 CONTROL DE ARTISTAS MANUAL (Pegá acá tus artistas con las comas bien)
+// 🔧 CONTROL DE ARTISTAS MANUAL (¡Actualizado con tus 7 artistas!)
 // =========================================================================
 const datosArtistas = [
-  { nombre: "Dorthe's",     rareza: "rare" },       
-  { nombre: "Ivan Hugo", rareza: "legendary" },  
-  { nombre: "Emoji",       rareza: "epic" },       
-  { nombre: "Aislandart",    rareza: "common" }, 
-  { nombre: "enne_rhn",    rareza: "common" }, 
-  { nombre: "sunnydayz.eth",    rareza: "common" },   
-  { nombre: "reylarsdam",  rareza: "epic" }        
+  { nombre: "Dorthe's",      rareza: "rare",      link: "" }, // pfp1.png
+  { nombre: "Ivan Hugo",     rareza: "legendary", link: "" }, // pfp2.png
+  { nombre: "Emoji",         rareza: "epic",      link: "" }, // pfp3.png
+  { nombre: "Aislandart",    rareza: "common",    link: "" }, // pfp4.png
+  { nombre: "enne_rhn",      rareza: "common",    link: "" }, // pfp5.png
+  { nombre: "sunnydayz.eth", rareza: "common",    link: "" }, // pfp6.png
+  { nombre: "reylarsdam",    rareza: "epic",      link: "https://x.com/reylarsdam" }  // pfp7.png
 ];
 
 function cargarConSeguridad(ruta) {
@@ -53,7 +53,6 @@ function preload() {
   logoArtista = cargarConSeguridad("logo-artista.png"); 
   marcoArtist = cargarConSeguridad("marco-artista.png"); 
   
-  // Cambiado para buscar directo en el directorio principal (Opción B)
   for (let i = 0; i < datosArtistas.length; i++) {
     let indexArchivo = i + 1;
     let rutaPFP = `pfp${indexArchivo}.png`; 
@@ -75,6 +74,7 @@ function initFloatingSystem() {
     pfp: logoArtista, 
     rarity: "artist", 
     nombre: "Buda Studio",
+    link: "https://x.com/budastudio_nft", 
     isFixed: true, 
     x: random(width * 0.2, width * 0.8), 
     y: random(height * 0.2, height * 0.8),
@@ -85,7 +85,7 @@ function initFloatingSystem() {
     radius: tamañoLogo / 2
   });
 
-  for (let i = 0; i < 40; i++) { // Ajustado para dar más espacio a los reales
+  for (let i = 0; i < 35; i++) { // Bajado un toque para equilibrar con los reales
     let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -94,6 +94,7 @@ function initFloatingSystem() {
       pfp: null, 
       rarity: r,
       nombre: "", 
+      link: null,
       isFixed: false,
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
@@ -116,6 +117,7 @@ function cargarArtistasManuales() {
       pfp: artista.imgCargada,
       rarity: artista.rareza,
       nombre: artista.nombre,
+      link: artista.link || null,
       isFixed: false,
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
@@ -151,26 +153,33 @@ function draw() {
     background(12, 12, 14);
   }
   
-  // 💥 APLICAR FÍSICA DE COLISIONES A TODOS LOS ELEMENTOS
   aplicarColisiones();
 
   let cuadroInteractuado = null;
+  let alguienTieneFocus = false;
 
   for (let f of frames) {
     drawAndMoveFrame(f);
     
-    // Detectar si el mouse está encima calculando el centro real del círculo
     let centroX = f.x + f.radius;
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
     
     if (d < f.radius && f.nombre !== "") {
       cuadroInteractuado = f;
+      if (f.link) alguienTieneFocus = true;
     }
   }
 
+  if (alguienTieneFocus) {
+    cursor(HAND);
+  } else {
+    cursor(ARROW);
+  }
+
   if (cuadroInteractuado) {
-    dibujarCartelNombre(cuadroInteractuado.nombre, mouseX, mouseY);
+    let textoCartel = cuadroInteractuado.link ? `${cuadroInteractuado.nombre} 🔗` : cuadroInteractuado.nombre;
+    dibujarCartelNombre(textoCartel, mouseX, mouseY);
   }
 }
 
@@ -178,28 +187,24 @@ function drawAndMoveFrame(f) {
   f.x += f.vx;
   f.y += f.vy;
 
-  // Rebote sutil contra los bordes de la pantalla
   if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
   if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
 
   push();
   translate(f.x, f.y);
 
-  // ✨ FUNCIÓN GLOW: Si el mouse está encima, dibuja un resplandor de neón de fondo
   let centroX_local = f.radius;
   let centroY_local = f.radius;
   let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
   
   if (dMouse < f.radius && f.nombre !== "") {
-    // Dibujamos capas concéntricas translúcidas para simular el brillo difuminado
     noStroke();
     for (let i = 15; i > 0; i--) {
-      fill(255, 215, 0, 15 - i); // Resplandor dorado/místico ajustable
+      fill(255, 215, 0, 15 - i); 
       ellipse(centroX_local, centroY_local, f.size + (i * 4));
     }
   }
 
-  // 1. Capa de Fondo
   if (f.pfp && f.pfp.width > 1) {
     image(f.pfp, 0, 0, f.size, f.size);
   } else {
@@ -214,7 +219,6 @@ function drawAndMoveFrame(f) {
     }
   }
 
-  // 2. Capa de Frente (Marcos)
   if (f.rarity === "artist") {
     let marcoParaDibujar = (marcoArtist && marcoArtist.width > 1) ? marcoArtist : marcoLegendary;
     if (marcoParaDibujar && marcoParaDibujar.width > 1) image(marcoParaDibujar, 0, 0, f.size, f.size);
@@ -227,14 +231,12 @@ function drawAndMoveFrame(f) {
   pop();
 }
 
-// Lógica unificada para que ningún icono se tape con otro
 function aplicarColisiones() {
   for (let i = 0; i < frames.length; i++) {
     for (let j = i + 1; j < frames.length; j++) {
       let f1 = frames[i];
       let f2 = frames[j];
 
-      // Calculamos centros reales
       let c1x = f1.x + f1.radius;
       let c1y = f1.y + f1.radius;
       let c2x = f2.x + f2.radius;
@@ -246,17 +248,13 @@ function aplicarColisiones() {
       let distanciaMinima = f1.radius + f2.radius;
 
       if (distancia < distanciaMinima) {
-        // Angulo de choque
         let angulo = atan2(dy, dx);
-        
-        // Separación física inmediata para que no se queden pegados
         let superposicion = distanciaMinima - distancia;
         f1.x -= cos(angulo) * (superposicion * 0.5);
         f1.y -= sin(angulo) * (superposicion * 0.5);
         f2.x += cos(angulo) * (superposicion * 0.5);
         f2.y += sin(angulo) * (superposicion * 0.5);
 
-        // Rebote elástico de velocidades (Tu algoritmo original adaptado)
         let ax = cos(angulo) * 0.04;
         let ay = sin(angulo) * 0.04;
         f1.vx -= ax;
@@ -264,6 +262,19 @@ function aplicarColisiones() {
         f2.vx += ax;
         f2.vy += ay;
       }
+    }
+  }
+}
+
+function mouseClicked() {
+  for (let f of frames) {
+    let centroX = f.x + f.radius;
+    let centroY = f.y + f.radius;
+    let d = dist(mouseX, mouseY, centroX, centroY);
+    
+    if (d < f.radius && f.link && f.link !== "") {
+      window.open(f.link, '_blank'); 
+      break; 
     }
   }
 }
