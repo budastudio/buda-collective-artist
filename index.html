@@ -17,22 +17,19 @@ let bg;
 let frames = [];
 let maxFrames = 80;
 
-// Variables para imágenes fijas
 let marcoCommon, marcoRare, marcoEpic, marcoLegendary, marcoArtist;
 let logoArtista;
-
-// Lista de archivos que fallaron al cargar (para mostrártelo en pantalla si pasa)
 let archivosRotos = [];
 
 // =========================================================================
-// 🔧 CONTROL DE ARTISTAS MANUAL (Configurá acá tus 3 primeros amigos)
+// 🔧 CONTROL DE ARTISTAS MANUAL (Pegá acá tus artistas con las comas bien)
 // =========================================================================
 const datosArtistas = [
-  { nombre: "Dorthys",     rareza: "rare" },       // Busca pfp1.png
-  { nombre: "IvanHugo", rareza: "legendary" },  // Busca pfp2.png
-  { nombre: "Emoji",       rareza: "epic" },       // <--- ¡Faltaba esta coma! (Busca pfp3.png)
-  { nombre: "Aislandart",    rareza: "common" },     // <--- ¡Faltaba esta coma! (Busca pfp4.png)
-  { nombre: "enne_rhn",  rareza: "epic" }        // El último no la necesita (Busca pfp5.png)
+  { nombre: "Dorthys",     rareza: "rare" },       
+  { nombre: "Ivan Hugo", rareza: "legendary" },  
+  { nombre: "Emoji",       rareza: "epic" },       
+  { nombre: "enne_rhn",    rareza: "common" },     
+  { nombre: "Aislandart",  rareza: "epic" }        
 ];
 
 function cargarConSeguridad(ruta) {
@@ -46,7 +43,6 @@ function cargarConSeguridad(ruta) {
 }
 
 function preload() {
-  // Cargamos todo con la función segura para que no congele el sistema
   bg = cargarConSeguridad("obra-background.jpg"); 
   marcoCommon = cargarConSeguridad("marco-common.png");
   marcoRare = cargarConSeguridad("marco-rare.png");
@@ -55,10 +51,10 @@ function preload() {
   logoArtista = cargarConSeguridad("logo-artista.png"); 
   marcoArtist = cargarConSeguridad("marco-artista.png"); 
   
-  // Carga de las PFPs locales
+  // Cambiado para buscar directo en el directorio principal (Opción B)
   for (let i = 0; i < datosArtistas.length; i++) {
     let indexArchivo = i + 1;
-    let rutaPFP = `pfp${indexArchivo}.png`;
+    let rutaPFP = `pfp${indexArchivo}.png`; 
     datosArtistas[i].imgCargada = cargarConSeguridad(rutaPFP);
   }
 }
@@ -76,17 +72,18 @@ function initFloatingSystem() {
   frames.push({
     pfp: logoArtista, 
     rarity: "artist", 
-    nombre: "Buda Studio",
+    nombre: "Buda Co. Creator",
     isFixed: true, 
     x: random(width * 0.2, width * 0.8), 
     y: random(height * 0.2, height * 0.8),
     size: tamañoLogo,
     vx: random(-0.15, 0.15), 
     vy: random(-0.15, 0.15), 
-    t: random(1000)
+    t: random(1000),
+    radius: tamañoLogo / 2
   });
 
-  for (let i = 0; i < 46; i++) {
+  for (let i = 0; i < 40; i++) { // Ajustado para dar más espacio a los reales
     let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -102,7 +99,8 @@ function initFloatingSystem() {
       vx: random(-0.2, 0.2), 
       vy: random(-0.2, 0.2), 
       t: random(1000),
-      col: color(random(100, 255), random(100, 255), random(220, 255)) 
+      col: color(random(100, 255), random(100, 255), random(220, 255)),
+      radius: tamaño / 2
     });
   }
 }
@@ -110,7 +108,7 @@ function initFloatingSystem() {
 function cargarArtistasManuales() {
   for (let i = 0; i < datosArtistas.length; i++) {
     let artista = datosArtistas[i];
-    let tamaño = random(90, 140);
+    let tamaño = random(95, 130);
     
     frames.push({
       pfp: artista.imgCargada,
@@ -122,13 +120,13 @@ function cargarArtistasManuales() {
       size: tamaño,
       vx: random(-0.25, 0.25), 
       vy: random(-0.25, 0.25),
-      t: random(1000)
+      t: random(1000),
+      radius: tamaño / 2
     });
   }
 }
 
 function draw() {
-  // Si hay archivos rotos, te lo mostramos en una lista roja en pantalla
   if (archivosRotos.length > 0) {
     background(20, 10, 15);
     fill(255, 50, 50);
@@ -137,28 +135,35 @@ function draw() {
     text("⚠️ ERROR DE CARGA EN GITHUB:", 30, 30);
     textSize(14);
     fill(200);
-    text("Asegurate de que estos archivos existan en tu repositorio con este nombre exacto (ojo mayúsculas):", 30, 60);
-    
+    text("Asegurate de que estos archivos existan en la raíz junto al index.html:", 30, 60);
     fill(255, 100, 100);
     for (let i = 0; i < archivosRotos.length; i++) {
       text("- " + archivosRotos[i], 40, 100 + (i * 22));
     }
-    return; // Frena el dibujo para que veas el error
+    return;
   }
 
-  // Si todo cargó bien, corre tu animación original
   if (bg && bg.width > 1) {
     image(bg, 0, 0, width, height);
   } else {
     background(12, 12, 14);
   }
   
+  // 💥 APLICAR FÍSICA DE COLISIONES A TODOS LOS ELEMENTOS
+  aplicarColisiones();
+
   let cuadroInteractuado = null;
 
   for (let f of frames) {
     drawAndMoveFrame(f);
-    if (mouseX > f.x && mouseX < f.x + f.size && mouseY > f.y && mouseY < f.y + f.size) {
-      if (f.nombre !== "") cuadroInteractuado = f;
+    
+    // Detectar si el mouse está encima calculando el centro real del círculo
+    let centroX = f.x + f.radius;
+    let centroY = f.y + f.radius;
+    let d = dist(mouseX, mouseY, centroX, centroY);
+    
+    if (d < f.radius && f.nombre !== "") {
+      cuadroInteractuado = f;
     }
   }
 
@@ -171,12 +176,28 @@ function drawAndMoveFrame(f) {
   f.x += f.vx;
   f.y += f.vy;
 
+  // Rebote sutil contra los bordes de la pantalla
   if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
   if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
 
   push();
   translate(f.x, f.y);
 
+  // ✨ FUNCIÓN GLOW: Si el mouse está encima, dibuja un resplandor de neón de fondo
+  let centroX_local = f.radius;
+  let centroY_local = f.radius;
+  let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
+  
+  if (dMouse < f.radius && f.nombre !== "") {
+    // Dibujamos capas concéntricas translúcidas para simular el brillo difuminado
+    noStroke();
+    for (let i = 15; i > 0; i--) {
+      fill(255, 215, 0, 15 - i); // Resplandor dorado/místico ajustable
+      ellipse(centroX_local, centroY_local, f.size + (i * 4));
+    }
+  }
+
+  // 1. Capa de Fondo
   if (f.pfp && f.pfp.width > 1) {
     image(f.pfp, 0, 0, f.size, f.size);
   } else {
@@ -191,6 +212,7 @@ function drawAndMoveFrame(f) {
     }
   }
 
+  // 2. Capa de Frente (Marcos)
   if (f.rarity === "artist") {
     let marcoParaDibujar = (marcoArtist && marcoArtist.width > 1) ? marcoArtist : marcoLegendary;
     if (marcoParaDibujar && marcoParaDibujar.width > 1) image(marcoParaDibujar, 0, 0, f.size, f.size);
@@ -203,6 +225,47 @@ function drawAndMoveFrame(f) {
   pop();
 }
 
+// Lógica unificada para que ningún icono se tape con otro
+function aplicarColisiones() {
+  for (let i = 0; i < frames.length; i++) {
+    for (let j = i + 1; j < frames.length; j++) {
+      let f1 = frames[i];
+      let f2 = frames[j];
+
+      // Calculamos centros reales
+      let c1x = f1.x + f1.radius;
+      let c1y = f1.y + f1.radius;
+      let c2x = f2.x + f2.radius;
+      let c2y = f2.y + f2.radius;
+
+      let dx = c2x - c1x;
+      let dy = c2y - c1y;
+      let distancia = sqrt(dx * dx + dy * dy);
+      let distanciaMinima = f1.radius + f2.radius;
+
+      if (distancia < distanciaMinima) {
+        // Angulo de choque
+        let angulo = atan2(dy, dx);
+        
+        // Separación física inmediata para que no se queden pegados
+        let superposicion = distanciaMinima - distancia;
+        f1.x -= cos(angulo) * (superposicion * 0.5);
+        f1.y -= sin(angulo) * (superposicion * 0.5);
+        f2.x += cos(angulo) * (superposicion * 0.5);
+        f2.y += sin(angulo) * (superposicion * 0.5);
+
+        // Rebote elástico de velocidades (Tu algoritmo original adaptado)
+        let ax = cos(angulo) * 0.04;
+        let ay = sin(angulo) * 0.04;
+        f1.vx -= ax;
+        f1.vy -= ay;
+        f2.vx += ax;
+        f2.vy += ay;
+      }
+    }
+  }
+}
+
 function dibujarCartelNombre(txt, mx, my) {
   push();
   textSize(14);
@@ -213,8 +276,8 @@ function dibujarCartelNombre(txt, mx, my) {
   if (cx + txtWidth > width) cx = mx - txtWidth - 5;
   if (cy + txtHeight > height) cy = height - txtHeight - 5;
 
-  fill(15, 15, 18, 230);
-  stroke(255, 255, 255, 40);
+  fill(15, 15, 18, 240);
+  stroke(255, 255, 255, 50);
   strokeWeight(1);
   rect(cx, cy, txtWidth, txtHeight, 6);
 
