@@ -25,12 +25,13 @@ let archivosRotos = [];
 // 🔧 CONTROL DE ARTISTAS MANUAL (Pegá acá tus artistas con las comas bien)
 // =========================================================================
 const datosArtistas = [
-  { nombre: "Dorthes",     rareza: "rare" },       
+  { nombre: "Dorthe's",     rareza: "rare" },       
   { nombre: "Ivan Hugo", rareza: "legendary" },  
   { nombre: "Emoji",       rareza: "epic" },       
-  { nombre: "Aislandart",    rareza: "common" },     
-  { nombre: "enne_rhn",  rareza: "epic" }
-  { nombre: "sunnydayz.eth",    rareza: "common" }, 
+  { nombre: "Aislandart",    rareza: "common" }, 
+  { nombre: "enne_rhn",    rareza: "common" }, 
+  { nombre: "sunnydayz.eth",    rareza: "common" },   
+  { nombre: "reylarsdam",  rareza: "epic" }        
 ];
 
 function cargarConSeguridad(ruta) {
@@ -73,7 +74,7 @@ function initFloatingSystem() {
   frames.push({
     pfp: logoArtista, 
     rarity: "artist", 
-    nombre: "Buda Studio",
+    nombre: "Buda Co. Creator",
     isFixed: true, 
     x: random(width * 0.2, width * 0.8), 
     y: random(height * 0.2, height * 0.8),
