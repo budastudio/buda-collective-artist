@@ -37,28 +37,29 @@ uetas iniciales basadas en el contexto general de estos creadores en la escena a
 Aquí tienes el código listo para copiar y pegar:
 
 JavaScript
-const artistas = [
-  { nombre: "Dorthe's",        rareza: "rare",      link: "https://x.com/DortheJOC" }, // pfp1.png
-  { nombre: "Ivan Hugo",       rareza: "rare",      link: "https://x.com/ivnhgo" }, // pfp2.png
-  { nombre: "Emoji",           rareza: "common",    link: "https://x.com/_EM0JI" }, // pfp3.png
-  { nombre: "Aislandart",      rareza: "common",    link: "https://x.com/aislandart" }, // pfp4.png
-  { nombre: "enne_rhn",        rareza: "common",    link: "https://x.com/enne_rhn96" }, // pfp5.png
-  { nombre: "sunnydayz.eth",   rareza: "common",    link: "https://x.com/sunnydayzsoon" }, // pfp6.png
-  { nombre: "reylarsdam",      rareza: "epic",      link: "https://x.com/reylarsdam" }, // pfp7.png
-  { nombre: "EightyEight",     rareza: "common",    link: "https://x.com/" }, // pfp8.png
-  { nombre: "VJdeliria",       rareza: "epic",      link: "https://x.com/VJdeliria" }, // pfp9.png
-  { nombre: "Blue2black",      rareza: "rare",      link: "https://x.com/Blue2black" }, // pfp10.png
-  { nombre: "nikolekapo_nft",  rareza: "rare",      link: "https://x.com/nikolekapo_nft" }, // pfp11.png
-  { nombre: "wallplugnft",     rareza: "rare",      link: "https://x.com/wallplugnft" }, // pfp12.png
-  { nombre: "Adolfochs",       rareza: "epic",      link: "https://x.com/adolfochzs" }, // pfp13.png
-  { nombre: "sashelka",        rareza: "rare",      link: "https://x.com/sashelka" }, // pfp14.png
-  { nombre: "Chrisland",       rareza: "rare",      link: "https://x.com/Chrisland1405" }, // pfp15.png
-  { nombre: "EmpressTrash",    rareza: "common",    link: "https://x.com/EmpressTrash" }, // pfp16.png
-  { nombre: "mtropedroangel",  rareza: "legendary", link: "https://x.com/mtropedroangel" }, // pfp17.png
-  { nombre: "gulbakanozge",    rareza: "common",    link: "https://x.com/gulbakanozge" }, // pfp18.png
-  { nombre: "StrokeDriven",    rareza: "common",    link: "https://x.com/StrokeDriven" }, // pfp19.png
-  { nombre: "Ivonnespectre",   rareza: "common",    link: "https://x.com/ivonnespectre" }, // pfp20.png
-  { nombre: "Aoifeodwyer",     rareza: "common",    link: "https://x.com/Aoifeodwyer" }
+{ nombre: "Dorthe's",         rareza: "rare",        link: "https://x.com/DortheJOC" }, // pfp1.png
+  { nombre: "Ivan Hugo",      rareza: "rare",      link: "https://x.com/ivnhgo" }, // pfp2.png
+  { nombre: "Emoji",          rareza: "common",    link: "https://x.com/_EM0JI" }, // pfp3.png
+  { nombre: "Aislandart",     rareza: "common",    link: "https://x.com/aislandart" }, // pfp4.png
+  { nombre: "enne_rhn",       rareza: "common",      link: "https://x.com/enne_rhn96" }, // pfp5.png
+  { nombre: "sunnydayz.eth",  rareza: "common",    link: "https://x.com/sunnydayzsoon" }, // pfp6.png
+  { nombre: "reylarsdam",     rareza: "epic",      link: "https://x.com/reylarsdam" }, // pfp7.png
+  { nombre: "EightyEight",    rareza: "common",      link: "" }, // pfp8.png
+  { nombre: "VJdeliria",      rareza: "epic",      link: "https://x.com/VJdeliria" }, // pfp9.png
+  { nombre: "Blue2black",     rareza: "rare",      link: "https://x.com/Blue2black" }, // pfp10.png
+  { nombre: "nikolekapo_nft", rareza: "rare",      link: "https://x.com/nikolekapo_nft" }, // pfp11.png
+  { nombre: "wallplugnft",    rareza: "rare",      link: "https://x.com/wallplugnft" }, // pfp12.png
+  { nombre: "Adolfochs",      rareza: "epic",      link: "https://x.com/adolfochzs" }, // pfp13.png
+  { nombre: "sashelka",       rareza: "rare",      link: "https://x.com/sashelka" }, // pfp14.png
+  { nombre: "Chrisland",      rareza: "rare",      link: "https://x.com/Chrisland1405" }, // pfp15.png
+  { nombre: "EmpressTrash",   rareza: "common",    link: "https://x.com/EmpressTrash" }, // pfp16.png
+  { nombre: "mtropedroangel", rareza: "legendary", link: "https://x.com/mtropedroangel" }, // pfp17.png
+  { nombre: "gulbakanozge",   rareza: "common",    link: "https://x.com/gulbakanozge" }  // pfp18.png
+{ nombre: "StrokeDriven",   rareza: "common",    link: "https://x.com/StrokeDriven" },  // pfp19.png
+  { nombre: "Ivonnespectre",   rareza: "common",    link: "https://x.com/ivonnespectre" },  // pfp20.png
+  { nombre: "Aoifeodwyer",   rareza: "common",    link: "https://x.com/Aoifeodwyer" }  // pfp21.png
+
+];
 function cargarConSeguridad(ruta) {
   return loadImage(ruta, 
     img => console.log("Cargado ok: " + ruta), 
