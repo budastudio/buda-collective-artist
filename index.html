@@ -206,7 +206,7 @@ function draw() {
     cursor(ARROW);
   }
 
-  if (cuadroInteractuado) {
+  if (cuadroInteractuado) {                    
     let textoCartel = cuadroInteractuado.link ? `${cuadroInteractuado.nombre} 🔗` : cuadroInteractuado.nombre;
     dibujarCartelNombre(textoCartel, mouseX, mouseY);
   }
