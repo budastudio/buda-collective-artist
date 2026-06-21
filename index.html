@@ -6,9 +6,19 @@
     <title>Buda Collective Artist - Live Showcase</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; }
-        canvas { display: block; }
-    </style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #0c0c0e;
+    touch-action: none;
+    overscroll-behavior: none;
+}
+canvas { display: block; }
+</style>
 </head>
 <body>
 
@@ -40,12 +50,12 @@ const datosArtistas = [
   { nombre: "enne_rhn",       rareza: "rare",      link: "https://x.com/enne_rhn96" }, // pfp5.png
   { nombre: "sunnydayz.eth",  rareza: "common",    link: "https://x.com/sunnydayzsoon" }, // pfp6.png
   { nombre: "reylarsdam",     rareza: "epic",      link: "https://x.com/reylarsdam" }, // pfp7.png
-  { nombre: "EightyEight",    rareza: "epic",      link: "https://x.com/CryptoShawn88" }, // pfp8.png
+  { nombre: "EightyEight",    rareza: "epic",      link: "" }, // pfp8.png
   { nombre: "VJdeliria",      rareza: "epic",      link: "https://x.com/VJdeliria" }, // pfp9.png
   { nombre: "Blue2black",     rareza: "rare",      link: "https://x.com/Blue2black" }, // pfp10.png
   { nombre: "nikolekapo_nft", rareza: "rare",      link: "https://x.com/nikolekapo_nft" }, // pfp11.png
   { nombre: "wallplugnft",    rareza: "rare",      link: "https://x.com/wallplugnft" }, // pfp12.png
-  { nombre: "Adolfochzs",      rareza: "epic",      link: "https://x.com/adolfochzs" }, // pfp13.png
+  { nombre: "Adolfochs",      rareza: "epic",      link: "https://x.com/Adolfochs" }, // pfp13.png
   { nombre: "sashelka",       rareza: "rare",      link: "https://x.com/sashelka" }, // pfp14.png
   { nombre: "Chrisland",      rareza: "rare",      link: "https://x.com/Chrisland1405" }, // pfp15.png
   { nombre: "EmpressTrash",   rareza: "common",    link: "https://x.com/EmpressTrash" }, // pfp16.png
@@ -54,8 +64,7 @@ const datosArtistas = [
   { nombre: "StrokeDriven",   rareza: "common",    link: "https://x.com/StrokeDriven" },  // pfp19.png
   { nombre: "Aoifeodwyer",   rareza: "common",    link: "https://x.com/Aoifeodwyer" },  // pfp20.png
   { nombre: "Ivonnespectre",   rareza: "common",  link: "https://x.com/Ivonnespectre" },  // pfp21.png
-  { nombre: "ernestoasch",   rareza: "common",  link: "https://x.com/ernestoasch" } , // pfp22.png
-  { nombre: "HuemansUniverse",   rareza: "common",  link: "https://x.com/HuemansUniverse" }  // pfp23.png
+  { nombre: "ernestoasch",   rareza: "common",  link: "https://x.com/ernestoasch" }  // pfp22.png
 ];
 
 function cargarConSeguridad(ruta) {
@@ -110,7 +119,9 @@ function initFloatingSystem() {
     isDragging: false
   });
 
-  for (let i = 0; i < 30; i++) { // Bajado a 30 para compensar los 11 reales
+  let cantidadFrames = windowWidth < 768 ? 15 : 30;
+
+  for (let i = 0; i < cantidadFrames; i++) { // Adaptativo móvil
     let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -219,8 +230,25 @@ function drawAndMoveFrame(f) {
     f.x += f.vx;
     f.y += f.vy;
 
-    if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
-    if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
+    if (f.x < 0) {
+      f.x = 0;
+      f.vx *= -1;
+    }
+
+    if (f.x > width - f.size) {
+      f.x = width - f.size;
+      f.vx *= -1;
+    }
+
+    if (f.y < 0) {
+      f.y = 0;
+      f.vy *= -1;
+    }
+
+    if (f.y > height - f.size) {
+      f.y = height - f.size;
+      f.vy *= -1;
+    }
   }
 
   push();
@@ -420,8 +448,30 @@ function dibujarCartelNombre(txt, mx, my) {
   pop();
 }
 
+function touchStarted() {
+  mousePressed();
+  return false;
+}
+
+function touchMoved() {
+  return false;
+}
+
+function touchEnded() {
+  mouseReleased();
+  return false;
+}
+
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+
+  for (let f of frames) {
+    if (f.x < 0) f.x = 0;
+    if (f.y < 0) f.y = 0;
+
+    if (f.x > width - f.size) f.x = width - f.size;
+    if (f.y > height - f.size) f.y = height - f.size;
+  }
 }
 </script>
 
