@@ -120,7 +120,7 @@ function initFloatingSystem() {
     isDragging: false
   });
 
-  let cantidadFrames = windowWidth < 768 ? 15 : 30;
+  let cantidadFrames = windowWidth < 768 ? 8 : 30;
 
   for (let i = 0; i < cantidadFrames; i++) { // Adaptativo móvil
     let tamaño = random(70, 115);
@@ -149,7 +149,7 @@ function initFloatingSystem() {
 function cargarArtistasManuales() {
   for (let i = 0; i < datosArtistas.length; i++) {
     let artista = datosArtistas[i];
-    let tamaño = random(95, 130);
+    let tamaño = windowWidth < 768 ? random(110, 145) : random(95, 130);
     
     frames.push({
       pfp: artista.imgCargada,
@@ -160,8 +160,8 @@ function cargarArtistasManuales() {
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
-      vx: random(-0.25, 0.25), 
-      vy: random(-0.25, 0.25),
+      vx: random(-0.08, 0.08), 
+      vy: random(-0.08, 0.08),
       t: random(1000),
       radius: tamaño / 2,
       isDragging: false
@@ -228,6 +228,10 @@ function draw() {
 function drawAndMoveFrame(f) {
   // Solo se mueve solo si NO se está arrastrando en este momento
   if (!f.isDragging) {
+    let maxSpeed = windowWidth < 768 ? 0.7 : 1.5;
+    f.vx = constrain(f.vx, -maxSpeed, maxSpeed);
+    f.vy = constrain(f.vy, -maxSpeed, maxSpeed);
+
     f.x += f.vx;
     f.y += f.vy;
 
@@ -290,6 +294,9 @@ function drawAndMoveFrame(f) {
   else if (f.rarity === "epic" && marcoEpic && marcoEpic.width > 1) image(marcoEpic, 0, 0, f.size, f.size);
   else if (f.rarity === "legendary" && marcoLegendary && marcoLegendary.width > 1) image(marcoLegendary, 0, 0, f.size, f.size);
 
+  f.vx *= 0.99;
+  f.vy *= 0.99;
+
   pop();
 }
 
@@ -331,8 +338,8 @@ function aplicarColisiones() {
           f2.x += cos(angulo) * (superposicion * 0.5);
           f2.y += sin(angulo) * (superposicion * 0.5);
 
-          let ax = cos(angulo) * 0.04;
-          let ay = sin(angulo) * 0.04;
+          let ax = cos(angulo) * 0.01;
+          let ay = sin(angulo) * 0.01;
           f1.vx -= ax;
           f1.vy -= ay;
           f2.vx += ax;
@@ -354,7 +361,7 @@ function mousePressed() {
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
     
-    if (d < f.radius) {
+    if (d < f.radius + 15) {
       cuadroArrastrado = f;
       f.isDragging = true;
       fueArrastrado = false;
@@ -381,7 +388,7 @@ function actualizarArrastre() {
     if (cuadroArrastrado.y > height - cuadroArrastrado.size) cuadroArrastrado.y = height - cuadroArrastrado.size;
 
     // Si el mouse se movió significativamente, confirmamos que es un Drag
-    if (dist(mouseX, mouseY, mouseXAnterior, mouseYAnterior) > 2) {
+    if (dist(mouseX, mouseY, mouseXAnterior, mouseYAnterior) > 12) {
       fueArrastrado = true;
     }
   }
@@ -459,6 +466,23 @@ function touchMoved() {
 }
 
 function touchEnded() {
+
+  if (!fueArrastrado) {
+
+    for (let f of frames) {
+
+      let centroX = f.x + f.radius;
+      let centroY = f.y + f.radius;
+
+      let d = dist(mouseX, mouseY, centroX, centroY);
+
+      if (d < f.radius + 15 && f.link) {
+        window.open(f.link, '_blank');
+        break;
+      }
+    }
+  }
+
   mouseReleased();
   return false;
 }
