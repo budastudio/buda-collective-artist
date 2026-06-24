@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buda Collective Artist - Soft Field System</title>
+    <title>Buda Collective Artist - Live Showcase</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
-
     <style>
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -18,216 +18,486 @@ html, body {
     overscroll-behavior: none;
 }
 canvas { display: block; }
-    </style>
+</style>
 </head>
-
 <body>
 
 <script>
-
 let bg;
 let frames = [];
+let maxFrames = 80;
+
 let marcoCommon, marcoRare, marcoEpic, marcoLegendary, marcoArtist;
 let logoArtista;
 let archivosRotos = [];
 
+// Variables para el control del Drag
 let cuadroArrastrado = null;
+let mouseXAnterior = 0;
+let mouseYAnterior = 0;
 let distCentroX = 0;
 let distCentroY = 0;
-let fueArrastrado = false;
+let fueArrastrado = false; // Evita abrir links por error al arrastrar
 
-// ==========================
-// ARTISTAS
-// ==========================
+// =========================================================================
+// 🔧 CONTROL DE ARTISTAS MANUAL (Tus 11 artistas intactos)
+// =========================================================================
 const datosArtistas = [
-  { nombre: "Dorthe's", rareza: "rare", link: "https://x.com/DortheJOC" },
-  { nombre: "Ivan Hugo", rareza: "rare", link: "https://x.com/ivnhgo" },
-  { nombre: "Emoji", rareza: "common", link: "https://x.com/_EM0JI" },
-  { nombre: "Aislandart", rareza: "common", link: "https://x.com/aislandart" },
-  { nombre: "enne_rhn", rareza: "rare", link: "https://x.com/enne_rhn96" },
-  { nombre: "sunnydayz.eth", rareza: "common", link: "https://x.com/sunnydayzsoon" },
-  { nombre: "reylarsdam", rareza: "epic", link: "https://x.com/reylarsdam" },
-  { nombre: "EightyEight", rareza: "epic", link: "https://x.com/CryptoShawn88" },
-  { nombre: "VJdeliria", rareza: "epic", link: "https://x.com/VJdeliria" },
-  { nombre: "Blue2black", rareza: "rare", link: "https://x.com/Blue2black" },
-  { nombre: "nikolekapo_nft", rareza: "rare", link: "https://x.com/nikolekapo_nft" },
-  { nombre: "wallplugnft", rareza: "rare", link: "https://x.com/wallplugnft" },
-  { nombre: "Adolfochzs", rareza: "epic", link: "https://x.com/adolfochzs" },
-  { nombre: "sashelka", rareza: "rare", link: "https://x.com/sashelka" },
-  { nombre: "Chrisland", rareza: "rare", link: "https://x.com/Chrisland1405" },
-  { nombre: "EmpressTrash", rareza: "common", link: "https://x.com/EmpressTrash" },
-  { nombre: "mtropedroangel", rareza: "legendary", link: "https://x.com/mtropedroangel" },
-  { nombre: "gulbakanozge", rareza: "common", link: "https://x.com/gulbakanozge" },
-  { nombre: "StrokeDriven", rareza: "common", link: "https://x.com/StrokeDriven" },
-  { nombre: "Aoifeodwyer", rareza: "common", link: "https://x.com/Aoifeodwyer" },
-  { nombre: "Ivonnespectre", rareza: "common", link: "https://x.com/Ivonnespectre" },
-  { nombre: "ernestoasch", rareza: "common", link: "https://x.com/ernestoasch" },
-  { nombre: "HuemansUniverse", rareza: "common", link: "https://x.com/HuemansUniverse" }
-];
+  { nombre: "Dorthe's",       rareza: "rare",      link: "https://x.com/DortheJOC" }, // pfp1.png
+  { nombre: "Ivan Hugo",      rareza: "rare",      link: "https://x.com/ivnhgo" }, // pfp2.png
+  { nombre: "Emoji",          rareza: "common",    link: "https://x.com/_EM0JI" }, // pfp3.png
+  { nombre: "Aislandart",     rareza: "common",    link: "https://x.com/aislandart" }, // pfp4.png
+  { nombre: "enne_rhn",       rareza: "rare",      link: "https://x.com/enne_rhn96" }, // pfp5.png
+  { nombre: "sunnydayz.eth",  rareza: "common",    link: "https://x.com/sunnydayzsoon" }, // pfp6.png
+  { nombre: "reylarsdam",     rareza: "epic",      link: "https://x.com/reylarsdam" }, // pfp7.png
+  { nombre: "EightyEight",    rareza: "epic",      link: "https://x.com/CryptoShawn88" }, // pfp8.png
+  { nombre: "VJdeliria",      rareza: "epic",      link: "https://x.com/VJdeliria" }, // pfp9.png
+  { nombre: "Blue2black",     rareza: "rare",      link: "https://x.com/Blue2black" }, // pfp10.png
+  { nombre: "nikolekapo_nft", rareza: "rare",      link: "https://x.com/nikolekapo_nft" }, // pfp11.png
+  { nombre: "wallplugnft",    rareza: "rare",      link: "https://x.com/wallplugnft" }, // pfp12.png
+  { nombre: "Adolfochzs",      rareza: "epic",      link: "https://x.com/adolfochzs" }, // pfp13.png
+  { nombre: "sashelka",       rareza: "rare",      link: "https://x.com/sashelka" }, // pfp14.png
+  { nombre: "Chrisland",      rareza: "rare",      link: "https://x.com/Chrisland1405" }, // pfp15.png
+  { nombre: "EmpressTrash",   rareza: "common",    link: "https://x.com/EmpressTrash" }, // pfp16.png
+  { nombre: "mtropedroangel", rareza: "legendary", link: "https://x.com/mtropedroangel" }, // pfp17.png
+  { nombre: "gulbakanozge",   rareza: "common",    link: "https://x.com/gulbakanozge" },  // pfp18.png
+  { nombre: "StrokeDriven",   rareza: "common",    link: "https://x.com/StrokeDriven" },  // pfp19.png
+  { nombre: "Aoifeodwyer",   rareza: "common",    link: "https://x.com/Aoifeodwyer" },  // pfp20.png
+  { nombre: "Ivonnespectre",   rareza: "common",  link: "https://x.com/Ivonnespectre" },  // pfp21.png
+  { nombre: "ernestoasch",   rareza: "common",  link: "https://x.com/ernestoasch" } , // pfp22.png
+  { nombre: "HuemansUniverse",   rareza: "common",  link: "https://x.com/HuemansUniverse" }  // pfp23.png
+]
+
+function cargarConSeguridad(ruta) {
+  return loadImage(ruta, 
+    img => console.log("Cargado ok: " + ruta), 
+    err => {
+      console.error("Error cargando: " + ruta);
+      archivosRotos.push(ruta);
+    }
+  );
+}
 
 function preload() {
-  bg = loadImage("obra-background.jpg");
-  marcoCommon = loadImage("marco-common.png");
-  marcoRare = loadImage("marco-rare.png");
-  marcoEpic = loadImage("marco-epic.png");
-  marcoLegendary = loadImage("marco-legendary.png");
-  logoArtista = loadImage("logo-artista.png");
-  marcoArtist = loadImage("marco-artista.png");
-
+  bg = cargarConSeguridad("obra-background.jpg"); 
+  marcoCommon = cargarConSeguridad("marco-common.png");
+  marcoRare = cargarConSeguridad("marco-rare.png");
+  marcoEpic = cargarConSeguridad("marco-epic.png");
+  marcoLegendary = cargarConSeguridad("marco-legendary.png");
+  logoArtista = cargarConSeguridad("logo-artista.png"); 
+  marcoArtist = cargarConSeguridad("marco-artista.png"); 
+  
   for (let i = 0; i < datosArtistas.length; i++) {
-    datosArtistas[i].imgCargada = loadImage(`pfp${i+1}.png`);
+    let indexArchivo = i + 1;
+    let rutaPFP = `pfp${indexArchivo}.png`; 
+    datosArtistas[i].imgCargada = cargarConSeguridad(rutaPFP);
   }
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  init();
-  cargar();
-  if (windowWidth < 768) frameRate(45);
+  initFloatingSystem();
+  cargarArtistasManuales();
 }
 
-function init() {
+function initFloatingSystem() {
   frames = [];
-
-  // logo central
+  
+  let tamañoLogo = 100; 
   frames.push({
-    pfp: logoArtista,
-    x: width/2,
-    y: height/2,
-    size: 110,
-    vx: 0,
-    vy: 0,
-    radius: 55,
-    rarity: "artist",
+    pfp: logoArtista, 
+    rarity: "artist", 
     nombre: "Buda Studio",
-    link: "https://x.com/budastudio_nft"
+    link: "https://x.com/budastudio_nft", 
+    isFixed: true, 
+    x: random(width * 0.2, width * 0.8), 
+    y: random(height * 0.2, height * 0.8),
+    size: tamañoLogo,
+    vx: random(-0.15, 0.15), 
+    vy: random(-0.15, 0.15), 
+    t: random(1000),
+    radius: tamañoLogo / 2,
+    isDragging: false
   });
+
+  let cantidadFrames = windowWidth < 768 ? 8 : 30;
+
+  for (let i = 0; i < cantidadFrames; i++) { // Adaptativo móvil
+    let tamaño = random(70, 115);
+    let rarezas = ["common", "rare", "epic", "legendary"];
+    let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
+    
+    frames.push({
+      pfp: null, 
+      rarity: r,
+      nombre: "", 
+      link: null,
+      isFixed: false,
+      x: random(0, width - tamaño),
+      y: random(0, height - tamaño),
+      size: tamaño,
+      vx: random(-0.2, 0.2), 
+      vy: random(-0.2, 0.2), 
+      t: random(1000),
+      col: color(random(100, 255), random(100, 255), random(220, 255)),
+      radius: tamaño / 2,
+      isDragging: false
+    });
+  }
 }
 
-function cargar() {
-  let isMobile = windowWidth < 768;
-  let margin = isMobile ? 60 : 20;
-
-  for (let a of datosArtistas) {
-    let size = isMobile ? random(100, 130) : random(90, 120);
-
+function cargarArtistasManuales() {
+  for (let i = 0; i < datosArtistas.length; i++) {
+    let artista = datosArtistas[i];
+    let tamaño = windowWidth < 768 ? random(110, 145) : random(95, 130);
+    
     frames.push({
-      pfp: a.imgCargada,
-      x: random(margin, width - margin),
-      y: random(margin, height - margin),
-      size,
-      vx: random(-0.3, 0.3),
-      vy: random(-0.3, 0.3),
-      radius: size/2,
-      rarity: a.rareza,
-      nombre: a.nombre,
-      link: a.link
+      pfp: artista.imgCargada,
+      rarity: artista.rareza,
+      nombre: artista.nombre,
+      link: artista.link || null,
+      isFixed: false,
+      x: random(0, width - tamaño),
+      y: random(0, height - tamaño),
+      size: tamaño,
+      vx: random(-0.08, 0.08), 
+      vy: random(-0.08, 0.08),
+      t: random(1000),
+      radius: tamaño / 2,
+      isDragging: false
     });
   }
 }
 
 function draw() {
-  background(10, 10, 14);
+  if (archivosRotos.length > 0) {
+    background(20, 10, 15);
+    fill(255, 50, 50);
+    textSize(20);
+    textAlign(LEFT, TOP);
+    text("⚠️ ERROR DE CARGA EN GITHUB:", 30, 30);
+    textSize(14);
+    fill(200);
+    text("Asegurate de que estos archivos existan en la raíz junto al index.html:", 30, 60);
+    fill(255, 100, 100);
+    for (let i = 0; i < archivosRotos.length; i++) {
+      text("- " + archivosRotos[i], 40, 100 + (i * 22));
+    }
+    return;
+  }
 
-  actualizarCampoFuerzas();
-  drawFrames();
-}
+  if (bg && bg.width > 1) {
+    image(bg, 0, 0, width, height);
+  } else {
+    background(12, 12, 14);
+  }
+  
+  // Lógica activa para arrastrar objetos con el mouse
+  actualizarArrastre();
 
-function actualizarCampoFuerzas() {
+  aplicarColisiones();
 
-  let centerX = width/2;
-  let centerY = height/2;
-
-  let isMobile = windowWidth < 768;
+  let cuadroInteractuado = null;
+  let alguienTieneFocus = false;
 
   for (let f of frames) {
-    if (f === cuadroArrastrado) continue;
+    drawAndMoveFrame(f);
+    
+    let centroX = f.x + f.radius;
+    let centroY = f.y + f.radius;
+    let d = dist(mouseX, mouseY, centroX, centroY);
+    
+    if ((d < f.radius || f.isDragging) && f.nombre !== "") {
+      cuadroInteractuado = f;
+      if (f.link) alguienTieneFocus = true;
+    }
+  }
 
-    // 🔮 ATRACCIÓN SUAVE AL CENTRO
-    let dx = centerX - f.x;
-    let dy = centerY - f.y;
+  if (alguienTieneFocus || cuadroArrastrado) {
+    cursor(HAND);
+  } else {
+    cursor(ARROW);
+  }
 
-    f.vx += dx * (isMobile ? 0.00001 : 0.00002);
-    f.vy += dy * (isMobile ? 0.00001 : 0.00002);
+  if (cuadroInteractuado) {                    
+    let textoCartel = cuadroInteractuado.link ? `${cuadroInteractuado.nombre} 🔗` : cuadroInteractuado.nombre;
+    dibujarCartelNombre(textoCartel, mouseX, mouseY);
+  }
+}
 
-    // 🌫️ INERCIA
-    f.vx *= isMobile ? 0.985 : 0.99;
-    f.vy *= isMobile ? 0.985 : 0.99;
+function drawAndMoveFrame(f) {
+  // Solo se mueve solo si NO se está arrastrando en este momento
+  if (!f.isDragging) {
+    let maxSpeed = windowWidth < 768 ? 0.7 : 1.5;
+    f.vx = constrain(f.vx, -maxSpeed, maxSpeed);
+    f.vy = constrain(f.vy, -maxSpeed, maxSpeed);
 
     f.x += f.vx;
     f.y += f.vy;
+
+    if (f.x < 0) {
+      f.x = 0;
+      f.vx *= -1;
+    }
+
+    if (f.x > width - f.size) {
+      f.x = width - f.size;
+      f.vx *= -1;
+    }
+
+    if (f.y < 0) {
+      f.y = 0;
+      f.vy *= -1;
+    }
+
+    if (f.y > height - f.size) {
+      f.y = height - f.size;
+      f.vy *= -1;
+    }
   }
 
-  // 🌌 REPULSIÓN SUAVE GLOBAL
+  push();
+  translate(f.x, f.y);
+
+  let centroX_local = f.radius;
+  let centroY_local = f.radius;
+  let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
+  
+  if ((dMouse < f.radius || f.isDragging) && f.nombre !== "") {
+    noStroke();
+    for (let i = 15; i > 0; i--) {
+      fill(255, 215, 0, 15 - i); 
+      ellipse(centroX_local, centroY_local, f.size + (i * 4));
+    }
+  }
+
+  if (f.pfp && f.pfp.width > 1) {
+    image(f.pfp, 0, 0, f.size, f.size);
+  } else {
+    let pulse = sin(frameCount * 0.02 + f.t) * 15;
+    fill(red(f.col), green(f.col), blue(f.col), 25 + pulse);
+    noStroke();
+    rect(0, 0, f.size, f.size);
+    
+    fill(255, 40 + pulse);
+    if (f.rarity === "legendary" || f.rarity === "epic") {
+      ellipse(f.size/2, f.size/2, f.size * 0.4);
+    }
+  }
+
+  if (f.rarity === "artist") {
+    let marcoParaDibujar = (marcoArtist && marcoArtist.width > 1) ? marcoArtist : marcoLegendary;
+    if (marcoParaDibujar && marcoParaDibujar.width > 1) image(marcoParaDibujar, 0, 0, f.size, f.size);
+  }
+  else if (f.rarity === "common" && marcoCommon && marcoCommon.width > 1) image(marcoCommon, 0, 0, f.size, f.size);
+  else if (f.rarity === "rare" && marcoRare && marcoRare.width > 1) image(marcoRare, 0, 0, f.size, f.size);
+  else if (f.rarity === "epic" && marcoEpic && marcoEpic.width > 1) image(marcoEpic, 0, 0, f.size, f.size);
+  else if (f.rarity === "legendary" && marcoLegendary && marcoLegendary.width > 1) image(marcoLegendary, 0, 0, f.size, f.size);
+
+  f.vx *= 0.99;
+  f.vy *= 0.99;
+
+  pop();
+}
+
+function aplicarColisiones() {
   for (let i = 0; i < frames.length; i++) {
     for (let j = i + 1; j < frames.length; j++) {
+      let f1 = frames[i];
+      let f2 = frames[j];
 
-      let a = frames[i];
-      let b = frames[j];
+      let c1x = f1.x + f1.radius;
+      let c1y = f1.y + f1.radius;
+      let c2x = f2.x + f2.radius;
+      let c2y = f2.y + f2.radius;
 
-      let dx = b.x - a.x;
-      let dy = b.y - a.y;
-      let d = sqrt(dx*dx + dy*dy);
+      let dx = c2x - c1x;
+      let dy = c2y - c1y;
+      let distancia = sqrt(dx * dx + dy * dy);
+      let distanciaMinima = f1.radius + f2.radius;
 
-      let minDist = (a.radius + b.radius) * 0.9;
+      if (distancia < distanciaMinima) {
+        let angulo = atan2(dy, dx);
+        let superposicion = distanciaMinima - distancia;
+        
+        // El que se está arrastrando tiene "masa infinita", no se deja mover por otros
+        if (f1.isDragging) {
+          f2.x += cos(angulo) * superposicion;
+          f2.y += sin(angulo) * superposicion;
+          f2.vx += cos(angulo) * 0.1;
+          f2.vy += sin(angulo) * 0.1;
+        } else if (f2.isDragging) {
+          f1.x -= cos(angulo) * superposicion;
+          f1.y -= sin(angulo) * superposicion;
+          f1.vx -= cos(angulo) * 0.1;
+          f1.vy -= sin(angulo) * 0.1;
+        } else {
+          // Rebote normal si ambos flotan libres
+          f1.x -= cos(angulo) * (superposicion * 0.5);
+          f1.y -= sin(angulo) * (superposicion * 0.5);
+          f2.x += cos(angulo) * (superposicion * 0.5);
+          f2.y += sin(angulo) * (superposicion * 0.5);
 
-      if (d < minDist && d > 0.01) {
-        let force = (minDist - d) * (windowWidth < 768 ? 0.0008 : 0.0015);
-
-        let nx = dx / d;
-        let ny = dy / d;
-
-        a.vx -= nx * force;
-        a.vy -= ny * force;
-
-        b.vx += nx * force;
-        b.vy += ny * force;
+          let ax = cos(angulo) * 0.01;
+          let ay = sin(angulo) * 0.01;
+          f1.vx -= ax;
+          f1.vy -= ay;
+          f2.vx += ax;
+          f2.vy += ay;
+        }
       }
     }
   }
-
-  // bordes suaves
-  for (let f of frames) {
-    let pad = 40;
-
-    if (f.x < pad) f.vx += 0.05;
-    if (f.x > width - pad) f.vx -= 0.05;
-    if (f.y < pad) f.vy += 0.05;
-    if (f.y > height - pad) f.vy -= 0.05;
-  }
 }
 
-function drawFrames() {
-  for (let f of frames) {
-    push();
-    translate(f.x, f.y);
-
-    if (f.pfp) {
-      image(f.pfp, -f.radius, -f.radius, f.size, f.size);
-    }
-
-    pop();
-  }
-}
+// =========================================================================
+// 🖱️ NUEVAS FUNCIONES DE INTERACCIÓN MOUSE / DRAG & DROP
+// =========================================================================
 
 function mousePressed() {
+  // Buscamos si el usuario hizo clic justo adentro de alguna burbuja
   for (let f of frames) {
-    let d = dist(mouseX, mouseY, f.x, f.y);
-    if (d < f.radius) {
+    let centroX = f.x + f.radius;
+    let centroY = f.y + f.radius;
+    let d = dist(mouseX, mouseY, centroX, centroY);
+    
+    if (d < f.radius + 15) {
       cuadroArrastrado = f;
+      f.isDragging = true;
+      fueArrastrado = false;
+      // Guardamos la distancia exacta del clic al centro para que el arrastre sea súper suave
+      distCentroX = mouseX - f.x;
+      distCentroY = mouseY - f.y;
+      mouseXAnterior = mouseX;
+      mouseYAnterior = mouseY;
       break;
     }
   }
 }
 
+function actualizarArrastre() {
+  if (cuadroArrastrado) {
+    // Mueve la burbuja siguiendo la posición del mouse
+    cuadroArrastrado.x = mouseX - distCentroX;
+    cuadroArrastrado.y = mouseY - distCentroY;
+    
+    // Mantener la burbuja dentro de los límites de la pantalla mientras se arrastra
+    if (cuadroArrastrado.x < 0) cuadroArrastrado.x = 0;
+    if (cuadroArrastrado.x > width - cuadroArrastrado.size) cuadroArrastrado.x = width - cuadroArrastrado.size;
+    if (cuadroArrastrado.y < 0) cuadroArrastrado.y = 0;
+    if (cuadroArrastrado.y > height - cuadroArrastrado.size) cuadroArrastrado.y = height - cuadroArrastrado.size;
+
+    // Si el mouse se movió significativamente, confirmamos que es un Drag
+    if (dist(mouseX, mouseY, mouseXAnterior, mouseYAnterior) > 12) {
+      fueArrastrado = true;
+    }
+  }
+}
+
 function mouseReleased() {
-  cuadroArrastrado = null;
+  if (cuadroArrastrado) {
+    cuadroArrastrado.isDragging = false;
+    
+    // Calcula la velocidad de lanzamiento basándose en el último movimiento del mouse
+    let fuerzaLanzamiento = 0.15;
+    cuadroArrastrado.vx = (mouseX - mouseXAnterior) * fuerzaLanzamiento;
+    cuadroArrastrado.vy = (mouseY - mouseYAnterior) * fuerzaLanzamiento;
+    
+    // Ponemos un límite de velocidad para que no salga disparado de forma descontrolada
+    let limiteVelocidad = 3;
+    cuadroArrastrado.vx = constrain(cuadroArrastrado.vx, -limiteVelocidad, limiteVelocidad);
+    cuadroArrastrado.vy = constrain(cuadroArrastrado.vy, -limiteVelocidad, limiteVelocidad);
+    
+    // Si la soltamos casi quieta, le damos un empujoncito aleatorio para que no quede muerta
+    if (abs(cuadroArrastrado.vx) < 0.05 && abs(cuadroArrastrado.vy) < 0.05) {
+      cuadroArrastrado.vx = random(-0.2, 0.2);
+      cuadroArrastrado.vy = random(-0.2, 0.2);
+    }
+
+    cuadroArrastrado = null;
+  }
+}
+
+function mouseClicked() {
+  // Solo abrimos el link si el usuario hizo un click limpio y NO arrastró la burbuja
+  if (!fueArrastrado) {
+    for (let f of frames) {
+      let centroX = f.x + f.radius;
+      let centroY = f.y + f.radius;
+      let d = dist(mouseX, mouseY, centroX, centroY);
+      
+      if (d < f.radius && f.link && f.link !== "") {
+        window.open(f.link, '_blank'); 
+        break; 
+      }
+    }
+  }
+}
+
+function dibujarCartelNombre(txt, mx, my) {
+  push();
+  textSize(14);
+  let txtWidth = textWidth(txt) + 20;
+  let txtHeight = 28;
+  let cx = mx + 15;
+  let cy = my - 15;
+  if (cx + txtWidth > width) cx = mx - txtWidth - 5;
+  if (cy + txtHeight > height) cy = height - txtHeight - 5;
+
+  fill(15, 15, 18, 240);
+  stroke(255, 255, 255, 50);
+  strokeWeight(1);
+  rect(cx, cy, txtWidth, txtHeight, 6);
+
+  noStroke();
+  fill(255);
+  textAlign(CENTER, CENTER);
+  text(txt, cx + txtWidth / 2, cy + txtHeight / 2);
+  pop();
+}
+
+function touchStarted() {
+  mousePressed();
+  return false;
+}
+
+function touchMoved() {
+  return false;
+}
+
+function touchEnded() {
+
+  if (!fueArrastrado) {
+
+    for (let f of frames) {
+
+      let centroX = f.x + f.radius;
+      let centroY = f.y + f.radius;
+
+      let d = dist(mouseX, mouseY, centroX, centroY);
+
+      if (d < f.radius + 15 && f.link) {
+        window.open(f.link, '_blank');
+        break;
+      }
+    }
+  }
+
+  mouseReleased();
+  return false;
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-}
 
+  for (let f of frames) {
+    if (f.x < 0) f.x = 0;
+    if (f.y < 0) f.y = 0;
+
+    if (f.x > width - f.size) f.x = width - f.size;
+    if (f.y > height - f.size) f.y = height - f.size;
+  }
+}
 </script>
 
 </body>
