@@ -6,19 +6,9 @@
     <title>Buda Collective Artist - Live Showcase</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
-html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #0c0c0e;
-    touch-action: none;
-    overscroll-behavior: none;
-}
-canvas { display: block; }
-</style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
 
@@ -67,7 +57,8 @@ const datosArtistas = [
   { nombre: "ernestoasch",   rareza: "common",  link: "https://x.com/ernestoasch" }, // pfp22.png
   { nombre: "HuemansUniverse",   rareza: "common",  link: "https://x.com/HuemansUniverse" },  // pfp23.png
   { nombre: "B_DWIL",   rareza: "common",  link: "https://x.com/@B_DWIL" }  // pfp24.png  
-]
+];
+
 
 function cargarConSeguridad(ruta) {
   return loadImage(ruta, 
@@ -121,9 +112,7 @@ function initFloatingSystem() {
     isDragging: false
   });
 
-  let cantidadFrames = windowWidth < 768 ? 8 : 30;
-
-  for (let i = 0; i < cantidadFrames; i++) { // Adaptativo móvil
+  for (let i = 0; i < 30; i++) { // Bajado a 30 para compensar los 11 reales
     let tamaño = random(70, 115);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -150,7 +139,7 @@ function initFloatingSystem() {
 function cargarArtistasManuales() {
   for (let i = 0; i < datosArtistas.length; i++) {
     let artista = datosArtistas[i];
-    let tamaño = windowWidth < 768 ? random(110, 145) : random(95, 130);
+    let tamaño = random(95, 130);
     
     frames.push({
       pfp: artista.imgCargada,
@@ -161,8 +150,8 @@ function cargarArtistasManuales() {
       x: random(0, width - tamaño),
       y: random(0, height - tamaño),
       size: tamaño,
-      vx: random(-0.08, 0.08), 
-      vy: random(-0.08, 0.08),
+      vx: random(-0.25, 0.25), 
+      vy: random(-0.25, 0.25),
       t: random(1000),
       radius: tamaño / 2,
       isDragging: false
@@ -220,7 +209,7 @@ function draw() {
     cursor(ARROW);
   }
 
-  if (cuadroInteractuado) {                    
+  if (cuadroInteractuado) {
     let textoCartel = cuadroInteractuado.link ? `${cuadroInteractuado.nombre} 🔗` : cuadroInteractuado.nombre;
     dibujarCartelNombre(textoCartel, mouseX, mouseY);
   }
@@ -229,32 +218,11 @@ function draw() {
 function drawAndMoveFrame(f) {
   // Solo se mueve solo si NO se está arrastrando en este momento
   if (!f.isDragging) {
-    let maxSpeed = windowWidth < 768 ? 0.7 : 1.5;
-    f.vx = constrain(f.vx, -maxSpeed, maxSpeed);
-    f.vy = constrain(f.vy, -maxSpeed, maxSpeed);
-
     f.x += f.vx;
     f.y += f.vy;
 
-    if (f.x < 0) {
-      f.x = 0;
-      f.vx *= -1;
-    }
-
-    if (f.x > width - f.size) {
-      f.x = width - f.size;
-      f.vx *= -1;
-    }
-
-    if (f.y < 0) {
-      f.y = 0;
-      f.vy *= -1;
-    }
-
-    if (f.y > height - f.size) {
-      f.y = height - f.size;
-      f.vy *= -1;
-    }
+    if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
+    if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
   }
 
   push();
@@ -295,13 +263,10 @@ function drawAndMoveFrame(f) {
   else if (f.rarity === "epic" && marcoEpic && marcoEpic.width > 1) image(marcoEpic, 0, 0, f.size, f.size);
   else if (f.rarity === "legendary" && marcoLegendary && marcoLegendary.width > 1) image(marcoLegendary, 0, 0, f.size, f.size);
 
-  f.vx *= 0.99;
-  f.vy *= 0.99;
-
   pop();
 }
 
-function aplicarColisiones() {
+// Planned replacement with CryptoBubbles-style soft-field engine\nfunction aplicarColisiones() {
   for (let i = 0; i < frames.length; i++) {
     for (let j = i + 1; j < frames.length; j++) {
       let f1 = frames[i];
@@ -339,8 +304,8 @@ function aplicarColisiones() {
           f2.x += cos(angulo) * (superposicion * 0.5);
           f2.y += sin(angulo) * (superposicion * 0.5);
 
-          let ax = cos(angulo) * 0.01;
-          let ay = sin(angulo) * 0.01;
+          let ax = cos(angulo) * 0.04;
+          let ay = sin(angulo) * 0.04;
           f1.vx -= ax;
           f1.vy -= ay;
           f2.vx += ax;
@@ -362,7 +327,7 @@ function mousePressed() {
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
     
-    if (d < f.radius + 15) {
+    if (d < f.radius) {
       cuadroArrastrado = f;
       f.isDragging = true;
       fueArrastrado = false;
@@ -389,7 +354,7 @@ function actualizarArrastre() {
     if (cuadroArrastrado.y > height - cuadroArrastrado.size) cuadroArrastrado.y = height - cuadroArrastrado.size;
 
     // Si el mouse se movió significativamente, confirmamos que es un Drag
-    if (dist(mouseX, mouseY, mouseXAnterior, mouseYAnterior) > 12) {
+    if (dist(mouseX, mouseY, mouseXAnterior, mouseYAnterior) > 2) {
       fueArrastrado = true;
     }
   }
@@ -457,47 +422,8 @@ function dibujarCartelNombre(txt, mx, my) {
   pop();
 }
 
-function touchStarted() {
-  mousePressed();
-  return false;
-}
-
-function touchMoved() {
-  return false;
-}
-
-function touchEnded() {
-
-  if (!fueArrastrado) {
-
-    for (let f of frames) {
-
-      let centroX = f.x + f.radius;
-      let centroY = f.y + f.radius;
-
-      let d = dist(mouseX, mouseY, centroX, centroY);
-
-      if (d < f.radius + 15 && f.link) {
-        window.open(f.link, '_blank');
-        break;
-      }
-    }
-  }
-
-  mouseReleased();
-  return false;
-}
-
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-
-  for (let f of frames) {
-    if (f.x < 0) f.x = 0;
-    if (f.y < 0) f.y = 0;
-
-    if (f.x > width - f.size) f.x = width - f.size;
-    if (f.y > height - f.size) f.y = height - f.size;
-  }
 }
 </script>
 
