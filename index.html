@@ -7,97 +7,104 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
-        canvas { display: block; }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
 
-        /* --- Estilos del Modal Cinematográfico --- */
+        /* --- CONTENEDOR EN COLOR NEGRO TRASLÚCIDO (POR ENCIMA DE TODO) --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(5, 5, 7, 0.3);
-            backdrop-filter: blur(0px);
-            -webkit-backdrop-filter: blur(0px);
+            background: rgba(0, 0, 0, 0.75); /* Negro traslúcido intenso para cubrir las burbujas */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease, backdrop-filter 0.5s ease;
-            z-index: 999;
+            transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+            z-index: 9999; /* Forzado por encima de cualquier elemento */
         }
 
+        /* Cuando está activo, se muestra y permite clics */
         .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
         }
 
+        /* --- TARJETA CENTRAL ENFOQUE CINEMATOGRÁFICO --- */
         .modal-card {
-            background: rgba(18, 18, 22, 0.75);
+            background: #121216;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 480px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            max-width: 450px;
+            padding: 30px 24px 24px 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
             color: #ffffff;
             position: relative;
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(0.85);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
+            box-sizing: border-box;
         }
 
         .modal-overlay.active .modal-card {
-            transform: scale(1) translateY(0);
+            transform: scale(1);
         }
 
+        /* Botón de cerrar X */
         .btn-close {
             position: absolute;
             top: 15px;
-            right: 15px;
+            right: 20px;
             background: none;
             border: none;
             color: rgba(255, 255, 255, 0.5);
-            font-size: 22px;
+            font-size: 28px;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.2s, transform 0.2s;
             line-height: 1;
+            z-index: 10000;
         }
 
-        .btn-close:hover { color: #ffffff; }
+        .btn-close:hover { 
+            color: #ffffff; 
+            transform: scale(1.15);
+        }
 
         .artist-hero {
             width: 100%;
-            height: 180px;
+            height: 160px;
             object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: -50px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: -45px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .artist-avatar {
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            border: 3px solid #121216;
+            border: 4px solid #121216;
             background: #121216;
             position: relative;
             margin: 0 auto 12px auto;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
             display: block;
+            object-fit: cover;
         }
 
-        .artist-name { font-size: 24px; font-weight: 700; margin: 0 0 4px 0; letter-spacing: -0.5px; }
-        .artist-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin: 0 0 16px 0; }
-        .artist-bio { font-size: 14px; color: rgba(255, 255, 255, 0.8); line-height: 1.5; margin: 0 0 24px 0; padding: 0 8px; }
+        .artist-name { font-size: 24px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.5px; }
+        .artist-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin: 0 0 16px 0; line-height: 1.4; }
+        .artist-bio { font-size: 14px; color: rgba(255, 255, 255, 0.85); line-height: 1.5; margin: 0 0 24px 0; padding: 0 10px; }
 
         .works-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 14px;
             text-align: left;
         }
 
@@ -106,17 +113,17 @@
             aspect-ratio: 1;
             object-fit: cover;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
-        .work-title { font-size: 11px; font-weight: 500; margin: 4px 0 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .work-year { font-size: 10px; color: rgba(255, 255, 255, 0.4); }
+        .work-title { font-size: 12px; font-weight: 500; margin: 5px 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .work-year { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body>
 
 <div class="modal-overlay" id="artistModal" onclick="cerrarModalDesdeOverlay(event)">
     <div class="modal-card">
-        <button class="btn-close" onclick="cerrarModal()">&times;</button>
+        <button class="btn-close" onclick="event.stopPropagation(); cerrarModal();">&times;</button>
         <img id="modalHero" class="artist-hero" src="" alt="Hero">
         <img id="modalAvatar" class="artist-avatar" src="" alt="Avatar">
         <h2 id="modalName" class="artist-name"></h2>
@@ -130,7 +137,7 @@
 
 <script>
 // =========================================================================
-// 📦 DATOS DE LEONARDO EMBEDIDOS (Simulando la lectura de leonardo.json)
+// DATOS DE LEONARDO EMBEDIDOS
 // =========================================================================
 const datosLeonardo = {
   "id": "buda",
@@ -149,7 +156,7 @@ const datosLeonardo = {
 let bg;
 let frames = [];
 let maxFrames = 80;
-let modalAbierto = false; // Flag para pausar interacciones del canvas
+let modalAbierto = false; 
 
 let marcoCommon, marcoRare, marcoEpic, marcoLegendary, marcoArtist;
 let logoArtista;
@@ -223,22 +230,22 @@ function setup() {
 
 function initFloatingSystem() {
   frames = [];
-  
   let tamañoLogo = 100; 
+  
   frames.push({
     pfp: logoArtista, 
     rarity: "artist", 
     nombre: "Buda Studio",
-    link: "MODAL_BUDA", // Marcador especial para identificar la acción customizada
+    link: "MODAL_BUDA", 
     isFixed: false, 
     x: random(width * 0.2, width * 0.8), 
     y: random(height * 0.2, height * 0.8),
     size: tamañoLogo,
-    vx: 0, vy: 0, // Inician estáticos para emerger
+    vx: 0, vy: 0, 
     t: random(1000),
     radius: tamañoLogo / 2,
     isDragging: false,
-    escalaAparicion: 0 // Multiplicador para la animación de escala inicial
+    escalaAparicion: 0 
   });
 
   for (let i = 0; i < 30; i++) {
@@ -294,7 +301,7 @@ function draw() {
     fill(255, 50, 50);
     textSize(20);
     textAlign(LEFT, TOP);
-    text("⚠️ ERROR DE CARGA EN GITHUB:", 30, 30);
+    text("⚠️ ERROR DE CARGA:", 30, 30);
     return;
   }
 
@@ -304,19 +311,19 @@ function draw() {
     background(12, 12, 14);
   }
   
-  actualizarArrastre();
-  aplicarColisiones();
+  if (!modalAbierto) {
+    actualizarArrastre();
+    aplicarColisiones();
+  }
 
   let cuadroInteractuado = null;
   let alguienTieneFocus = false;
 
   for (let f of frames) {
-    // 🌅 ANIMACIÓN INICIAL DE APARICIÓN (Primeros 3-4 segundos)
     if (f.escalaAparicion < 1) {
-      f.escalaAparicion += 0.01; // Ritmo de crecimiento suave
+      f.escalaAparicion += 0.01; 
       if (f.escalaAparicion >= 1) {
         f.escalaAparicion = 1;
-        // Al terminar de crecer, se les da su impulso inicial orgánico
         f.vx = random(-0.2, 0.2);
         f.vy = random(-0.2, 0.2);
       }
@@ -356,7 +363,6 @@ function drawAndMoveFrame(f) {
   }
 
   push();
-  // Aplicamos traslación moviendo el pivote al centro para realizar el escalado de entrada de forma correcta
   translate(f.x + f.radius, f.y + f.radius);
   scale(f.escalaAparicion);
   translate(-f.radius, -f.radius);
@@ -408,8 +414,6 @@ function aplicarColisiones() {
       let dx = c2x - c1x;
       let dy = c2y - c1y;
       let distancia = sqrt(dx * dx + dy * dy);
-      
-      // La distancia mínima se adapta dinámicamente según la escala de aparición actual
       let distanciaMinima = (f1.radius * f1.escalaAparicion) + (f2.radius * f2.escalaAparicion);
 
       if (distancia < distanciaMinima && distancia > 0) {
@@ -538,19 +542,17 @@ function windowResized() {
 }
 
 // =========================================================================
-// 🎬 CONTROLADORES DE INTERFAZ (DOM / MODAL)
+// INTERFAZ MODAL CORREGIDA
 // =========================================================================
 function abrirModalArtista(data) {
   modalAbierto = true;
   
-  // Inyectar textos básicos
   document.getElementById('modalHero').src = data.hero;
   document.getElementById('modalAvatar').src = data.avatar;
   document.getElementById('modalName').innerText = data.name;
   document.getElementById('modalSubtitle').innerText = data.subtitle;
   document.getElementById('modalBio').innerText = data.bio;
   
-  // Inyectar las obras de arte dinámicamente
   let containerObras = document.getElementById('modalWorks');
   containerObras.innerHTML = '';
   
@@ -565,24 +567,23 @@ function abrirModalArtista(data) {
     containerObras.innerHTML += itemHtml;
   });
 
-  // Activar la clase CSS para iniciar la transición cinematográfica
   document.getElementById('artistModal').classList.add('active');
 }
 
 function cerrarModal() {
   document.getElementById('artistModal').classList.remove('active');
-  // Esperar a que termine la animación de fadeout para habilitar interacciones
+  // Esperar a que la transición termine para volver a activar físicas
   setTimeout(() => { modalAbierto = false; }, 400);
 }
 
 function cerrarModalDesdeOverlay(event) {
-  // Evitar que se cierre si se hace click adentro de la tarjeta del artista
+  // Solo cierra si se hace click directamente en el fondo traslúcido oscuro
   if (event.target === document.getElementById('artistModal')) {
     cerrarModal();
   }
 }
 
-// Cierre con el teclado (Tecla Escape)
+// Cierre con Esc
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalAbierto) {
     cerrarModal();
