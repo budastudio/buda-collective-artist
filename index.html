@@ -586,7 +586,7 @@ function abrirModalArtista(data) {
   document.getElementById('modalSubtitle').innerText = data.subtitle;
   document.getElementById('modalBio').innerText = data.bio;
   
-  // Modificación aquí: busca la propiedad .click de la red social 'x'
+  // Solución aquí: busca correctamente la propiedad .click del nuevo JSON estructurado
   let socialBtn = document.getElementById('modalSocialLink');
   if (data.social && data.social.x && data.social.x.click) {
       socialBtn.href = data.social.x.click;
