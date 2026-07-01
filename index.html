@@ -4,11 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buda Collective Artist - Live Showcase</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js">
+const modal=document.getElementById('artistModal');
+document.getElementById('closeModal').onclick=()=>modal.style.display='none';
+modal.onclick=e=>{if(e.target===modal)modal.style.display='none';};
+
+const _oldMouseClicked=mouseClicked;
+mouseClicked=function(){
+ if(!fueArrastrado){
+   for(let f of frames){
+      let d=dist(mouseX,mouseY,f.x+f.radius,f.y+f.radius);
+      if(d<f.radius){
+         if(f.rarity==="artist"){modal.style.display="flex";return;}
+      }
+   }
+ }
+ if(typeof _oldMouseClicked==="function")_oldMouseClicked();
+}
+
+</script>
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; }
         canvas { display: block; }
-    </style>
+    
+<style>
+#artistModal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9999}
+#artistCard{width:min(900px,92vw);background:#121212;border:1px solid #555;border-radius:18px;padding:24px;color:#fff;display:flex;gap:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#artistCard img{max-width:420px;border-radius:10px}
+#artistInfo{flex:1}
+#closeModal{position:absolute;top:18px;right:24px;font-size:32px;cursor:pointer}
+@media(max-width:768px){#artistCard{flex-direction:column}#artistCard img{max-width:100%}}
+</style>
+</style>
 </head>
 <body>
 
@@ -58,7 +85,6 @@ const datosArtistas = [
   { nombre: "HuemansUniverse",   rareza: "common",  link: "https://x.com/HuemansUniverse" },  // pfp23.png
   { nombre: "B_DWIL",   rareza: "common",  link: "https://x.com/@B_DWIL" }  // pfp24.png  
 ];
-
 
 function cargarConSeguridad(ruta) {
   return loadImage(ruta, 
@@ -266,7 +292,7 @@ function drawAndMoveFrame(f) {
   pop();
 }
 
-// Planned replacement with CryptoBubbles-style soft-field engine\nfunction aplicarColisiones() {
+function aplicarColisiones() {
   for (let i = 0; i < frames.length; i++) {
     for (let j = i + 1; j < frames.length; j++) {
       let f1 = frames[i];
@@ -426,6 +452,21 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 </script>
+
+
+<div id="artistModal">
+<div id="closeModal">&times;</div>
+<div id="artistCard">
+<img src="obra-background.jpg" id="artworkPreview">
+<div id="artistInfo">
+<h1>Leonardo Scarcia</h1>
+<h3>Buda Studio</h3>
+<p>Entre el Velo y la Piel</p>
+<p>Esta ventana es la base del perfil expandido. Luego podremos cargar múltiples obras, bio y enlaces.</p>
+<p><a href="https://x.com/budastudio_nft" target="_blank" style="color:#7fd3ff">X Profile</a></p>
+</div>
+</div>
+</div>
 
 </body>
 </html>
