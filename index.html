@@ -49,6 +49,8 @@
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
             box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-overlay.active .modal-card {
@@ -98,7 +100,29 @@
         }
 
         .artist-name { font-size: 24px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.5px; }
-        .artist-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin: 0 0 16px 0; line-height: 1.4; }
+        .artist-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin: 0 0 12px 0; line-height: 1.4; }
+        
+        /* Botón de Redes / X Profile */
+        .artist-social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .artist-social-btn:hover {
+            background: #e2e2e2;
+            transform: scale(1.03);
+        }
+
         .artist-bio { font-size: 14px; color: rgba(255, 255, 255, 0.85); line-height: 1.5; margin: 0 0 24px 0; padding: 0 10px; }
 
         .works-container {
@@ -128,16 +152,20 @@
         <img id="modalAvatar" class="artist-avatar" src="" alt="Avatar">
         <h2 id="modalName" class="artist-name"></h2>
         <p id="modalSubtitle" class="artist-subtitle"></p>
+        
+        <a id="modalSocialLink" class="artist-social-btn" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+            Seguir en X
+        </a>
+
         <p id="modalBio" class="artist-bio"></p>
         
-        <div class="works-container" id="modalWorks">
-            </div>
+        <div class="works-container" id="modalWorks"></div>
     </div>
 </div>
 
 <script>
 // =========================================================================
-// DATOS DE LEONARDO EMBEDIDOS
+// DATOS DE LEONARDO ACTUALIZADOS CON LA PROPIEDAD CLICK
 // =========================================================================
 const datosLeonardo = {
   "id": "buda",
@@ -146,7 +174,12 @@ const datosLeonardo = {
   "avatar": "logo-artista.png",
   "hero": "obra-leonardo-01.jpg",
   "bio": "Visual artist working across painting, animation, AI and digital art.",
-  "social": { "x": "https://x.com/budastudio_nft" },
+  "social": { 
+    "x": {
+      "link": "https://x.com/budastudio_nft",
+      "click": "https://x.com/budastudio_nft"
+    }
+  },
   "works": [
     { "title": "Entre el Velo y la Piel #1", "image": "obra-leonardo-01.jpg", "year": "2026" },
     { "title": "Entre el Velo y la Piel #2", "image": "obra-leonardo-02.jpg", "year": "2026" }
@@ -542,7 +575,7 @@ function windowResized() {
 }
 
 // =========================================================================
-// INTERFAZ MODAL CORREGIDA
+// INTERFAZ MODAL CORREGIDA CON ENLACE ESTRUCTURADO (.click)
 // =========================================================================
 function abrirModalArtista(data) {
   modalAbierto = true;
@@ -552,6 +585,15 @@ function abrirModalArtista(data) {
   document.getElementById('modalName').innerText = data.name;
   document.getElementById('modalSubtitle').innerText = data.subtitle;
   document.getElementById('modalBio').innerText = data.bio;
+  
+  // Modificación aquí: busca la propiedad .click de la red social 'x'
+  let socialBtn = document.getElementById('modalSocialLink');
+  if (data.social && data.social.x && data.social.x.click) {
+      socialBtn.href = data.social.x.click;
+      socialBtn.style.display = 'inline-flex';
+  } else {
+      socialBtn.style.display = 'none';
+  }
   
   let containerObras = document.getElementById('modalWorks');
   containerObras.innerHTML = '';
@@ -572,18 +614,15 @@ function abrirModalArtista(data) {
 
 function cerrarModal() {
   document.getElementById('artistModal').classList.remove('active');
-  // Esperar a que la transición termine para volver a activar físicas
   setTimeout(() => { modalAbierto = false; }, 400);
 }
 
 function cerrarModalDesdeOverlay(event) {
-  // Solo cierra si se hace click directamente en el fondo traslúcido oscuro
   if (event.target === document.getElementById('artistModal')) {
     cerrarModal();
   }
 }
 
-// Cierre con Esc
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalAbierto) {
     cerrarModal();
