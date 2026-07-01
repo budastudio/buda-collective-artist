@@ -1,0 +1,32 @@
+{
+  "id": "buda",
+  "name": "Leonardo Scarcia",
+  "subtitle": "Visual Artist · Animator · Founder of Buda Collective",
+  "avatar": "logo-artista.png",
+  "hero": "obra-leonardo-01.jpg",
+
+  "bio": "Visual artist working across painting, animation, AI and digital art.",
+
+  "social": {
+    "x": {
+      "link": "https://x.com/budastudio_nft",
+      "click": "https://x.com/budastudio_nft"
+    },
+    "website": "",
+    "foundation": "",
+    "transient": ""
+  },
+
+  "works": [
+    {
+      "title": "Entre el Velo y la Piel #1",
+      "image": "obra-leonardo-01.jpg",
+      "year": "2026"
+    },
+    {
+      "title": "Entre el Velo y la Piel #2",
+      "image": "obra-leonardo-02.jpg",
+      "year": "2026"
+    }
+  ]
+}
