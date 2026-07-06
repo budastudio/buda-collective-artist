@@ -1,0 +1,1 @@
+document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();alert('Next step: connect Supabase.');});
