@@ -86,8 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
         inviteBox.style.display = 'none';
       }
     } catch (err) {
-      console.error('[Buda] Error registering artist:', err);
-      setMsg('❌ Something went wrong sending your profile. Please try again.', 'error');
+      console.error("FULL ERROR:", err);
+
+      const message =
+        err?.message ||
+        err?.error_description ||
+        err?.details ||
+        JSON.stringify(err, null, 2);
+
+      alert(message);
+      setMsg(message, "error");
+
     } finally {
       submitBtn.disabled = false;
     }
