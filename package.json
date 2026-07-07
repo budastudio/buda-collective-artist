@@ -1,0 +1,7 @@
+{
+  "name": "buda-collective-artist",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Buda Collective live showcase with artist registration + admin approval."
+}
