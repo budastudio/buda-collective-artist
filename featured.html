@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Featured Artist — Buda Collective</title>
+  <link rel="stylesheet" href="featured.css">
+</head>
+<body>
+  <a class="back-link" href="index.html">← Back to showcase</a>
+
+  <div id="state-loading" class="state-msg">Loading artist…</div>
+  <div id="state-error" class="state-msg" style="display:none;">
+    We couldn't find this profile, or it hasn't been approved yet.
+    <br><a href="index.html">Back to showcase</a>
+  </div>
+
+  <div id="artistProfile" class="profile" style="display:none;">
+    <img id="pHero" class="hero" src="" alt="">
+    <div class="profile-body">
+      <img id="pAvatar" class="avatar" src="" alt="">
+      <h1 id="pName"></h1>
+      <p id="pSubtitle" class="subtitle"></p>
+      <p id="pBio" class="bio"></p>
+      <a id="pXLink" class="x-link" href="#" target="_blank" rel="noopener noreferrer">View profile on X ↗</a>
+
+      <h2 id="worksHeading" class="works-heading" style="display:none;">Works</h2>
+      <div id="worksGrid" class="works-grid"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="featured.js"></script>
+</body>
+</html>

@@ -1,2 +1,2 @@
-const SUPABASE_URL='';
-const SUPABASE_ANON_KEY='';
+const SUPABASE_URL='https://ziautsdlspdojwwvwmfa.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppYXV0c2Rsc3Bkb2p3d3Z3bWZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyODQzMDIsImV4cCI6MjA5ODg2MDMwMn0.Q-MB34BVjposm0BwnmbO02vEkGDsJbEHeZrByv3FDkc';

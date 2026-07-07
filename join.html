@@ -1,1 +1,71 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>Join Buda Collective</title><link rel="stylesheet" href="join.css"></head><body><div class="c"><h1>BUDA COLLECTIVE</h1><h2>Founding Artist Registration</h2><form id="f"><input placeholder="Artist Name"><input placeholder="Country"><input placeholder="Wallet"><input placeholder="Marketplace"><input placeholder="Website"><label><input type="checkbox"> Featured Exhibition (USD25)</label><button>Submit</button></form><p>This starter version is ready to connect to Supabase.</p></div><script src="config.js"></script><script src="join.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Buda Collective — Artist Registration</title>
+  <link rel="stylesheet" href="join.css">
+</head>
+<body>
+  <div class="c">
+    <a class="back-link" href="index.html">← Back to showcase</a>
+    <h1>BUDA COLLECTIVE</h1>
+    <h2>Community Artist Registration</h2>
+    <p class="intro">Submit your profile to join the living collection. Your profile stays in <strong>review (pending)</strong> and appears on the showcase (avatar + name + link to X) once we approve it — for free.</p>
+
+    <form id="joinForm" novalidate>
+      <div class="avatar-field">
+        <label for="avatar">Avatar *</label>
+        <div class="avatar-picker">
+          <img id="avatarPreview" src="logo-artista.png" alt="Preview">
+          <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/webp" required>
+        </div>
+      </div>
+
+      <label for="name">Artist Name *</label>
+      <input type="text" id="name" name="name" placeholder="Artist Name" required maxlength="80">
+
+      <label for="xLink">X (Twitter) Profile *</label>
+      <input type="url" id="xLink" name="xLink" placeholder="https://x.com/your_username" required>
+
+      <label for="country">Country</label>
+      <input type="text" id="country" name="country" placeholder="Country">
+
+      <label for="wallet">Wallet</label>
+      <input type="text" id="wallet" name="wallet" placeholder="Wallet (optional)">
+
+      <label for="marketplace">Marketplace</label>
+      <input type="text" id="marketplace" name="marketplace" placeholder="OpenSea / Foundation / etc (optional)">
+
+      <label for="website">Website</label>
+      <input type="url" id="website" name="website" placeholder="https://your-site.com (optional)">
+
+      <label for="bio">Bio (optional, used if you unlock your Featured Window)</label>
+      <textarea id="bio" name="bio" rows="3" placeholder="A short description of your work…" maxlength="400"></textarea>
+
+      <label class="checkbox-line">
+        <input type="checkbox" id="wantsFeatured" name="wantsFeatured">
+        Unlock Upgrade ✨
+      </label>
+      <p class="checkbox-hint">This does NOT grant automatic access: your basic profile is approved for free; the Featured Window (a window showcasing your works, floating above the rest) only activates once we confirm your payment.</p>
+
+      <button type="submit" id="submitBtn">Submit</button>
+      <p id="formMsg" class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <div id="inviteBox" class="invite-box" style="display:none;">
+      <p class="invite-label">🔗 Your personal link</p>
+      <div class="invite-row">
+        <input type="text" id="inviteLink" readonly>
+        <button type="button" id="copyInviteBtn">Copy</button>
+      </div>
+      <p class="invite-hint">You can already share it. It becomes your Featured Window once we approve your profile <strong>and</strong> confirm your payment.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="join.js"></script>
+</body>
+</html>
