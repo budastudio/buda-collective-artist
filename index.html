@@ -1,3 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buda Collective Artist - Live Showcase</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #0c0c0e; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+
+        /* --- CONTENEDOR EN COLOR NEGRO TRASLÚCIDO (POR ENCIMA DE TODO) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75); /* Negro traslúcido intenso para cubrir las burbujas */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+            z-index: 9999; /* Forzado por encima de cualquier elemento */
+        }
+
+        /* Cuando está activo, se muestra y permite clics */
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- TARJETA CENTRAL ENFOQUE CINEMATOGRÁFICO --- */
+        .modal-card {
+            background: #121216;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            padding: 30px 24px 24px 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            color: #ffffff;
+            position: relative;
+            transform: scale(0.85);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        /* Botón de cerrar X */
+        .btn-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            line-height: 1;
+            z-index: 10000;
+        }
+
+        .btn-close:hover { 
+            color: #ffffff; 
+            transform: scale(1.15);
+        }
+
+        .artist-hero {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: -45px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .artist-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid #121216;
+            background: #121216;
+            position: relative;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            display: block;
+            object-fit: cover;
+        }
+
+        .artist-name { font-size: 24px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.5px; }
+        .artist-subtitle { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin: 0 0 12px 0; line-height: 1.4; }
+
+        /* Botón de Redes / X Profile */
+        .artist-social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .artist-social-btn:hover {
+            background: #e2e2e2;
+            transform: scale(1.03);
+        }
+
+        .artist-bio { font-size: 14px; color: rgba(255, 255, 255, 0.85); line-height: 1.5; margin: 0 0 24px 0; padding: 0 10px; }
+
+        .works-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            text-align: left;
+        }
+
+        .work-item img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .work-title { font-size: 12px; font-weight: 500; margin: 5px 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .work-year { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+
+        /* Single new button: links to registration (Join / Featured), no panel or sidebar */
+        .btn-join {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 500;
+            background: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 24px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease;
+        }
+        .btn-join:hover { transform: scale(1.04); }
+    </style>
+</head>
+<body>
+
+<a class="btn-join" href="join.html">+ Join / Featured</a>
+
+
+<div class="modal-overlay" id="artistModal" onclick="cerrarModalDesdeOverlay(event)">
+    <div class="modal-card">
+        <button class="btn-close" onclick="event.stopPropagation(); cerrarModal();">&times;</button>
+        <img id="modalHero" class="artist-hero" src="" alt="Hero">
+        <img id="modalAvatar" class="artist-avatar" src="" alt="Avatar">
+        <h2 id="modalName" class="artist-name"></h2>
+        <p id="modalSubtitle" class="artist-subtitle"></p>
+
+        <a id="modalSocialLink" class="artist-social-btn" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
+            Seguir en X
+        </a>
+
+        <p id="modalBio" class="artist-bio"></p>
+
+        <div class="works-container" id="modalWorks"></div>
+    </div>
+</div>
+
 <script>
 // =========================================================================
 // DATOS DE LEONARDO ACTUALIZADOS CON LA PROPIEDAD CLICK
@@ -103,7 +293,7 @@ function setup() {
 
 function initFloatingSystem() {
   frames = [];
-  let tamañoLogo = 190; // ✅ Founders más grandes (Original era 150)
+  let tamañoLogo = 195; // Founders más grandes para ganar jerarquía
 
   frames.push({
     pfp: logoArtista, 
@@ -126,11 +316,12 @@ function initFloatingSystem() {
     escalaAparicion: 0.75,
     alpha: 120,
     esVacio: false,
-    glow: true
+    glow: true,
+    col: null
   });
 
   for (let i = 0; i < 30; i++) {
-    let tamaño = random(145, 175); // ✅ Vacíos nunca menores al 20% del tamaño actual
+    let tamaño = random(145, 175); // Dimensión robusta (nunca menor en un 20% al original)
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
 
@@ -148,7 +339,7 @@ function initFloatingSystem() {
       vx: 0, vy: 0,
       t: random(1000),
       pulso: random(TWO_PI),
-      col: color(random(100, 255), random(100, 255), random(220, 255)),
+      col: { r: random(100, 255), g: random(100, 255), b: random(220, 255) }, // Estructurado como objeto nativo para p5.js
       radius: tamaño / 2,
       isDragging: false,
       entrando: true,
@@ -188,7 +379,8 @@ function cargarArtistasManuales() {
       escalaAparicion: 0.75,
       alpha: 120,
       esVacio: false,
-      glow: true
+      glow: true,
+      col: null
     });
   }
 }
@@ -214,6 +406,7 @@ function draw() {
     aplicarColisiones();
   }
 
+  // Orden de capas: Vacíos abajo (0), Artistas en medio (1), Founders arriba del todo (2)
   frames.sort((a, b) => {
     let rangoA = a.rarity === 'artist' ? 2 : (a.esVacio ? 0 : 1);
     let rangoB = b.rarity === 'artist' ? 2 : (b.esVacio ? 0 : 1);
@@ -281,7 +474,7 @@ function drawAndMoveFrame(f) {
   let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
   let elMouseEncima = (dMouse < f.radius * f.escalaAparicion) && !modalAbierto;
 
-  // ✅ [CORRECCIÓN] Sin elipses/glow de fondo al estar en reposo ("off") para los vacíos.
+  // Sin elipses de fondo al estar "off" en los vacíos
   if (!f.esVacio && f.glow) {
     noStroke();
     fill(130, 185, 255, 95);
@@ -291,13 +484,13 @@ function drawAndMoveFrame(f) {
   scale(f.escalaAparicion);
   translate(-f.radius, -f.radius);
 
-  // ✅ [CORRECCIÓN] Aura elíptica en Roll Over ÚNICAMENTE para Founders/Artistas con nombre. Los vacíos no la generan.
+  // Aura elíptica en Roll Over ÚNICAMENTE para Founders y artistas (con nombre). Los vacíos no generan aura.
   if ((dMouse < f.radius || f.isDragging) && f.nombre !== "" && !modalAbierto) {
     noStroke();
     let colorGlowBase = (f.rarity === "artist") ? color(255, 215, 0) : color(255, 255, 255);
     for (let i = 25; i > 0; i--) {
       let alphaElegante = (25 - i) * 0.9;
-      fill(red(colorGlowBase), green(colorGlowBase), blue(colorGlowBase), alphaElegante); 
+      fill(colorGlowBase.levels[0], colorGlowBase.levels[1], colorGlowBase.levels[2], alphaElegante); 
       ellipse(centroX_local, centroY_local, f.size + (i * 2.5));
     }
   }
@@ -306,12 +499,12 @@ function drawAndMoveFrame(f) {
     tint(255, f.alpha);
     image(f.pfp, 0, 0, f.size, f.size);
     noTint();
-  } else {
-    // ✅ [CORRECCIÓN] Los vacíos en rollover NO tienen aura; cambian estrictamente a un canal alpha controlado del 40% (102/255)
-    let base = f.col || color(160, 120, 255);
+  } else if (f.esVacio) {
+    // Los vacíos en rollover NO muestran auras elípticas, cambian estrictamente a un 40% de alpha
+    let base = f.col || { r: 160, g: 120, b: 255 };
     let alphaDinamico = elMouseEncima ? 102 : 45; // 102 equivale exactamente al 40% de opacidad
     
-    fill(red(base), green(base), blue(base), alphaDinamico);
+    fill(base.r, base.g, base.b, alphaDinamico);
     noStroke();
     rect(0, 0, f.size, f.size, 12);
   }
@@ -535,8 +728,8 @@ async function cargarArtistasComunidad() {
     const ordenados = [...artistas].sort((a, b) => (a.featured === b.featured) ? 0 : (a.featured ? 1 : -1));
 
     ordenados.forEach(a => {
-      // ✅ Si es destacado (Founder/Featured) hereda el tamaño mayor proporcional
-      let tamaño = a.featured ? random(190, 215) : random(130, 170);
+      // Los destacados (Founders/Featured de base de datos) heredan una mayor proporción de tamaño
+      let tamaño = a.featured ? random(195, 220) : random(130, 170);
       let imgArtista = a.avatar_url
         ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
         : null;
@@ -564,7 +757,8 @@ async function cargarArtistasComunidad() {
         escalaAparicion: 0.75,
         alpha: 120,
         esVacio: false,
-        glow: true
+        glow: true,
+        col: null
       });
     });
   } catch (e) {
@@ -572,3 +766,5 @@ async function cargarArtistasComunidad() {
   }
 }
 </script>
+</body>
+</html>
