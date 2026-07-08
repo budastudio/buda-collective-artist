@@ -179,7 +179,7 @@
         <p id="modalSubtitle" class="artist-subtitle"></p>
 
         <a id="modalSocialLink" class="artist-social-btn" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
-            Follow me X
+            Seguir en X
         </a>
 
         <p id="modalBio" class="artist-bio"></p>
@@ -206,8 +206,8 @@ const datosLeonardo = {
     }
   },
   "works": [
-    { "title": "Buda NFT collective #1", "image": "obra-leonardo-01.jpg", "year": "2026" },
-    { "title": "Physical painting oil in canvas #2", "image": "obra-leonardo-02.jpg", "year": "2026" }
+    { "title": "Entre el Velo y la Piel #1", "image": "obra-leonardo-01.jpg", "year": "2026" },
+    { "title": "Entre el Velo y la Piel #2", "image": "obra-leonardo-02.jpg", "year": "2026" }
   ]
 };
 
@@ -639,4 +639,124 @@ function dibujarCartelNombre(txt, mx, my) {
   let txtHeight = 28;
   let cx = mx + 15;
   let cy = my - 15;
-  if (cx + txtWidth > width) cx =
+  if (cx + txtWidth > width) cx = mx - txtWidth - 5;
+  if (cy + txtHeight > height) cy = height - txtHeight - 5;
+
+  fill(15, 15, 18, 240);
+  stroke(255, 255, 255, 50);
+  strokeWeight(1);
+  rect(cx, cy, txtWidth, txtHeight, 6);
+
+  noStroke();
+  fill(255);
+  textAlign(CENTER, CENTER);
+  text(txt, cx + txtWidth / 2, cy + txtHeight / 2);
+  pop();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+function abrirModalArtista(data) {
+  modalAbierto = true;
+
+  document.getElementById('modalHero').src = data.hero;
+  document.getElementById('modalAvatar').src = data.avatar;
+  document.getElementById('modalName').innerText = data.name;
+  document.getElementById('modalSubtitle').innerText = data.subtitle;
+  document.getElementById('modalBio').innerText = data.bio;
+
+  let socialBtn = document.getElementById('modalSocialLink');
+  if (data.social && data.social.x && data.social.x.click) {
+      socialBtn.href = data.social.x.click;
+      socialBtn.style.display = 'inline-flex';
+  } else {
+      socialBtn.style.display = 'none';
+  }
+
+  let containerObras = document.getElementById('modalWorks');
+  containerObras.innerHTML = '';
+
+  data.works.forEach(obra => {
+    let itemHtml = `
+      <div class="work-item">
+        <img src="${obra.image}" alt="${obra.title}">
+        <p class="work-title">${obra.title}</p>
+        <p class="work-year">${obra.year}</p>
+      </div>
+    `;
+    containerObras.innerHTML += itemHtml;
+  });
+
+  document.getElementById('artistModal').classList.add('active');
+}
+
+function cerrarModal() {
+  document.getElementById('artistModal').classList.remove('active');
+  setTimeout(() => { modalAbierto = false; }, 400);
+}
+
+function cerrarModalDesdeOverlay(event) {
+  if (event.target === document.getElementById('artistModal')) {
+    cerrarModal();
+  }
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modalAbierto) {
+    cerrarModal();
+  }
+});
+
+async function cargarArtistasComunidad() {
+  if (typeof budaSupabase === 'undefined') {
+    console.warn('[Buda] Supabase is not configured (check config.js). Community artists will not load.');
+    return;
+  }
+
+  try {
+    const artistas = await budaSupabase.fetchApprovedArtists();
+    const ordenados = [...artistas].sort((a, b) => (a.featured === b.featured) ? 0 : (a.featured ? 1 : -1));
+
+    ordenados.forEach(a => {
+      let tamaño = a.featured ? random(150, 185) : random(120, 150);
+      let imgArtista = a.avatar_url
+        ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
+        : null;
+
+      let destino = a.featured ? `featured.html?id=${encodeURIComponent(a.id)}` : (a.x_link || '');
+
+      frames.push({
+        pfp: imgArtista,
+        rarity: a.featured ? 'epic' : 'common',
+        nombre: a.name,
+        link: destino,
+        isFixed: false,
+        x: random(0, width - tamaño),
+        y: height + random(40, 180),
+        targetY: random(height * 0.12, height * 0.76),
+        size: tamaño,
+        baseSize: tamaño,
+        vx: 0, vy: 0,
+        t: random(1000),
+        radius: tamaño / 2,
+        isDragging: false,
+        entrando: true,
+        entradaInicio: millis() + random(0, 500),
+        duracionEntrada: DOSIER_ENTRADA_MS,
+        escalaAparicion: 0.75,
+        alpha: 120,
+        esVacio: false,
+        glow: true
+      });
+    });
+  } catch (e) {
+    console.error('[Buda] Error loading community artists:', e);
+  }
+}
+</script>
+
+
+</body>
+</html>
