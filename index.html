@@ -401,7 +401,15 @@ function draw() {
 
   if (!modalAbierto) {
     actualizarArrastre();
+    aplicarColisiones(); // ✅ Activadas las colisiones suaves en cada frame
   }
+
+  // ✅ Ordenamiento por capas estable para priorizar renderizado (Vacíos abajo -> Artistas -> Founders arriba del todo)
+  frames.sort((a, b) => {
+    let rangoA = a.rarity === 'artist' ? 2 : (a.esVacio ? 0 : 1);
+    let rangoB = b.rarity === 'artist' ? 2 : (b.esVacio ? 0 : 1);
+    return rangoA - rangoB;
+  });
 
   let cuadroInteractuado = null;
   let alguienTieneFocus = false;
@@ -459,34 +467,39 @@ function drawAndMoveFrame(f) {
   push();
   translate(f.x + f.radius, f.y + f.radius);
 
-  const glowScale = f.esVacio ? 1.12 : 1.28;
-  const auraScale = f.esVacio ? 1.06 : 1.18;
-  const auraAlpha = f.esVacio ? 130 : 95;
+  let centroX_local = f.radius;
+  let centroY_local = f.radius;
+  let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
+  let elMouseEncima = (dMouse < f.radius * f.escalaAparicion) && !modalAbierto;
 
+  // ✅ Glow de los vacíos mucho más difuso (blur visual mediante capas progresivas), grande y sutil
   if (f.esVacio) {
     const brillo = (sin(frameCount * 0.035 + f.pulso) + 1) / 2;
     const pulseColor = lerpColor(color(95, 70, 230), color(255, 170, 95), brillo);
     noStroke();
-    fill(red(pulseColor), green(pulseColor), blue(pulseColor), 170);
-    ellipse(0, 0, f.size * glowScale, f.size * glowScale);
+    // Renderizado multicapa sutil para simular blur real
+    for (let capa = 1.8; capa >= 1.0; capa -= 0.2) {
+      let alphaDifuso = (1.8 - capa) * (elMouseEncima ? 35 : 22); 
+      fill(red(pulseColor), green(pulseColor), blue(pulseColor), alphaDifuso);
+      ellipse(0, 0, f.size * capa, f.size * capa);
+    }
   } else if (f.glow) {
     noStroke();
-    fill(130, 185, 255, auraAlpha);
-    ellipse(0, 0, f.size * auraScale, f.size * auraScale);
+    fill(130, 185, 255, 95);
+    ellipse(0, 0, f.size * 1.18, f.size * 1.18);
   }
 
   scale(f.escalaAparicion);
   translate(-f.radius, -f.radius);
 
-  let centroX_local = f.radius;
-  let centroY_local = f.radius;
-  let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
-
+  // ✅ Hover exclusivo de los Founders / Artistas reales: mantiene el glow dorado pero mucho más elegante, suave y degradado
   if ((dMouse < f.radius || f.isDragging) && f.nombre !== "" && !modalAbierto) {
     noStroke();
-    for (let i = 15; i > 0; i--) {
-      fill(255, 215, 0, 15 - i); 
-      ellipse(centroX_local, centroY_local, f.size + (i * 4));
+    let colorGlowBase = (f.rarity === "artist") ? color(255, 215, 0) : color(255, 255, 255);
+    for (let i = 25; i > 0; i--) {
+      let alphaElegante = (25 - i) * 0.9;
+      fill(red(colorGlowBase), green(colorGlowBase), blue(colorGlowBase), alphaElegante); 
+      ellipse(centroX_local, centroY_local, f.size + (i * 2.5));
     }
   }
 
@@ -495,9 +508,12 @@ function drawAndMoveFrame(f) {
     image(f.pfp, 0, 0, f.size, f.size);
     noTint();
   } else {
-    let pulse = sin(frameCount * 0.025 + f.t) * 35;
+    // ✅ El hover de los vacíos solamente modifica de manera sutil el alpha del color base
+    let pulse = sin(frameCount * 0.025 + f.t) * 25;
     let base = f.col || color(160, 120, 255);
-    fill(red(base), green(base), blue(base), 130 + pulse);
+    let alphaBase = elMouseEncima ? 195 : 125; 
+    
+    fill(red(base), green(base), blue(base), alphaBase + pulse);
     noStroke();
     rect(0, 0, f.size, f.size, 12);
   }
@@ -558,7 +574,8 @@ function aplicarColisiones() {
 
 function mousePressed() {
   if (modalAbierto) return;
-  for (let f of frames) {
+  for (let i = frames.length - 1; i >= 0; i--) { 
+    let f = frames[i];
     let centroX = f.x + f.radius;
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
@@ -614,7 +631,8 @@ function mouseReleased() {
 function mouseClicked() {
   if (modalAbierto) return;
   if (!fueArrastrado) {
-    for (let f of frames) {
+    for (let i = frames.length - 1; i >= 0; i--) { 
+      let f = frames[i];
       let centroX = f.x + f.radius;
       let centroY = f.y + f.radius;
       let d = dist(mouseX, mouseY, centroX, centroY);
