@@ -293,7 +293,7 @@ function setup() {
 
 function initFloatingSystem() {
   frames = [];
-  let tamañoLogo = 195; // Founders más grandes para ganar jerarquía
+  let tamañoLogo = 150; // Max 150px para el Founder/Icono de Buda Studio
 
   frames.push({
     pfp: logoArtista, 
@@ -301,12 +301,13 @@ function initFloatingSystem() {
     nombre: "Buda Studio",
     link: "MODAL_BUDA", 
     isFixed: false, 
-    x: random(width * 0.2, width * 0.8), 
-    y: height + random(40, 120),
+    x: random(0, width - tamañoLogo), 
+    y: random(0, height - tamañoLogo),
     targetY: random(height * 0.22, height * 0.62),
     size: tamañoLogo,
     baseSize: tamañoLogo,
-    vx: 0, vy: 0, 
+    vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
+    vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
     t: random(1000),
     radius: tamañoLogo / 2,
     isDragging: false,
@@ -316,12 +317,12 @@ function initFloatingSystem() {
     escalaAparicion: 0.75,
     alpha: 120,
     esVacio: false,
-    glow: true,
-    col: null
+    glow: true
   });
 
-  for (let i = 0; i < 30; i++) {
-    let tamaño = random(145, 175); // Dimensión robusta (nunca menor en un 20% al original)
+  // Cantidad reducida al 50% (De 30 pasamos a 15 vacíos)
+  for (let i = 0; i < 15; i++) {
+    let tamaño = random(60, 80); // Reducidos al 50% (Max 80px para los vacíos)
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
 
@@ -332,14 +333,15 @@ function initFloatingSystem() {
       link: null,
       isFixed: false,
       x: random(0, width - tamaño),
-      y: height + random(30, 160),
+      y: random(0, height - tamaño),
       targetY: random(height * 0.18, height * 0.78),
       size: tamaño,
       baseSize: tamaño,
-      vx: 0, vy: 0,
+      vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
+      vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
       t: random(1000),
       pulso: random(TWO_PI),
-      col: { r: random(100, 255), g: random(100, 255), b: random(220, 255) }, // Estructurado como objeto nativo para p5.js
+      col: color(random(100, 255), random(100, 255), random(220, 255)),
       radius: tamaño / 2,
       isDragging: false,
       entrando: true,
@@ -356,7 +358,7 @@ function initFloatingSystem() {
 function cargarArtistasManuales() {
   for (let i = 0; i < datosArtistas.length; i++) {
     let artista = datosArtistas[i];
-    let tamaño = random(130, 170);
+    let tamaño = random(65, 85); // Tamaño escalado proporcionalmente al 50% menos
 
     frames.push({
       pfp: artista.imgCargada,
@@ -365,11 +367,12 @@ function cargarArtistasManuales() {
       link: artista.link || null,
       isFixed: false,
       x: random(0, width - tamaño),
-      y: height + random(40, 180),
+      y: random(0, height - tamaño),
       targetY: random(height * 0.12, height * 0.76),
       size: tamaño,
       baseSize: tamaño,
-      vx: 0, vy: 0,
+      vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
+      vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
       t: random(1000),
       radius: tamaño / 2,
       isDragging: false,
@@ -379,8 +382,7 @@ function cargarArtistasManuales() {
       escalaAparicion: 0.75,
       alpha: 120,
       esVacio: false,
-      glow: true,
-      col: null
+      glow: false // Sin elipse trasera permanente
     });
   }
 }
@@ -406,13 +408,6 @@ function draw() {
     aplicarColisiones();
   }
 
-  // Orden de capas: Vacíos abajo (0), Artistas en medio (1), Founders arriba del todo (2)
-  frames.sort((a, b) => {
-    let rangoA = a.rarity === 'artist' ? 2 : (a.esVacio ? 0 : 1);
-    let rangoB = b.rarity === 'artist' ? 2 : (b.esVacio ? 0 : 1);
-    return rangoA - rangoB;
-  });
-
   let cuadroInteractuado = null;
   let alguienTieneFocus = false;
 
@@ -429,16 +424,16 @@ function draw() {
         f.escalaAparicion = 1;
         f.alpha = 255;
         f.entrando = false;
-        if (f.vx === 0 && f.vy === 0) {
-          f.vx = random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO);
-          f.vy = random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO);
-        }
       }
     } else if (!f.isDragging && !modalAbierto) {
       f.x += f.vx;
       f.y += f.vy;
-      if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
-      if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
+      
+      // ✅ Restricción absoluta para que NINGÚN artista se salga de los bordes del browser
+      if (f.x < 0) { f.x = 0; f.vx *= -1; }
+      if (f.x > width - f.size) { f.x = width - f.size; f.vx *= -1; }
+      if (f.y < 0) { f.y = 0; f.vy *= -1; }
+      if (f.y > height - f.size) { f.y = height - f.size; f.vy *= -1; }
     }
 
     drawAndMoveFrame(f);
@@ -469,29 +464,21 @@ function drawAndMoveFrame(f) {
   push();
   translate(f.x + f.radius, f.y + f.radius);
 
-  let centroX_local = f.radius;
-  let centroY_local = f.radius;
-  let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
-  let elMouseEncima = (dMouse < f.radius * f.escalaAparicion) && !modalAbierto;
-
-  // Sin elipses de fondo al estar "off" en los vacíos
-  if (!f.esVacio && f.glow) {
-    noStroke();
-    fill(130, 185, 255, 95);
-    ellipse(0, 0, f.size * 1.18, f.size * 1.18);
-  }
+  // SE ELIMINARON POR COMPLETO LAS ELIPSES/GLOWS DE FONDO PERMANENTES EN REPOSO
 
   scale(f.escalaAparicion);
   translate(-f.radius, -f.radius);
 
-  // Aura elíptica en Roll Over ÚNICAMENTE para Founders y artistas (con nombre). Los vacíos no generan aura.
-  if ((dMouse < f.radius || f.isDragging) && f.nombre !== "" && !modalAbierto) {
+  let centroX_local = f.radius;
+  let centroY_local = f.radius;
+  let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
+
+  // ✅ SOLO los founder/artists reales generan aura al roll over
+  if ((dMouse < f.radius || f.isDragging) && f.rarity === "artist" && !modalAbierto) {
     noStroke();
-    let colorGlowBase = (f.rarity === "artist") ? color(255, 215, 0) : color(255, 255, 255);
-    for (let i = 25; i > 0; i--) {
-      let alphaElegante = (25 - i) * 0.9;
-      fill(colorGlowBase.levels[0], colorGlowBase.levels[1], colorGlowBase.levels[2], alphaElegante); 
-      ellipse(centroX_local, centroY_local, f.size + (i * 2.5));
+    for (let i = 15; i > 0; i--) {
+      fill(255, 215, 0, 15 - i); 
+      ellipse(centroX_local, centroY_local, f.size + (i * 4));
     }
   }
 
@@ -499,12 +486,10 @@ function drawAndMoveFrame(f) {
     tint(255, f.alpha);
     image(f.pfp, 0, 0, f.size, f.size);
     noTint();
-  } else if (f.esVacio) {
-    // Los vacíos en rollover NO muestran auras elípticas, cambian estrictamente a un 40% de alpha
-    let base = f.col || { r: 160, g: 120, b: 255 };
-    let alphaDinamico = elMouseEncima ? 102 : 45; // 102 equivale exactamente al 40% de opacidad
-    
-    fill(base.r, base.g, base.b, alphaDinamico);
+  } else {
+    // ✅ Cuadrados vacíos estrictamente al 20% de alpha (51/255) y SIN roll over
+    let base = f.col || color(160, 120, 255);
+    fill(red(base), green(base), blue(base), 51); 
     noStroke();
     rect(0, 0, f.size, f.size, 12);
   }
@@ -565,8 +550,7 @@ function aplicarColisiones() {
 
 function mousePressed() {
   if (modalAbierto) return;
-  for (let i = frames.length - 1; i >= 0; i--) { 
-    let f = frames[i];
+  for (let f of frames) {
     let centroX = f.x + f.radius;
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
@@ -622,8 +606,7 @@ function mouseReleased() {
 function mouseClicked() {
   if (modalAbierto) return;
   if (!fueArrastrado) {
-    for (let i = frames.length - 1; i >= 0; i--) { 
-      let f = frames[i];
+    for (let f of frames) {
       let centroX = f.x + f.radius;
       let centroY = f.y + f.radius;
       let d = dist(mouseX, mouseY, centroX, centroY);
@@ -728,8 +711,7 @@ async function cargarArtistasComunidad() {
     const ordenados = [...artistas].sort((a, b) => (a.featured === b.featured) ? 0 : (a.featured ? 1 : -1));
 
     ordenados.forEach(a => {
-      // Los destacados (Founders/Featured de base de datos) heredan una mayor proporción de tamaño
-      let tamaño = a.featured ? random(195, 220) : random(130, 170);
+      let tamaño = a.featured ? random(120, 150) : random(65, 85); // Reducción del 50% proporcional
       let imgArtista = a.avatar_url
         ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
         : null;
@@ -743,11 +725,12 @@ async function cargarArtistasComunidad() {
         link: destino,
         isFixed: false,
         x: random(0, width - tamaño),
-        y: height + random(40, 180),
+        y: random(0, height - tamaño),
         targetY: random(height * 0.12, height * 0.76),
         size: tamaño,
         baseSize: tamaño,
-        vx: 0, vy: 0,
+        vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
+        vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
         t: random(1000),
         radius: tamaño / 2,
         isDragging: false,
@@ -757,8 +740,7 @@ async function cargarArtistasComunidad() {
         escalaAparicion: 0.75,
         alpha: 120,
         esVacio: false,
-        glow: true,
-        col: null
+        glow: false
       });
     });
   } catch (e) {
@@ -766,5 +748,6 @@ async function cargarArtistasComunidad() {
   }
 }
 </script>
+
 </body>
 </html>
