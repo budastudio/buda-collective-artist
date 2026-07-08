@@ -169,6 +169,7 @@
 
 <a class="btn-join" href="join.html">+ Join / Featured</a>
 
+
 <div class="modal-overlay" id="artistModal" onclick="cerrarModalDesdeOverlay(event)">
     <div class="modal-card">
         <button class="btn-close" onclick="event.stopPropagation(); cerrarModal();">&times;</button>
@@ -178,7 +179,7 @@
         <p id="modalSubtitle" class="artist-subtitle"></p>
 
         <a id="modalSocialLink" class="artist-social-btn" href="#" target="_blank" rel="noopener noreferrer" style="display: none;">
-            Seguir en X
+            Follow me X
         </a>
 
         <p id="modalBio" class="artist-bio"></p>
@@ -205,8 +206,8 @@ const datosLeonardo = {
     }
   },
   "works": [
-    { "title": "Entre el Velo y la Piel #1", "image": "obra-leonardo-01.jpg", "year": "2026" },
-    { "title": "Entre el Velo y la Piel #2", "image": "obra-leonardo-02.jpg", "year": "2026" }
+    { "title": "Buda NFT collective #1", "image": "obra-leonardo-01.jpg", "year": "2026" },
+    { "title": "Physical painting oil in canvas #2", "image": "obra-leonardo-02.jpg", "year": "2026" }
   ]
 };
 
@@ -292,7 +293,7 @@ function setup() {
 
 function initFloatingSystem() {
   frames = [];
-  let tamañoLogo = 150; // Máximo 150px para el icono de Buda Studio / Founder
+  let tamañoLogo = 150; 
 
   frames.push({
     pfp: logoArtista, 
@@ -300,13 +301,12 @@ function initFloatingSystem() {
     nombre: "Buda Studio",
     link: "MODAL_BUDA", 
     isFixed: false, 
-    x: random(0, width - tamañoLogo), 
-    y: random(0, height - tamañoLogo),
+    x: random(width * 0.2, width * 0.8), 
+    y: height + random(40, 120),
     targetY: random(height * 0.22, height * 0.62),
     size: tamañoLogo,
     baseSize: tamañoLogo,
-    vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
-    vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
+    vx: 0, vy: 0, 
     t: random(1000),
     radius: tamañoLogo / 2,
     isDragging: false,
@@ -319,25 +319,23 @@ function initFloatingSystem() {
     glow: true
   });
 
-  // Cantidad reducida al 50% (Exactamente 15 vacíos)
-  for (let i = 0; i < 15; i++) {
-    let tamaño = random(60, 80); // Reducido al 50% (Max 80px para vacíos)
+  for (let i = 0; i < 30; i++) {
+    let tamaño = random(120, 160);
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
 
     frames.push({
       pfp: null, 
       rarity: r,
-      nombre: "", // Estrictamente vacío, sin nombre heredado
+      nombre: "", 
       link: null,
       isFixed: false,
       x: random(0, width - tamaño),
-      y: random(0, height - tamaño),
+      y: height + random(30, 160),
       targetY: random(height * 0.18, height * 0.78),
       size: tamaño,
       baseSize: tamaño,
-      vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
-      vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
+      vx: 0, vy: 0,
       t: random(1000),
       pulso: random(TWO_PI),
       col: color(random(100, 255), random(100, 255), random(220, 255)),
@@ -357,7 +355,7 @@ function initFloatingSystem() {
 function cargarArtistasManuales() {
   for (let i = 0; i < datosArtistas.length; i++) {
     let artista = datosArtistas[i];
-    let tamaño = random(65, 85); // Reducción del 50% para artistas normales
+    let tamaño = random(130, 170);
 
     frames.push({
       pfp: artista.imgCargada,
@@ -366,12 +364,11 @@ function cargarArtistasManuales() {
       link: artista.link || null,
       isFixed: false,
       x: random(0, width - tamaño),
-      y: random(0, height - tamaño),
+      y: height + random(40, 180),
       targetY: random(height * 0.12, height * 0.76),
       size: tamaño,
       baseSize: tamaño,
-      vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
-      vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
+      vx: 0, vy: 0,
       t: random(1000),
       radius: tamaño / 2,
       isDragging: false,
@@ -381,7 +378,7 @@ function cargarArtistasManuales() {
       escalaAparicion: 0.75,
       alpha: 120,
       esVacio: false,
-      glow: false
+      glow: true
     });
   }
 }
@@ -404,15 +401,7 @@ function draw() {
 
   if (!modalAbierto) {
     actualizarArrastre();
-    aplicarColisiones();
   }
-
-  // Garantizar el orden de renderizado por capas para que el ratón no se confunda
-  frames.sort((a, b) => {
-    let rangoA = a.rarity === 'artist' ? 2 : (a.esVacio ? 0 : 1);
-    let rangoB = b.rarity === 'artist' ? 2 : (b.esVacio ? 0 : 1);
-    return rangoA - rangoB;
-  });
 
   let cuadroInteractuado = null;
   let alguienTieneFocus = false;
@@ -430,16 +419,16 @@ function draw() {
         f.escalaAparicion = 1;
         f.alpha = 255;
         f.entrando = false;
+        if (f.vx === 0 && f.vy === 0) {
+          f.vx = random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO);
+          f.vy = random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO);
+        }
       }
     } else if (!f.isDragging && !modalAbierto) {
       f.x += f.vx;
       f.y += f.vy;
-      
-      // ✅ Restricción absoluta dentro del Browser (No se salen de la pantalla)
-      if (f.x < 0) { f.x = 0; f.vx *= -1; }
-      if (f.x > width - f.size) { f.x = width - f.size; f.vx *= -1; }
-      if (f.y < 0) { f.y = 0; f.vy *= -1; }
-      if (f.y > height - f.size) { f.y = height - f.size; f.vy *= -1; }
+      if (f.x < 0 || f.x > width - f.size) f.vx *= -1;
+      if (f.y < 0 || f.y > height - f.size) f.vy *= -1;
     }
 
     drawAndMoveFrame(f);
@@ -448,7 +437,6 @@ function draw() {
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
 
-    // ✅ CORRECCIÓN: Los cuadros vacíos (f.esVacio) quedan totalmente excluidos de tener rollover o focus
     if (!f.esVacio && (d < f.radius * f.escalaAparicion || f.isDragging) && f.nombre !== "" && !modalAbierto) {
       cuadroInteractuado = f;
       if (f.link) alguienTieneFocus = true;
@@ -471,7 +459,21 @@ function drawAndMoveFrame(f) {
   push();
   translate(f.x + f.radius, f.y + f.radius);
 
-  // Sin elipses traseras permanentes ni resplandores en reposo
+  const glowScale = f.esVacio ? 1.12 : 1.28;
+  const auraScale = f.esVacio ? 1.06 : 1.18;
+  const auraAlpha = f.esVacio ? 130 : 95;
+
+  if (f.esVacio) {
+    const brillo = (sin(frameCount * 0.035 + f.pulso) + 1) / 2;
+    const pulseColor = lerpColor(color(95, 70, 230), color(255, 170, 95), brillo);
+    noStroke();
+    fill(red(pulseColor), green(pulseColor), blue(pulseColor), 170);
+    ellipse(0, 0, f.size * glowScale, f.size * glowScale);
+  } else if (f.glow) {
+    noStroke();
+    fill(130, 185, 255, auraAlpha);
+    ellipse(0, 0, f.size * auraScale, f.size * auraScale);
+  }
 
   scale(f.escalaAparicion);
   translate(-f.radius, -f.radius);
@@ -480,11 +482,11 @@ function drawAndMoveFrame(f) {
   let centroY_local = f.radius;
   let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
 
-  // ✅ ÚNICAMENTE los founders reales ("artist") tienen aura dorada al hacer roll over
-  if (!f.esVacio && (dMouse < f.radius || f.isDragging) && f.rarity === "artist" && !modalAbierto) {
+  // Al pasar el ratón (Roll Over) por un cuadro con contenido real se añade un brillo tenue en blanco
+  if (!f.esVacio && (dMouse < f.radius || f.isDragging) && f.nombre !== "" && !modalAbierto) {
     noStroke();
     for (let i = 15; i > 0; i--) {
-      fill(255, 215, 0, 15 - i); 
+      fill(255, 255, 255, 12 - i * 0.7); 
       ellipse(centroX_local, centroY_local, f.size + (i * 4));
     }
   }
@@ -494,9 +496,9 @@ function drawAndMoveFrame(f) {
     image(f.pfp, 0, 0, f.size, f.size);
     noTint();
   } else {
-    // ✅ Cuadrados vacíos con opacidad fija del 20% (51 de 255) y totalmente limpios (sin rollover)
+    let pulse = sin(frameCount * 0.025 + f.t) * 35;
     let base = f.col || color(160, 120, 255);
-    fill(red(base), green(base), blue(base), 51); 
+    fill(red(base), green(base), blue(base), 130 + pulse);
     noStroke();
     rect(0, 0, f.size, f.size, 12);
   }
@@ -562,7 +564,7 @@ function mousePressed() {
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
 
-    if (d < f.radius * f.escalaAparicion) {
+    if (!f.esVacio && d < f.radius * f.escalaAparicion) {
       cuadroArrastrado = f;
       f.isDragging = true;
       fueArrastrado = false;
@@ -618,7 +620,6 @@ function mouseClicked() {
       let centroY = f.y + f.radius;
       let d = dist(mouseX, mouseY, centroX, centroY);
 
-      // Los vacíos no reaccionan al clic
       if (!f.esVacio && d < f.radius * f.escalaAparicion && f.link && f.link !== "") {
         if (f.link === "MODAL_BUDA") {
           abrirModalArtista(datosLeonardo);
@@ -638,124 +639,4 @@ function dibujarCartelNombre(txt, mx, my) {
   let txtHeight = 28;
   let cx = mx + 15;
   let cy = my - 15;
-  if (cx + txtWidth > width) cx = mx - txtWidth - 5;
-  if (cy + txtHeight > height) cy = height - txtHeight - 5;
-
-  fill(15, 15, 18, 240);
-  stroke(255, 255, 255, 50);
-  strokeWeight(1);
-  rect(cx, cy, txtWidth, txtHeight, 6);
-
-  noStroke();
-  fill(255);
-  textAlign(CENTER, CENTER);
-  text(txt, cx + txtWidth / 2, cy + txtHeight / 2);
-  pop();
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
-
-function abrirModalArtista(data) {
-  modalAbierto = true;
-
-  document.getElementById('modalHero').src = data.hero;
-  document.getElementById('modalAvatar').src = data.avatar;
-  document.getElementById('modalName').innerText = data.name;
-  document.getElementById('modalSubtitle').innerText = data.subtitle;
-  document.getElementById('modalBio').innerText = data.bio;
-
-  let socialBtn = document.getElementById('modalSocialLink');
-  if (data.social && data.social.x && data.social.x.click) {
-      socialBtn.href = data.social.x.click;
-      socialBtn.style.display = 'inline-flex';
-  } else {
-      socialBtn.style.display = 'none';
-  }
-
-  let containerObras = document.getElementById('modalWorks');
-  containerObras.innerHTML = '';
-
-  data.works.forEach(obra => {
-    let itemHtml = `
-      <div class="work-item">
-        <img src="${obra.image}" alt="${obra.title}">
-        <p class="work-title">${obra.title}</p>
-        <p class="work-year">${obra.year}</p>
-      </div>
-    `;
-    containerObras.innerHTML += itemHtml;
-  });
-
-  document.getElementById('artistModal').classList.add('active');
-}
-
-function cerrarModal() {
-  document.getElementById('artistModal').classList.remove('active');
-  setTimeout(() => { modalAbierto = false; }, 400);
-}
-
-function cerrarModalDesdeOverlay(event) {
-  if (event.target === document.getElementById('artistModal')) {
-    cerrarModal();
-  }
-}
-
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && modalAbierto) {
-    cerrarModal();
-  }
-});
-
-async function cargarArtistasComunidad() {
-  if (typeof budaSupabase === 'undefined') {
-    console.warn('[Buda] Supabase is not configured (check config.js). Community artists will not load.');
-    return;
-  }
-
-  try {
-    const artistas = await budaSupabase.fetchApprovedArtists();
-    const ordenados = [...artistas].sort((a, b) => (a.featured === b.featured) ? 0 : (a.featured ? 1 : -1));
-
-    ordenados.forEach(a => {
-      let tamaño = a.featured ? random(120, 150) : random(65, 85); 
-      let imgArtista = a.avatar_url
-        ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
-        : null;
-
-      let destino = a.featured ? `featured.html?id=${encodeURIComponent(a.id)}` : (a.x_link || '');
-
-      frames.push({
-        pfp: imgArtista,
-        rarity: a.featured ? 'epic' : 'common',
-        nombre: a.name,
-        link: destino,
-        isFixed: false,
-        x: random(0, width - tamaño),
-        y: random(0, height - tamaño),
-        targetY: random(height * 0.12, height * 0.76),
-        size: tamaño,
-        baseSize: tamaño,
-        vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
-        vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
-        t: random(1000),
-        radius: tamaño / 2,
-        isDragging: false,
-        entrando: true,
-        entradaInicio: millis() + random(0, 500),
-        duracionEntrada: DOSIER_ENTRADA_MS,
-        escalaAparicion: 0.75,
-        alpha: 120,
-        esVacio: false,
-        glow: false
-      });
-    });
-  } catch (e) {
-    console.error('[Buda] Error loading community artists:', e);
-  }
-}
-</script>
-
-</body>
-</html>
+  if (cx + txtWidth > width) cx =
