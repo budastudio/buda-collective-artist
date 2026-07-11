@@ -319,16 +319,16 @@ function initFloatingSystem() {
     glow: true
   });
 
-  // Cantidad estrictamente reducida al 50% (Exactamente 7 vacíos para dar balance visual)
+  // Cantidad reducida al 50% (Exactamente 7 vacíos en lugar de 15)
   for (let i = 0; i < 7; i++) {
-    let tamaño = random(60, 80); 
+    let tamaño = random(60, 80); // Reducido al 50% (Max 80px para vacíos)
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
 
     frames.push({
       pfp: null, 
       rarity: r,
-      nombre: "", 
+      nombre: "", // Estrictamente vacío, sin nombre heredado
       link: null,
       isFixed: false,
       x: random(0, width - tamaño),
@@ -357,7 +357,7 @@ function initFloatingSystem() {
 function cargarArtistasManuales() {
   for (let i = 0; i < datosArtistas.length; i++) {
     let artista = datosArtistas[i];
-    let tamaño = random(65, 85); 
+    let tamaño = random(65, 85); // Reducción del 50% para artistas normales
 
     frames.push({
       pfp: artista.imgCargada,
@@ -407,6 +407,7 @@ function draw() {
     aplicarColisiones();
   }
 
+  // Garantizar el orden de renderizado por capas para que el ratón no se confunda
   frames.sort((a, b) => {
     let rangoA = a.rarity === 'artist' ? 2 : (a.esVacio ? 0 : 1);
     let rangoB = b.rarity === 'artist' ? 2 : (b.esVacio ? 0 : 1);
@@ -434,6 +435,7 @@ function draw() {
       f.x += f.vx;
       f.y += f.vy;
       
+      // ✅ Restricción absoluta dentro del Browser (No se salen de la pantalla)
       if (f.x < 0) { f.x = 0; f.vx *= -1; }
       if (f.x > width - f.size) { f.x = width - f.size; f.vx *= -1; }
       if (f.y < 0) { f.y = 0; f.vy *= -1; }
@@ -446,6 +448,7 @@ function draw() {
     let centroY = f.y + f.radius;
     let d = dist(mouseX, mouseY, centroX, centroY);
 
+    // ✅ CORRECCIÓN: Los cuadros vacíos (f.esVacio) quedan totalmente excluidos de tener rollover o focus
     if (!f.esVacio && (d < f.radius * f.escalaAparicion || f.isDragging) && f.nombre !== "" && !modalAbierto) {
       cuadroInteractuado = f;
       if (f.link) alguienTieneFocus = true;
@@ -459,7 +462,7 @@ function draw() {
   }
 
   if (cuadroInteractuado && !modalAbierto) {
-    let textoCartel = cuadroInteractuado.link === "MODAL_BUDA" ? `${cuadroInteractuado.nombre} ✨` : `${cuadroInteractuado.nombre} 🔗`;
+    let textoCartel = (cuadroInteractuado.link === "MODAL_BUDA" || (cuadroInteractuado.infoSupabase && !cuadroInteractuado.infoSupabase.featured)) ? `${cuadroInteractuado.nombre} ✨` : `${cuadroInteractuado.nombre} 🔗`;
     dibujarCartelNombre(textoCartel, mouseX, mouseY);
   }
 }
@@ -468,6 +471,8 @@ function drawAndMoveFrame(f) {
   push();
   translate(f.x + f.radius, f.y + f.radius);
 
+  // Sin elipses traseras permanentes ni resplandores en reposo
+
   scale(f.escalaAparicion);
   translate(-f.radius, -f.radius);
 
@@ -475,6 +480,7 @@ function drawAndMoveFrame(f) {
   let centroY_local = f.radius;
   let dMouse = dist(mouseX, mouseY, f.x + centroX_local, f.y + centroY_local);
 
+  // ✅ ÚNICAMENTE los founders reales ("artist") tienen aura dorada al hacer roll over
   if (!f.esVacio && (dMouse < f.radius || f.isDragging) && f.rarity === "artist" && !modalAbierto) {
     noStroke();
     for (let i = 15; i > 0; i--) {
@@ -488,6 +494,7 @@ function drawAndMoveFrame(f) {
     image(f.pfp, 0, 0, f.size, f.size);
     noTint();
   } else {
+    // ✅ Cuadrados vacíos con opacidad fija del 20% (51 de 255) y totalmente limpios (sin rollover)
     let base = f.col || color(160, 120, 255);
     fill(red(base), green(base), blue(base), 51); 
     noStroke();
@@ -611,9 +618,32 @@ function mouseClicked() {
       let centroY = f.y + f.radius;
       let d = dist(mouseX, mouseY, centroX, centroY);
 
+      // Los vacíos no reaccionan al clic
       if (!f.esVacio && d < f.radius * f.escalaAparicion && f.link && f.link !== "") {
         if (f.link === "MODAL_BUDA") {
           abrirModalArtista(datosLeonardo);
+        } else if (f.infoSupabase && !f.infoSupabase.featured) {
+          // Adaptar datos del registro de Supabase a la estructura de la plantilla modal de Leonardo
+          const raw = f.infoSupabase;
+          const datosModalAdaptados = {
+            id: raw.id,
+            name: raw.name || raw.nombre || "Artist",
+            subtitle: raw.subtitle || "Approved Artist · Buda Collective",
+            avatar: raw.avatar_url || "logo-artista.png",
+            hero: raw.hero_url || "obra-leonardo-01.jpg",
+            bio: raw.bio || "Buda Collective verified digital artist.",
+            social: {
+              x: {
+                link: raw.x_link || "#",
+                click: raw.x_link || "#"
+              }
+            },
+            works: raw.works || [
+              { "title": "Buda Collection Artwork #1", "image": raw.hero_url || "obra-leonardo-01.jpg", "year": "2026" },
+              { "title": "Buda Collection Artwork #2", "image": raw.avatar_url || "logo-artista.png", "year": "2026" }
+            ]
+          };
+          abrirModalArtista(datosModalAdaptados);
         } else {
           window.open(f.link, '_blank'); 
         }
@@ -659,7 +689,7 @@ function abrirModalArtista(data) {
   document.getElementById('modalBio').innerText = data.bio;
 
   let socialBtn = document.getElementById('modalSocialLink');
-  if (data.social && data.social.x && data.social.x.click) {
+  if (data.social && data.social.x && data.social.x.click && data.social.x.click !== '#') {
       socialBtn.href = data.social.x.click;
       socialBtn.style.display = 'inline-flex';
   } else {
@@ -700,9 +730,6 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// =========================================================================
-// TU LÓGICA ORIGINAL DE SUPABASE RESTAURADA AL 100% (SIN MODIFICACIONES)
-// =========================================================================
 async function cargarArtistasComunidad() {
   if (typeof budaSupabase === 'undefined') {
     console.warn('[Buda] Supabase is not configured (check config.js). Community artists will not load.');
@@ -743,7 +770,8 @@ async function cargarArtistasComunidad() {
         escalaAparicion: 0.75,
         alpha: 120,
         esVacio: false,
-        glow: false
+        glow: false,
+        infoSupabase: a  // Se guarda el registro completo original para construir la modal dinámicamente si no es featured
       });
     });
   } catch (e) {
