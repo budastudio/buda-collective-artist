@@ -319,7 +319,7 @@ function initFloatingSystem() {
     glow: true
   });
 
-  // Cantidad reducida al 50% (Exactamente 7 vacíos para dejar aire visual)
+  // Cantidad estrictamente reducida al 50% (Exactamente 7 vacíos para dar balance visual)
   for (let i = 0; i < 7; i++) {
     let tamaño = random(60, 80); 
     let rarezas = ["common", "rare", "epic", "legendary"];
@@ -448,7 +448,7 @@ function draw() {
 
     if (!f.esVacio && (d < f.radius * f.escalaAparicion || f.isDragging) && f.nombre !== "" && !modalAbierto) {
       cuadroInteractuado = f;
-      if (f.link || f.artistaData) alguienTieneFocus = true;
+      if (f.link) alguienTieneFocus = true;
     }
   }
 
@@ -459,7 +459,7 @@ function draw() {
   }
 
   if (cuadroInteractuado && !modalAbierto) {
-    let textoCartel = (cuadroInteractuado.link === "MODAL_BUDA" || cuadroInteractuado.artistaData) ? `${cuadroInteractuado.nombre} ✨` : `${cuadroInteractuado.nombre} 🔗`;
+    let textoCartel = cuadroInteractuado.link === "MODAL_BUDA" ? `${cuadroInteractuado.nombre} ✨` : `${cuadroInteractuado.nombre} 🔗`;
     dibujarCartelNombre(textoCartel, mouseX, mouseY);
   }
 }
@@ -611,17 +611,13 @@ function mouseClicked() {
       let centroY = f.y + f.radius;
       let d = dist(mouseX, mouseY, centroX, centroY);
 
-      if (!f.esVacio && d < f.radius * f.escalaAparicion) {
+      if (!f.esVacio && d < f.radius * f.escalaAparicion && f.link && f.link !== "") {
         if (f.link === "MODAL_BUDA") {
           abrirModalArtista(datosLeonardo);
-          break;
-        } else if (f.artistaData) {
-          abrirModalArtista(f.artistaData);
-          break;
-        } else if (f.link && f.link !== "") {
+        } else {
           window.open(f.link, '_blank'); 
-          break; 
         }
+        break; 
       }
     }
   }
@@ -656,22 +652,15 @@ function windowResized() {
 function abrirModalArtista(data) {
   modalAbierto = true;
 
-  document.getElementById('modalHero').src = data.hero || data.hero_url || '';
-  document.getElementById('modalAvatar').src = data.avatar || data.avatar_url || '';
-  document.getElementById('modalName').innerText = data.name || '';
-  document.getElementById('modalSubtitle').innerText = data.subtitle || '';
-  document.getElementById('modalBio').innerText = data.bio || '';
+  document.getElementById('modalHero').src = data.hero;
+  document.getElementById('modalAvatar').src = data.avatar;
+  document.getElementById('modalName').innerText = data.name;
+  document.getElementById('modalSubtitle').innerText = data.subtitle;
+  document.getElementById('modalBio').innerText = data.bio;
 
   let socialBtn = document.getElementById('modalSocialLink');
-  let xUrl = '';
   if (data.social && data.social.x && data.social.x.click) {
-      xUrl = data.social.x.click;
-  } else if (data.x_link) {
-      xUrl = data.x_link;
-  }
-
-  if (xUrl) {
-      socialBtn.href = xUrl;
+      socialBtn.href = data.social.x.click;
       socialBtn.style.display = 'inline-flex';
   } else {
       socialBtn.style.display = 'none';
@@ -680,18 +669,16 @@ function abrirModalArtista(data) {
   let containerObras = document.getElementById('modalWorks');
   containerObras.innerHTML = '';
 
-  if (data.works && Array.isArray(data.works)) {
-    data.works.forEach(obra => {
-      let itemHtml = `
-        <div class="work-item">
-          <img src="${obra.image || obra.image_url || ''}" alt="${obra.title || ''}">
-          <p class="work-title">${obra.title || ''}</p>
-          <p class="work-year">${obra.year || ''}</p>
-        </div>
-      `;
-      containerObras.innerHTML += itemHtml;
-    });
-  }
+  data.works.forEach(obra => {
+    let itemHtml = `
+      <div class="work-item">
+        <img src="${obra.image}" alt="${obra.title}">
+        <p class="work-title">${obra.title}</p>
+        <p class="work-year">${obra.year}</p>
+      </div>
+    `;
+    containerObras.innerHTML += itemHtml;
+  });
 
   document.getElementById('artistModal').classList.add('active');
 }
@@ -713,6 +700,9 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+// =========================================================================
+// TU LÓGICA ORIGINAL DE SUPABASE RESTAURADA AL 100% (SIN MODIFICACIONES)
+// =========================================================================
 async function cargarArtistasComunidad() {
   if (typeof budaSupabase === 'undefined') {
     console.warn('[Buda] Supabase is not configured (check config.js). Community artists will not load.');
@@ -721,72 +711,40 @@ async function cargarArtistasComunidad() {
 
   try {
     const artistas = await budaSupabase.fetchApprovedArtists();
+    const ordenados = [...artistas].sort((a, b) => (a.featured === b.featured) ? 0 : (a.featured ? 1 : -1));
 
-    artistas.forEach(a => {
-      if (a.featured) {
-        let tamaño = random(120, 150); 
-        let imgArtista = a.avatar_url
-          ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
-          : null;
+    ordenados.forEach(a => {
+      let tamaño = a.featured ? random(120, 150) : random(65, 85); 
+      let imgArtista = a.avatar_url
+        ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
+        : null;
 
-        let destino = `featured.html?id=${encodeURIComponent(a.id)}`;
+      let destino = a.featured ? `featured.html?id=${encodeURIComponent(a.id)}` : (a.x_link || '');
 
-        frames.push({
-          pfp: imgArtista,
-          rarity: 'epic',
-          nombre: a.name,
-          link: destino,
-          isFixed: false,
-          x: random(0, width - tamaño),
-          y: random(0, height - tamaño),
-          targetY: random(height * 0.12, height * 0.76),
-          size: tamaño,
-          baseSize: tamaño,
-          vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
-          vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
-          t: random(1000),
-          radius: tamaño / 2,
-          isDragging: false,
-          entrando: true,
-          entradaInicio: millis() + random(0, 500),
-          duracionEntrada: DOSIER_ENTRADA_MS,
-          escalaAparicion: 0.75,
-          alpha: 120,
-          esVacio: false,
-          glow: false
-        });
-      } else {
-        let tamaño = random(65, 85); 
-        let imgArtista = a.avatar_url
-          ? loadImage(a.avatar_url, () => {}, () => console.warn('[Buda] Avatar failed to load:', a.name))
-          : null;
-
-        frames.push({
-          pfp: imgArtista,
-          rarity: 'common',
-          nombre: a.name,
-          link: '',
-          artistaData: a,
-          isFixed: false,
-          x: random(0, width - tamaño),
-          y: random(0, height - tamaño),
-          targetY: random(height * 0.12, height * 0.76),
-          size: tamaño,
-          baseSize: tamaño,
-          vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
-          vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
-          t: random(1000),
-          radius: tamaño / 2,
-          isDragging: false,
-          entrando: true,
-          entradaInicio: millis() + random(0, 500),
-          duracionEntrada: DOSIER_ENTRADA_MS,
-          escalaAparicion: 0.75,
-          alpha: 120,
-          esVacio: false,
-          glow: false
-        });
-      }
+      frames.push({
+        pfp: imgArtista,
+        rarity: a.featured ? 'epic' : 'common',
+        nombre: a.name,
+        link: destino,
+        isFixed: false,
+        x: random(0, width - tamaño),
+        y: random(0, height - tamaño),
+        targetY: random(height * 0.12, height * 0.76),
+        size: tamaño,
+        baseSize: tamaño,
+        vx: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO), 
+        vy: random(-VELOCIDAD_MUSEO, VELOCIDAD_MUSEO),
+        t: random(1000),
+        radius: tamaño / 2,
+        isDragging: false,
+        entrando: true,
+        entradaInicio: millis() + random(0, 500),
+        duracionEntrada: DOSIER_ENTRADA_MS,
+        escalaAparicion: 0.75,
+        alpha: 120,
+        esVacio: false,
+        glow: false
+      });
     });
   } catch (e) {
     console.error('[Buda] Error loading community artists:', e);
