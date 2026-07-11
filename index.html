@@ -319,8 +319,8 @@ function initFloatingSystem() {
     glow: true
   });
 
-  // Cantidad reducida al 50% (Exactamente 7 vacíos en lugar de 15)
-  for (let i = 0; i < 7; i++) {
+  // Cantidad reducida al 50% (Exactamente 15 vacíos)
+  for (let i = 0; i < 15; i++) {
     let tamaño = random(60, 80); // Reducido al 50% (Max 80px para vacíos)
     let rarezas = ["common", "rare", "epic", "legendary"];
     let r = random() > 0.85 ? random(rarezas.slice(1)) : "common"; 
@@ -462,7 +462,7 @@ function draw() {
   }
 
   if (cuadroInteractuado && !modalAbierto) {
-    let textoCartel = (cuadroInteractuado.link === "MODAL_BUDA" || (cuadroInteractuado.infoSupabase && !cuadroInteractuado.infoSupabase.featured)) ? `${cuadroInteractuado.nombre} ✨` : `${cuadroInteractuado.nombre} 🔗`;
+    let textoCartel = cuadroInteractuado.link === "MODAL_BUDA" ? `${cuadroInteractuado.nombre} ✨` : `${cuadroInteractuado.nombre} 🔗`;
     dibujarCartelNombre(textoCartel, mouseX, mouseY);
   }
 }
@@ -622,28 +622,6 @@ function mouseClicked() {
       if (!f.esVacio && d < f.radius * f.escalaAparicion && f.link && f.link !== "") {
         if (f.link === "MODAL_BUDA") {
           abrirModalArtista(datosLeonardo);
-        } else if (f.infoSupabase && !f.infoSupabase.featured) {
-          // Adaptar datos del registro de Supabase a la estructura de la plantilla modal de Leonardo
-          const raw = f.infoSupabase;
-          const datosModalAdaptados = {
-            id: raw.id,
-            name: raw.name || raw.nombre || "Artist",
-            subtitle: raw.subtitle || "Approved Artist · Buda Collective",
-            avatar: raw.avatar_url || "logo-artista.png",
-            hero: raw.hero_url || "obra-leonardo-01.jpg",
-            bio: raw.bio || "Buda Collective verified digital artist.",
-            social: {
-              x: {
-                link: raw.x_link || "#",
-                click: raw.x_link || "#"
-              }
-            },
-            works: raw.works || [
-              { "title": "Buda Collection Artwork #1", "image": raw.hero_url || "obra-leonardo-01.jpg", "year": "2026" },
-              { "title": "Buda Collection Artwork #2", "image": raw.avatar_url || "logo-artista.png", "year": "2026" }
-            ]
-          };
-          abrirModalArtista(datosModalAdaptados);
         } else {
           window.open(f.link, '_blank'); 
         }
@@ -689,7 +667,7 @@ function abrirModalArtista(data) {
   document.getElementById('modalBio').innerText = data.bio;
 
   let socialBtn = document.getElementById('modalSocialLink');
-  if (data.social && data.social.x && data.social.x.click && data.social.x.click !== '#') {
+  if (data.social && data.social.x && data.social.x.click) {
       socialBtn.href = data.social.x.click;
       socialBtn.style.display = 'inline-flex';
   } else {
@@ -770,8 +748,7 @@ async function cargarArtistasComunidad() {
         escalaAparicion: 0.75,
         alpha: 120,
         esVacio: false,
-        glow: false,
-        infoSupabase: a  // Se guarda el registro completo original para construir la modal dinámicamente si no es featured
+        glow: false
       });
     });
   } catch (e) {
