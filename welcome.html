@@ -137,6 +137,7 @@ h1{
     color:#fff;
     text-decoration:none;
     transition:.35s;
+    cursor:pointer; /* Asegura que se muestre el cursor de mano al pasar por encima */
 }
 
 .button:hover{
@@ -314,6 +315,81 @@ h1{
     </div>
 
 </section>
+
+<script>
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+let particles = [];
+const particleCount = 60; // Cantidad para mantener sutileza y alto rendimiento
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+// Ajuste dinámico de tamaño de pantalla
+window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+});
+
+class Particle {
+    constructor() {
+        this.reset();
+        this.y = Math.random() * height; // Distribución inicial en pantalla
+    }
+
+    reset() {
+        this.x = Math.random() * width;
+        this.y = height + 10; // Comienza justo debajo del límite visible
+        this.size = Math.random() * 1.5 + 0.5; // Polvo dorado diminuto y elegante
+        this.speedY = -(Math.random() * 0.4 + 0.1); // Flujo lento hacia arriba
+        this.speedX = (Math.random() - 0.5) * 0.2; // Ligera oscilación lateral
+        this.alpha = Math.random() * 0.5 + 0.1; // Opacidad suave y variable
+    }
+
+    update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+
+        // Resetear si sale de los límites de la pantalla
+        if (this.y < -10 || this.x < -10 || this.x > width + 10) {
+            this.reset();
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        
+        // Color dorado corporativo de Buda Collective Art
+        ctx.fillStyle = '#d4af37'; 
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#d4af37';
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+// Inicializar partículas
+for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+}
+
+// Bucle de animación (Smooth 60fps)
+function animate() {
+    ctx.clearRect(0, 0, width, height);
+    
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
 
 </body>
 </html>
