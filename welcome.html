@@ -9,461 +9,256 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-
-background:#090909;
-font-family:Inter,sans-serif;
-color:white;
-overflow:hidden;
-
+    background:#090909;
+    font-family:Inter,sans-serif;
+    color:white;
+    overflow-x:hidden;
 }
 
 canvas{
-
-position:fixed;
-inset:0;
-z-index:0;
-
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events: none;
 }
 
 .hero{
-
-min-height:100vh;
-
-padding:40px 20px 80px;
-
-justify-content:flex-start;
-
-overflow-y:auto;
-
+    position: relative;
+    z-index: 1;
+    min-height:100vh;
+    padding:40px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra todo el contenido horizontalmente */
+    text-align: center;
+    overflow-y:auto;
 }
 
 .logo{
-
-width:150px;
-height:150px;
-
-border-radius:50%;
-
-margin-bottom:25px;
-
-box-shadow:
-0 0 50px rgba(212,175,55,.18);
-
-transition:.5s;
-
+    display: block;
+    margin: 0 auto 25px; /* Centra la imagen del logo */
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    box-shadow: 0 0 50px rgba(212,175,55,.18);
+    transition:.5s;
 }
 
 .logo:hover{
-
-transform:scale(1.05) rotate(2deg);
-
+    transform:scale(1.05) rotate(2deg);
 }
 
 h1{
-
-font-size:38px;
-font-weight:200;
-letter-spacing:6px;
-
+    font-size:38px;
+    font-weight:200;
+    letter-spacing:6px;
+    margin-bottom: 12px;
 }
 
 .subtitle{
-
-margin-top:12px;
-
-font-size:14px;
-
-letter-spacing:3px;
-
-color:#d4af37;
-
-text-transform:uppercase;
-
+    font-size:14px;
+    letter-spacing:3px;
+    color:#d4af37;
+    text-transform:uppercase;
+    margin-bottom: 30px;
 }
 
 .choose{
-
-margin-top:60px;
-margin-bottom:35px;
-
-font-size:18px;
-opacity:.7;
-
+    margin-top:60px;
+    margin-bottom:35px;
+    font-size:18px;
+    opacity:.7;
+    text-align: center;
 }
 
 .cards{
-
-display:flex;
-gap:35px;
-
-max-width:950px;
-width:100%;
-
-justify-content:center;
-
-flex-wrap:wrap;
-
+    display:flex;
+    gap:35px;
+    max-width:950px;
+    width:100%;
+    justify-content:center;
+    flex-wrap:wrap;
 }
 
 .card{
-
-position:relative;
-
-width:400px;
-height:260px;
-
-border:1px solid rgba(255,255,255,.08);
-
-border-radius:24px;
-
-overflow:hidden;
-
-background:
-linear-gradient(rgba(0,0,0,.55),
-rgba(0,0,0,.88)),
-var(--bg);
-
-background-size:cover;
-background-position:center;
-background-color:#111;
-
-transition:.45s;
-
-cursor:pointer;
-
-display:flex;
-align-items:flex-end;
-
+    position:relative;
+    width:400px;
+    height:260px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:24px;
+    overflow:hidden;
+    background: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.88)), var(--bg);
+    background-size:cover;
+    background-position:center;
+    background-color:#111;
+    transition:.45s;
+    cursor:pointer;
+    display:flex;
+    align-items:flex-end;
+    text-align: left; /* Mantiene el texto de las cartas alineado a la izquierda */
 }
 
 .card:hover{
-
-transform:translateY(-8px);
-
-border-color:#d4af37;
-
-box-shadow:
-
-0 0 35px rgba(212,175,55,.18);
-
+    transform:translateY(-8px);
+    border-color:#d4af37;
+    box-shadow: 0 0 35px rgba(212,175,55,.18);
 }
 
 .content{
-
-padding:30px;
-
+    padding:30px;
 }
 
 .card h2{
-
-font-weight:300;
-
-font-size:28px;
-
-line-height:1.1;
-
-margin-bottom:12px;
-
+    font-weight:300;
+    font-size:28px;
+    line-height:1.1;
+    margin-bottom:12px;
 }
 
 .card p{
-
-opacity:.75;
-
-line-height:1.6;
-
-font-size:14px;
-
-margin-bottom:20px;
-
+    opacity:.75;
+    line-height:1.6;
+    font-size:14px;
+    margin-bottom:20px;
 }
 
 .button{
-
-display:inline-flex;
-
-padding:12px 24px;
-
-border:1px solid #d4af37;
-
-border-radius:999px;
-
-color:#fff;
-
-text-decoration:none;
-
-transition:.35s;
-
+    display:inline-flex;
+    padding:12px 24px;
+    border:1px solid #d4af37;
+    border-radius:999px;
+    color:#fff;
+    text-decoration:none;
+    transition:.35s;
 }
 
 .button:hover{
-
-background:#d4af37;
-
-color:#000;
-
+    background:#d4af37;
+    color:#000;
 }
+
+/* ===== Manifesto ===== */
 .manifesto{
     width:100%;
     max-width:720px;
     margin:35px auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
     text-align:center;
 }
 
-.manifesto-btn{
-    background:none;
-    border:none;
-    color:#d4af37;
+.manifesto details{
+    width:100%;
+    text-align:center;
+}
+
+.manifesto summary{
+    list-style:none;
+    display:inline-block;
+    cursor:pointer;
     font-size:14px;
     letter-spacing:4px;
     text-transform:uppercase;
-    cursor:pointer;
-    font-family:inherit;
+    color:#d4af37;
+    padding:12px 24px;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 50px;
+    transition:.3s;
+}
+
+.manifesto summary::-webkit-details-marker{
+    display:none;
+}
+
+.manifesto summary:hover{
+    background: rgba(212,175,55, 0.1);
+    box-shadow: 0 0 15px rgba(212,175,55, 0.2);
 }
 
 .manifesto-text{
-    display:none;
-    margin-top:25px;
-}
-
-.manifesto-text.open{
-    display:block;
-    animation:fade .4s ease;
+    max-width:620px;
+    margin:25px auto 0;
+    text-align:center;
 }
 
 .manifesto-text p{
     margin:14px auto;
-    max-width:620px;
-    text-align:center;
     line-height:1.8;
+    font-size:15px;
+    font-weight:300;
     color:#d0d0d0;
-}
-@keyframes fade{
-
-from{
-
-opacity:0;
-transform:translateY(-10px);
-
-}
-
-to{
-
-opacity:1;
-transform:translateY(0);
-
-}
-
-}
-/* ===== Manifesto ===== */
-
-.manifesto{
-
-width:100%;
-max-width:720px;
-
-margin:35px auto;
-
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-
-text-align:center;
-
-}
-
-.manifesto details{
-
-width:100%;
-
-text-align:center;
-
-}
-
-.manifesto summary{
-
-list-style:none;
-
-display:block;
-
-width:100%;
-
-cursor:pointer;
-
-text-align:center;
-
-font-size:14px;
-
-letter-spacing:4px;
-
-text-transform:uppercase;
-
-color:#d4af37;
-
-padding:12px 0;
-
-transition:.3s;
-
-}
-
-.manifesto summary::-webkit-details-marker{
-
-display:none;
-
-}
-
-.manifesto summary:hover{
-
-opacity:.75;
-
-}
-
-.manifesto-text{
-
-max-width:620px;
-
-margin:25px auto 0;
-
-text-align:center;
-
-}
-
-.manifesto-text p{
-
-margin:14px auto;
-
-line-height:1.8;
-
-font-size:15px;
-
-font-weight:300;
-
-color:#d0d0d0;
-
-text-align:center;
-
+    text-align:center;
 }
 
 .manifesto-text strong{
-
-color:#fff;
-
+    color:#fff;
 }
 
 .manifesto-text em{
-
-font-style:normal;
-
-color:#d4af37;
-
+    font-style:normal;
+    color:#d4af37;
 }
 
 @keyframes fade{
-
-from{
-
-opacity:0;
-transform:translateY(-10px);
-
-}
-
-to{
-
-opacity:1;
-transform:translateY(0);
-
-}
-
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 .manifesto[open] .manifesto-text{
-
-animation:fade .45s ease;
-
+    animation:fade .45s ease;
 }
 
-body{
+/* Responsive */
+@media (max-width: 768px) {
+    .logo {
+        width:120px;
+        height:120px;
+    }
 
-overflow:auto;
+    h1{
+        font-size:30px;
+        letter-spacing:3px;
+    }
 
-}
+    .subtitle{
+        font-size:12px;
+        letter-spacing:2px;
+    }
 
-.hero{
+    .choose{
+        margin-top:35px;
+        margin-bottom:25px;
+    }
 
-padding:30px 20px 60px;
+    .cards{
+        flex-direction:column;
+        align-items:center;
+        gap:20px;
+        max-width:100%;
+    }
 
-}
-
-.logo{
-
-width:120px;
-height:120px;
-
-margin-bottom:20px;
-
-}
-
-h1{
-
-font-size:30px;
-
-letter-spacing:3px;
-
-text-align:center;
-
-}
-
-.subtitle{
-
-font-size:12px;
-
-letter-spacing:2px;
-
-text-align:center;
-
-}
-
-.choose{
-
-margin-top:35px;
-margin-bottom:25px;
-
-}
-
-.cards{
-
-flex-direction:column;
-
-align-items:center;
-
-gap:20px;
-
-max-width:100%;
-
-}
-
-.card{
-
-width:100%;
-
-max-width:360px;
-
-height:210px;
-
-}
-
+    .card{
+        width:100%;
+        max-width:360px;
+        height:210px;
+    }
 }
 </style>
-
 </head>
 
 <body>
@@ -472,171 +267,53 @@ height:210px;
 
 <section class="hero">
 
-<img src="logogold26_trans.png" class="logo">
+    <img src="logogold26_trans.png" class="logo" alt="Buda Collective Logo">
 
-<h1>BUDA COLLECTIVE ART</h1>
+    <h1>BUDA COLLECTIVE ART</h1>
 
-<div class="subtitle">
-A Living Digital Art Experience
-</div>
+    <div class="subtitle">
+        A Living Digital Art Experience
+    </div>
 
-<div class="manifesto">
+    <div class="manifesto">
+        <details>
+            <summary>✦ BEFORE YOU ENTER ✦</summary>
+            <div class="manifesto-text">
+                <p><em>Every exhibition tells a story.</em></p>
+                <p>Some preserve the past.</p>
+                <p>Others imagine the future.</p>
+                <p><strong>Buda Collective</strong> was created to do both.</p>
+                <p>A living digital exhibition where artists, collectors and ideas evolve together.</p>
+                <p>Every approved artist becomes part of a growing ecosystem built on collaboration, visibility and digital culture.</p>
+                <p>This is not just a gallery.</p>
+                <p>It is a living exhibition that evolves with every new artist.</p>
+            </div>
+        </details>
+    </div>
 
-<details>
+    <div class="choose">
+        Choose your journey
+    </div>
 
-<summary>✦ BEFORE YOU ENTER ✦</summary>
+    <div class="cards">
+        <div class="card" style="--bg:url('gallery.jpg')" onclick="location.href='index.html'">
+            <div class="content">
+                <h2>ENTER THE<br>LIVING GALLERY</h2>
+                <p>Experience the evolving exhibition of digital artists.</p>
+                <a class="button">ENTER →</a>
+            </div>
+        </div>
 
-<div class="manifesto-text">
-
-<p><em>Every exhibition tells a story.</em></p>
-
-<p>Some preserve the past.</p>
-
-<p>Others imagine the future.</p>
-
-<p><strong>Buda Collective</strong> was created to do both.</p>
-
-<p>
-A living digital exhibition where artists,
-collectors and ideas evolve together.
-</p>
-
-<p>
-Every approved artist becomes part of a growing ecosystem
-built on collaboration, visibility and digital culture.
-</p>
-
-<p>
-This is not just a gallery.
-</p>
-
-<p>
-It is a living exhibition that evolves with every new artist.
-</p>
-
-</div>
-
-</details>
-
-</div>
-
-<div class="choose">
-
-Choose your journey
-
-</div>
-
-<div class="cards">
-
-<div class="card"
-
-style="--bg:url('gallery.jpg')"
-
-onclick="location.href='index.html'">
-
-<div class="content">
-
-<h2>
-
-ENTER THE<br>
-LIVING GALLERY
-
-</h2>
-
-<p>
-
-Experience the evolving exhibition of digital artists.
-
-</p>
-
-<a class="button">
-
-ENTER →
-
-</a>
-
-</div>
-
-</div>
-
-<div class="card"
-
-style="--bg:url('community.jpg')"
-
-onclick="location.href='join.html'">
-
-<div class="content">
-
-<h2>
-
-JOIN THE<br>
-COLLECTIVE
-
-</h2>
-
-<p>
-
-Become part of our curated community of artists.
-
-</p>
-
-<a class="button">
-
-APPLY →
-
-</a>
-
-</div>
-
-</div>
-
-</div>
+        <div class="card" style="--bg:url('community.jpg')" onclick="location.href='join.html'">
+            <div class="content">
+                <h2>JOIN THE<br>COLLECTIVE</h2>
+                <p>Become part of our curated community of artists.</p>
+                <a class="button">APPLY →</a>
+            </div>
+        </div>
+    </div>
 
 </section>
-
-<script>
-
-const manifestoBtn=document.getElementById("manifestoBtn");
-const manifestoText=document.getElementById("manifestoText");
-
-manifestoBtn.onclick=function(){
-
-    manifestoText.classList.toggle("open");
-
-};
-function draw(){
-
-ctx.clearRect(0,0,c.width,c.height);
-
-for(let s of stars){
-
-ctx.beginPath();
-
-ctx.fillStyle="rgba(212,175,55,.65)";
-
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-
-ctx.fill();
-
-s.y+=s.v;
-
-if(s.y>c.height){
-
-s.y=0;
-
-s.x=Math.random()*c.width;
-
-}
-
-}
-
-requestAnimationFrame(draw);
-
-}
-
-draw();
-
-</script>
 
 </body>
 </html>
