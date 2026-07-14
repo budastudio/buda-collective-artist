@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -33,7 +33,7 @@ canvas{
     position: relative;
     z-index: 1;
     min-height:100vh;
-    padding:40px 20px 80px;
+    padding:30px 20px 40px; /* Reducido el padding inferior para optimizar espacio vertical */
     display: flex;
     flex-direction: column;
     align-items: center; /* Centra todo el contenido horizontalmente */
@@ -43,9 +43,9 @@ canvas{
 
 .logo{
     display: block;
-    margin: 0 auto 25px; /* Centra la imagen del logo */
-    width:150px;
-    height:150px;
+    margin: 0 auto 20px; /* Reducido margen inferior ligeramente */
+    width:140px; /* Ligeramente más compacto */
+    height:140px;
     border-radius:50%;
     box-shadow: 0 0 50px rgba(212,175,55,.18);
     transition:.5s;
@@ -56,31 +56,31 @@ canvas{
 }
 
 h1{
-    font-size:38px;
+    font-size:36px; /* Ajuste sutil de tamaño */
     font-weight:200;
     letter-spacing:6px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .subtitle{
-    font-size:14px;
+    font-size:13px;
     letter-spacing:3px;
     color:#d4af37;
     text-transform:uppercase;
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* Reducido de 30px */
 }
 
 .choose{
-    margin-top:60px;
-    margin-bottom:35px;
-    font-size:18px;
+    margin-top:35px; /* Reducido de 60px para elevarlo significativamente */
+    margin-bottom:25px; /* Reducido de 35px */
+    font-size:17px;
     opacity:.7;
     text-align: center;
 }
 
 .cards{
     display:flex;
-    gap:35px;
+    gap:30px; /* Reducido ligeramente de 35px */
     max-width:950px;
     width:100%;
     justify-content:center;
@@ -89,8 +89,8 @@ h1{
 
 .card{
     position:relative;
-    width:400px;
-    height:260px;
+    width:390px; /* Ligeramente más compacto para mejorar el espacio */
+    height:245px; /* Reducido de 260px */
     border:1px solid rgba(255,255,255,.08);
     border-radius:24px;
     overflow:hidden;
@@ -112,26 +112,26 @@ h1{
 }
 
 .content{
-    padding:30px;
+    padding:25px; /* Reducido sutilmente de 30px para subir los botones dentro de la tarjeta */
 }
 
 .card h2{
     font-weight:300;
-    font-size:28px;
+    font-size:26px; /* Reducido de 28px */
     line-height:1.1;
-    margin-bottom:12px;
+    margin-bottom:10px;
 }
 
 .card p{
     opacity:.75;
-    line-height:1.6;
-    font-size:14px;
-    margin-bottom:20px;
+    line-height:1.5;
+    font-size:13px;
+    margin-bottom:15px; /* Reducido de 20px para levantar el botón */
 }
 
 .button{
     display:inline-flex;
-    padding:12px 24px;
+    padding:10px 22px; /* Ligeramente más compacto */
     border:1px solid #d4af37;
     border-radius:999px;
     color:#fff;
@@ -149,7 +149,7 @@ h1{
 .manifesto{
     width:100%;
     max-width:720px;
-    margin:35px auto;
+    margin:20px auto; /* Reducido de 35px para ahorrar espacio vertical */
     display:flex;
     justify-content:center;
     align-items:center;
@@ -166,11 +166,11 @@ h1{
     list-style:none;
     display:inline-block;
     cursor:pointer;
-    font-size:14px;
+    font-size:13px;
     letter-spacing:4px;
     text-transform:uppercase;
     color:#d4af37;
-    padding:12px 24px;
+    padding:10px 20px;
     border: 1px solid rgba(212,175,55,0.3);
     border-radius: 50px;
     transition:.3s;
@@ -187,14 +187,14 @@ h1{
 
 .manifesto-text{
     max-width:620px;
-    margin:25px auto 0;
+    margin:20px auto 0;
     text-align:center;
 }
 
 .manifesto-text p{
-    margin:14px auto;
-    line-height:1.8;
-    font-size:15px;
+    margin:10px auto; /* Reducido de 14px */
+    line-height:1.7;
+    font-size:14px;
     font-weight:300;
     color:#d0d0d0;
     text-align:center;
@@ -227,23 +227,23 @@ h1{
 /* Responsive */
 @media (max-width: 768px) {
     .logo {
-        width:120px;
-        height:120px;
+        width:110px;
+        height:110px;
     }
 
     h1{
-        font-size:30px;
+        font-size:28px;
         letter-spacing:3px;
     }
 
     .subtitle{
-        font-size:12px;
+        font-size:11px;
         letter-spacing:2px;
     }
 
     .choose{
-        margin-top:35px;
-        margin-bottom:25px;
+        margin-top:25px;
+        margin-bottom:20px;
     }
 
     .cards{
@@ -255,8 +255,8 @@ h1{
 
     .card{
         width:100%;
-        max-width:360px;
-        height:210px;
+        max-width:340px;
+        height:200px;
     }
 }
 </style>
