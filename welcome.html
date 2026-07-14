@@ -211,95 +211,41 @@ background:#d4af37;
 color:#000;
 
 }
-/* ===== Manifesto ===== */
-
 .manifesto{
-
-max-width:700px;
-
-margin-top:35px;
-margin-bottom:35px;
-
-text-align:center;
-
+    width:100%;
+    max-width:720px;
+    margin:35px auto;
+    text-align:center;
 }
 
-.manifesto details{
-
-display:inline-block;
-
-}
-
-.manifesto summary{
-
-list-style:none;
-
-cursor:pointer;
-
-color:#d4af37;
-
-font-size:14px;
-
-letter-spacing:4px;
-
-text-transform:uppercase;
-
-user-select:none;
-
-transition:.3s;
-
-}
-
-.manifesto summary::-webkit-details-marker{
-
-display:none;
-
-}
-
-.manifesto summary:hover{
-
-opacity:.8;
-
+.manifesto-btn{
+    background:none;
+    border:none;
+    color:#d4af37;
+    font-size:14px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    cursor:pointer;
+    font-family:inherit;
 }
 
 .manifesto-text{
+    display:none;
+    margin-top:25px;
+}
 
-margin-top:25px;
-
-animation:fade .5s ease;
-
+.manifesto-text.open{
+    display:block;
+    animation:fade .4s ease;
 }
 
 .manifesto-text p{
-
-margin:14px auto;
-
-max-width:620px;
-
-font-size:15px;
-
-line-height:1.8;
-
-color:#d0d0d0;
-
-font-weight:300;
-
+    margin:14px auto;
+    max-width:620px;
+    text-align:center;
+    line-height:1.8;
+    color:#d0d0d0;
 }
-
-.manifesto-text strong{
-
-color:#fff;
-
-}
-
-.manifesto-text em{
-
-color:#d4af37;
-
-font-style:normal;
-
-}
-
 @keyframes fade{
 
 from{
@@ -650,40 +596,14 @@ APPLY →
 
 <script>
 
-const c=document.getElementById("bg");
+const manifestoBtn=document.getElementById("manifestoBtn");
+const manifestoText=document.getElementById("manifestoText");
 
-const ctx=c.getContext("2d");
+manifestoBtn.onclick=function(){
 
-function resize(){
+    manifestoText.classList.toggle("open");
 
-c.width=innerWidth;
-
-c.height=innerHeight;
-
-}
-
-resize();
-
-window.onresize=resize;
-
-const stars=[];
-
-for(let i=0;i<120;i++){
-
-stars.push({
-
-x:Math.random()*c.width,
-
-y:Math.random()*c.height,
-
-r:Math.random()*2,
-
-v:0.2+Math.random()*0.4
-
-});
-
-}
-
+};
 function draw(){
 
 ctx.clearRect(0,0,c.width,c.height);
