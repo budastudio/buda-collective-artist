@@ -215,7 +215,112 @@ background:#d4af37;
 color:#000;
 
 }
+/* ===== Manifesto ===== */
 
+.manifesto{
+
+max-width:700px;
+
+margin-top:35px;
+margin-bottom:35px;
+
+text-align:center;
+
+}
+
+.manifesto details{
+
+display:inline-block;
+
+}
+
+.manifesto summary{
+
+list-style:none;
+
+cursor:pointer;
+
+color:#d4af37;
+
+font-size:14px;
+
+letter-spacing:4px;
+
+text-transform:uppercase;
+
+user-select:none;
+
+transition:.3s;
+
+}
+
+.manifesto summary::-webkit-details-marker{
+
+display:none;
+
+}
+
+.manifesto summary:hover{
+
+opacity:.8;
+
+}
+
+.manifesto-text{
+
+margin-top:25px;
+
+animation:fade .5s ease;
+
+}
+
+.manifesto-text p{
+
+margin:14px auto;
+
+max-width:620px;
+
+font-size:15px;
+
+line-height:1.8;
+
+color:#d0d0d0;
+
+font-weight:300;
+
+}
+
+.manifesto-text strong{
+
+color:#fff;
+
+}
+
+.manifesto-text em{
+
+color:#d4af37;
+
+font-style:normal;
+
+}
+
+@keyframes fade{
+
+from{
+
+opacity:0;
+transform:translateY(-10px);
+
+}
+
+to{
+
+opacity:1;
+transform:translateY(0);
+
+}
+
+}
 @media(max-width:900px){
 
 h1{
@@ -258,6 +363,50 @@ max-width:500px;
 
 <div class="subtitle">
 A Living Digital Art Experience
+</div>
+
+<div class="manifesto">
+
+<details>
+
+<summary>
+
+BEFORE YOU ENTER ▼
+
+</summary>
+
+<div class="manifesto-text">
+
+<p><em>Every exhibition tells a story.</em></p>
+
+<p>Some preserve the past.</p>
+
+<p>Others imagine the future.</p>
+
+<p><strong>Buda Collective</strong> was created to do both.</p>
+
+<p>
+A living digital exhibition where artists,
+collectors and ideas evolve together.
+</p>
+
+<p>
+Every approved artist becomes part of a growing ecosystem
+built on collaboration, visibility and digital culture.
+</p>
+
+<p>
+This is not just a gallery.
+</p>
+
+<p>
+It is a living exhibition that evolves with every new artist.
+</p>
+
+</div>
+
+</details>
+
 </div>
 
 <div class="choose">
