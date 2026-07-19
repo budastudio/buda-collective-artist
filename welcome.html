@@ -13,53 +13,7 @@
     padding:0;
     box-sizing:border-box;
 }
-<script>
 
-const container=document.getElementById("manifestoText");
-
-const words=container.innerText
-.replace(/\n/g," ")
-.split(/\s+/);
-
-container.innerHTML=words
-.map(w=>`<span>${w}</span>`)
-.join(" ");
-
-const spans=[...container.querySelectorAll("span")];
-
-function reveal(){
-
-    const rect=container.getBoundingClientRect();
-
-    const start=window.innerHeight*0.8;
-
-    const end=window.innerHeight*0.2;
-
-    let progress=(start-rect.top)/(start-end);
-
-    progress=Math.max(0,Math.min(1,progress));
-
-    spans.forEach((span,i)=>{
-
-        const p=i/spans.length;
-
-        let value=(progress-p)*6;
-
-        value=Math.max(.20,Math.min(1,value));
-
-        span.style.opacity=value;
-
-    });
-
-}
-
-window.addEventListener("scroll",reveal,{passive:true});
-
-window.addEventListener("resize",reveal);
-
-reveal();
-
-</script>
 body{
     background:#090909;
     font-family:Inter,sans-serif;
@@ -190,31 +144,68 @@ h1{
     color:#000;
 }
 
+/* ===== Manifesto ===== */
 .manifesto{
     width:100%;
-    max-width:900px;
-    margin:60px auto;
+    max-width:720px;
+    margin:20px auto; /* Reducido de 35px para ahorrar espacio vertical */
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
     text-align:center;
 }
 
-.manifesto-title{
-    color:#d4af37;
+.manifesto details{
+    width:100%;
+    text-align:center;
+}
+
+.manifesto summary{
+    list-style:none;
+    display:inline-block;
+    cursor:pointer;
     font-size:13px;
-    letter-spacing:5px;
-    margin-bottom:45px;
-    font-weight:400;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:#d4af37;
+    padding:10px 20px;
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 50px;
+    transition:.3s;
 }
 
-.manifesto-scroll{
-    font-size:clamp(22px,2.4vw,42px);
+.manifesto summary::-webkit-details-marker{
+    display:none;
+}
+
+.manifesto summary:hover{
+    background: rgba(212,175,55, 0.1);
+    box-shadow: 0 0 15px rgba(212,175,55, 0.2);
+}
+
+.manifesto-text{
+    max-width:620px;
+    margin:20px auto 0;
+    text-align:center;
+}
+
+.manifesto-text p{
+    margin:10px auto; /* Reducido de 14px */
     line-height:1.7;
+    font-size:14px;
     font-weight:300;
-    color:white;
+    color:#d0d0d0;
+    text-align:center;
 }
 
-.manifesto-scroll span{
-    opacity:.20;
-    transition:opacity .15s linear;
+.manifesto-text strong{
+    color:#fff;
+}
+
+.manifesto-text em{
+    font-style:normal;
+    color:#d4af37;
 }
 
 @keyframes fade{
@@ -285,31 +276,21 @@ h1{
     </div>
 
     <div class="manifesto">
+        <details>
+            <summary>✦ BEFORE YOU ENTER ✦</summary>
+            <div class="manifesto-text">
+                <p><em>Every exhibition tells a story.</em></p>
+                <p>Some preserve the past.</p>
+                <p>Others imagine the future.</p>
+                <p><strong>Buda Collective</strong> was created to do both.</p>
+                <p>A living digital exhibition where artists, collectors and ideas evolve together.</p>
+                <p>Every approved artist becomes part of a growing ecosystem built on collaboration, visibility and digital culture.</p>
+                <p>This is not just a gallery.</p>
+                <p>It is a living exhibition that evolves with every new artist.</p>
+            </div>
+        </details>
+    </div>
 
-<h2 class="manifesto-title">✦ BEFORE YOU ENTER ✦</h2>
-
-<div id="manifestoText" class="manifesto-scroll">
-
-Every exhibition tells a story.
-
-Some preserve the past.
-
-Others imagine the future.
-
-Buda Collective was created to do both.
-
-A living digital exhibition where artists, collectors and ideas evolve together.
-
-Every approved artist becomes part of a growing ecosystem built on collaboration, visibility and digital culture.
-
-This is not just a gallery.
-
-It is a living exhibition that evolves with every new artist.
-
-</div>
-
-</div>
-    
     <div class="choose">
         Choose your journey
     </div>
