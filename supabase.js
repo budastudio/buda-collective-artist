@@ -185,13 +185,13 @@
     .from(ARTISTS_TABLE)
     .select('id, name, x_link, avatar_url, featured, created_at')
     .eq('status', 'approved')
-    .eq('featured', false)
     .order('created_at', { ascending: false });
 
 
   if (error) throw error;
 
   return data || [];
+
 }
 
 
