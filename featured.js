@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const artist =
       await budaSupabase.fetchApprovedArtistById(id);
+    console.log("DORTHE DATA:", artist);
 
 
 
