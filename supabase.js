@@ -155,16 +155,6 @@
   return data;
 
 }
-    const { data, error } = await client
-      .from(ARTISTS_TABLE)
-      .select('id, name, x_link, avatar_url, bio, works, featured, created_at')
-      .eq('status', 'approved')
-      .eq('id', id)
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
 
   window.budaSupabase = {
     client,
