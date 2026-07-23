@@ -167,6 +167,7 @@
         hero_image_url,
         statement,
         youtube_url,
+        work_1_image,
         work_1_title,
         work_1_link,
         work_2_image,
