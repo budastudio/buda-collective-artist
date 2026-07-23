@@ -1,296 +1,100 @@
 document.addEventListener('DOMContentLoaded', async () => {
-
-
   const loadingEl = document.getElementById('state-loading');
   const errorEl = document.getElementById('state-error');
   const profileEl = document.getElementById('artistProfile');
 
-
-  function showError(){
-
-    loadingEl.style.display='none';
-    profileEl.style.display='none';
-    errorEl.style.display='flex';
-
+  function showError() {
+    loadingEl.style.display = 'none';
+    profileEl.style.display = 'none';
+    errorEl.style.display = 'flex';
   }
-
-
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
-
-  if(!id){
-
+  if (!id) {
     showError();
     return;
-
   }
 
-
-
-  if(typeof budaSupabase === 'undefined'){
-
-    console.error('[Buda] Supabase missing');
+  if (typeof budaSupabase === 'undefined') {
+    console.error('[Buda] Supabase is not configured (check config.js).');
     showError();
     return;
-
   }
 
-
-
-  try{
-
-
-    const artist =
-      await budaSupabase.fetchApprovedArtistById(id);
-    console.log("DORTHE DATA:", artist);
-
-
-
-    if(!artist){
-
+  try {
+    const artist = await budaSupabase.fetchApprovedArtistById(id);
+    if (!artist) {
       showError();
       return;
-
     }
 
+    document.getElementById('pHero').src = artist.avatar_url || 'obra-background.jpg';
+    document.getElementById('pAvatar').src = artist.avatar_url || 'logo-artista.png';
+    document.getElementById('pName').textContent = artist.name;
+    document.getElementById('pSubtitle').textContent = artist.featured ? 'Featured Artist · Buda Collective' : 'Artist · Buda Collective';
+    document.getElementById('pBio').textContent = artist.bio || '';
+    document.getElementById('pBio').style.display = artist.bio ? 'block' : 'none';
 
-
-    /*
-    ==========================
-       PROFILE
-    ==========================
-    */
-
-
-    document.getElementById('pHero').src =
-      artist.hero_image_url ||
-      artist.avatar_url ||
-      'obra-background.jpg';
-
-
-
-    document.getElementById('pAvatar').src =
-      artist.avatar_url ||
-      'logo-artista.png';
-
-
-
-    document.getElementById('pName').textContent =
-      artist.name || '';
-
-
-
-    document.getElementById('pSubtitle').textContent =
-      artist.founder
-      ? `Founder #${artist.founder_number || ''} · Buda Collective`
-      : 'Artist · Buda Collective';
-
-
-
-    document.getElementById('pBio').textContent =
-      artist.bio || '';
-
-
-
-    document.getElementById('pBio').style.display =
-      artist.bio ? 'block' : 'none';
-
-
-
-    /*
-    ==========================
-       ARTIST STATEMENT
-    ==========================
-    */
-
-
-    const statementEl =
-      document.getElementById('artistStatement');
-
-
-    if(statementEl && artist.statement){
-
-      statementEl.textContent =
-        artist.statement;
-
-      statementEl.style.display='block';
-
+    const xLinkEl = document.getElementById('pXLink');
+    if (artist.x_link) {
+      xLinkEl.href = artist.x_link;
+      xLinkEl.style.display = 'inline-block';
+    } else {
+      xLinkEl.style.display = 'none';
     }
 
+    // Armamos la lista de obras leyendo las columnas de Supabase
+    let worksList = [];
 
-
-
-    /*
-    ==========================
-       X
-    ==========================
-    */
-
-
-    const xLink =
-      document.getElementById('pXLink');
-
-
-    if(artist.x_link){
-
-      xLink.href = artist.x_link;
-      xLink.style.display='inline-block';
-
-    }
-    else{
-
-      xLink.style.display='none';
-
-    }
-
-
-
-
-
-    /*
-    ==========================
-       FEATURED WORK
-    ==========================
-    */
-
-
-    const works = [];
-
-
-
-    if(artist.work_1_image){
-
-      works.push({
-
+    if (artist.work_1_image) {
+      worksList.push({
         image: artist.work_1_image,
-        link: artist.work_1_link,
-        title:'Featured Artwork'
-
+        title: artist.work_1_title || 'Obra 1',
+        link: artist.work_1_link || null
       });
-
     }
 
-
-
-    if(artist.work_2_image){
-
-      works.push({
-
+    if (artist.work_2_image) {
+      worksList.push({
         image: artist.work_2_image,
-        link: artist.work_2_link,
-        title:'Artwork 02'
-
+        title: artist.work_2_title || 'Obra 2',
+        link: artist.work_2_link || null
       });
-
     }
 
-
-
-
-    /*
-       JSONB works future support
-    */
-
-
-    if(Array.isArray(artist.works)){
-
-      artist.works.forEach(w=>{
-
-        works.push(w);
-
-      });
-
+    if (Array.isArray(artist.works)) {
+      worksList = worksList.concat(artist.works);
     }
 
+    if (worksList.length > 0) {
+      document.getElementById('worksHeading').style.display = 'block';
+      const grid = document.getElementById('worksGrid');
 
+      grid.innerHTML = worksList.map(w => {
+        const imageUrl = w.image || w.image_url || '';
+        const title = w.title || '';
+        const linkUrl = w.link || w.url || null;
 
-
-
-    const grid =
-      document.getElementById('worksGrid');
-
-
-
-    if(works.length){
-
-
-      document.getElementById('worksHeading').style.display='block';
-
-
-
-      grid.innerHTML =
-      works.map((w,index)=>`
-
-        <div class="work-item"
-             data-index="${index}">
-
-
-          <img
-          src="${w.image || w.image_url || ''}"
-          alt="${w.title || ''}">
-
-
-          <p class="work-title">
-          ${w.title || 'Artwork'}
-          </p>
-
-
-        </div>
-
-
-      `).join('');
-
-
-
+        return `
+          <div class="work-item">
+            ${linkUrl ? `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">` : ''}
+              <img src="${imageUrl}" alt="${title}">
+            ${linkUrl ? `</a>` : ''}
+            
+            ${title ? `<p class="work-title">${title}</p>` : ''}
+            
+            ${linkUrl ? `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="work-link">Ver obra ↗</a>` : ''}
+          </div>
+        `;
+      }).join('');
     }
 
-
-
-
-
-    /*
-    ==========================
-       YOUTUBE
-    ==========================
-    */
-
-
-    const youtube =
-      document.getElementById('artistYoutube');
-
-
-    if(youtube && artist.youtube_url){
-
-      youtube.href =
-        artist.youtube_url;
-
-      youtube.style.display='inline-block';
-
-    }
-
-
-
-
-
-    loadingEl.style.display='none';
-    profileEl.style.display='block';
-
-
-
-  }
-  catch(e){
-
-    console.error(
-      '[Buda] Error loading featured artist:',
-      e
-    );
-
+    loadingEl.style.display = 'none';
+    profileEl.style.display = 'block';
+  } catch (e) {
+    console.error('[Buda] Error loading the featured profile:', e);
     showError();
-
   }
-
-
-
 });
