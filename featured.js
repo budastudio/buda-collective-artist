@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             ${title ? `<p class="work-title">${title}</p>` : ''}
             
-            ${linkUrl ? `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="work-link">Ver obra ↗</a>` : ''}
+            ${linkUrl ? `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="work-link">View work ↗</a>` : ''}
           </div>
         `;
       }).join('');
