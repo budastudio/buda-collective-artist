@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (artist.work_1_image) {
       worksList.push({
         image: artist.work_1_image,
-        title: artist.work_1_title || 'Obra 1',
+        title: artist.work_1_title || '',
         link: artist.work_1_link || null
       });
     }
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (artist.work_2_image) {
       worksList.push({
         image: artist.work_2_image,
-        title: artist.work_2_title || 'Obra 2',
+        title: artist.work_2_title || '',
         link: artist.work_2_link || null
       });
     }
