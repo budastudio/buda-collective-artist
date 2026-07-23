@@ -30,22 +30,76 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    document.getElementById('pHero').src = artist.avatar_url || 'obra-background.jpg';
+    // Header independiente del Avatar
+    const heroEl = document.getElementById('pHero');
+    if (artist.hero_image_url) {
+      heroEl.src = artist.hero_image_url;
+      heroEl.style.display = 'block';
+    } else {
+      heroEl.src = 'obra-background.jpg';
+    }
+
+    // Avatar y Nombre
     document.getElementById('pAvatar').src = artist.avatar_url || 'logo-artista.png';
     document.getElementById('pName').textContent = artist.name;
-    document.getElementById('pSubtitle').textContent = artist.featured ? 'Featured Artist · Buda Collective' : 'Artist · Buda Collective';
+
+    // Subtítulo con soporte para Founder / Featured
+    let subtitleText = artist.featured ? 'Featured Artist · Buda Collective' : 'Artist · Buda Collective';
+    if (artist.founder) {
+      const founderNum = artist.founder_number ? ` #${artist.founder_number}` : '';
+      subtitleText = `Founder${founderNum} · Buda Collective`;
+    }
+    document.getElementById('pSubtitle').textContent = subtitleText;
+
+    // Bio
     document.getElementById('pBio').textContent = artist.bio || '';
     document.getElementById('pBio').style.display = artist.bio ? 'block' : 'none';
 
+    // Contenedor de Botones Sociales / Links
+    let buttonsContainer = document.getElementById('socialButtons');
+    if (!buttonsContainer) {
+      buttonsContainer = document.createElement('div');
+      buttonsContainer.id = 'socialButtons';
+      buttonsContainer.className = 'social-buttons';
+      const bioEl = document.getElementById('pBio');
+      bioEl.parentNode.insertBefore(buttonsContainer, bioEl.nextSibling);
+    }
+    buttonsContainer.innerHTML = '';
+
+    // Botón X (Twitter)
     const xLinkEl = document.getElementById('pXLink');
-    if (artist.x_link) {
-      xLinkEl.href = artist.x_link;
-      xLinkEl.style.display = 'inline-block';
-    } else {
-      xLinkEl.style.display = 'none';
+    if (xLinkEl) {
+      if (artist.x_link) {
+        xLinkEl.href = artist.x_link;
+        xLinkEl.style.display = 'inline-flex';
+        buttonsContainer.appendChild(xLinkEl);
+      } else {
+        xLinkEl.style.display = 'none';
+      }
+    } else if (artist.x_link) {
+      const newX = document.createElement('a');
+      newX.id = 'pXLink';
+      newX.className = 'x-link';
+      newX.href = artist.x_link;
+      newX.target = '_blank';
+      newX.rel = 'noopener noreferrer';
+      newX.textContent = 'View profile on X ↗';
+      buttonsContainer.appendChild(newX);
     }
 
-    // Armamos la lista de obras leyendo las columnas de Supabase
+    // Botón YouTube
+    if (artist.youtube_url) {
+      const ytLink = document.createElement('a');
+      ytLink.id = 'pYoutubeLink';
+      ytLink.className = 'yt-link';
+      ytLink.href = artist.youtube_url;
+      ytLink.target = '_blank';
+      ytLink.rel = 'noopener noreferrer';
+      ytLink.textContent = 'Watch process video ↗';
+      buttonsContainer.appendChild(ytLink);
+    }
+
+    // Obras (work_1, work_2 y/o array works)
     let worksList = [];
 
     if (artist.work_1_image) {
