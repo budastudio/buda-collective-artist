@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Featured Artist Registration — Buda Collective</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0d0d0d;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 600px;
+      background: #141414;
+      border: 1px solid #222222;
+      border-radius: 16px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header-section h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .header-section p {
+      color: #888888;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .section-divider {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #d4af37; /* Acento dorado característico de Buda */
+      border-bottom: 1px solid #222222;
+      padding-bottom: 6px;
+      margin: 28px 0 16px 0;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #aaaaaa;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      background-color: #0a0a0a;
+      border: 1px solid #282828;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 0 1px #d4af37;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0a0a0a;
+      padding: 12px 14px;
+      border: 1px solid #282828;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #d4af37;
+      cursor: pointer;
+    }
+
+    .checkbox-container label {
+      margin: 0;
+      cursor: pointer;
+      color: #ffffff;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #e6e6e6;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      background-color: #444444;
+      color: #888888;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #statusMsg {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .status-success {
+      color: #2ed573;
+    }
+
+    .status-error {
+      color: #ff4757;
+    }
+
+    .live-link {
+      color: #d4af37;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <div class="header-section">
+      <h1>Featured Artist Profile</h1>
+      <p>Set up your profile, works, and banner to be published in Buda Collective.</p>
+    </div>
+
+    <form id="featuredForm">
+      
+      <!-- General Info -->
+      <div class="section-divider">Profile Information</div>
+
+      <div class="form-group">
+        <label for="name">Artist Name / Handle *</label>
+        <input type="text" id="name" required placeholder="e.g. Satoshi Art">
+      </div>
+
+      <div class="form-group">
+        <label for="avatarUrl">Avatar Image URL *</label>
+        <input type="url" id="avatarUrl" required placeholder="https://.../avatar.jpg">
+      </div>
+
+      <div class="form-group">
+        <label for="heroUrl">Hero / Header Background URL *</label>
+        <input type="url" id="heroUrl" required placeholder="https://.../header.jpg">
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Bio / Artist Statement *</label>
+        <textarea id="bio" required placeholder="Tell the community about yourself and your art..."></textarea>
+      </div>
+
+      <!-- Social Links -->
+      <div class="section-divider">Social & Video</div>
+
+      <div class="form-group">
+        <label for="xLink">X (Twitter) Profile URL</label>
+        <input type="url" id="xLink" placeholder="https://x.com/yourhandle">
+      </div>
+
+      <div class="form-group">
+        <label for="youtubeUrl">YouTube Process / Video URL</label>
+        <input type="url" id="youtubeUrl" placeholder="https://youtube.com/watch?v=...">
+      </div>
+
+      <!-- Founder Status -->
+      <div class="section-divider">Collective Role</div>
+
+      <div class="form-group">
+        <div class="checkbox-container">
+          <input type="checkbox" id="isFounder" onchange="toggleFounder(this)">
+          <label for="isFounder">Founder Member</label>
+        </div>
+      </div>
+
+      <div class="form-group" id="founderNumGroup" style="display: none;">
+        <label for="founderNumber">Founder Number (#)</label>
+        <input type="number" id="founderNumber" placeholder="e.g. 1">
+      </div>
+
+      <!-- Featured Works -->
+      <div class="section-divider">Featured Work #1</div>
+
+      <div class="form-group">
+        <label for="work1Image">Work 1 Image URL *</label>
+        <input type="url" id="work1Image" required placeholder="https://.../work1.jpg">
+      </div>
+
+      <div class="form-group">
+        <label for="work1Title">Work 1 Title</label>
+        <input type="text" id="work1Title" placeholder="Title of your first piece">
+      </div>
+
+      <div class="form-group">
+        <label for="work1Link">Work 1 External Marketplace Link</label>
+        <input type="url" id="work1Link" placeholder="https://opensea.io/item/...">
+      </div>
+
+      <div class="section-divider">Featured Work #2</div>
+
+      <div class="form-group">
+        <label for="work2Image">Work 2 Image URL</label>
+        <input type="url" id="work2Image" placeholder="https://.../work2.jpg">
+      </div>
+
+      <div class="form-group">
+        <label for="work2Title">Work 2 Title</label>
+        <input type="text" id="work2Title" placeholder="Title of your second piece">
+      </div>
+
+      <div class="form-group">
+        <label for="work2Link">Work 2 External Marketplace Link</label>
+        <input type="url" id="work2Link" placeholder="https://foundation.app/item/...">
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">Publish Profile 🚀</button>
+    </form>
+
+    <div id="statusMsg"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    function toggleFounder(checkbox) {
+      document.getElementById('founderNumGroup').style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    document.getElementById('featuredForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMsg = document.getElementById('statusMsg');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publishing...';
+      statusMsg.className = '';
+      statusMsg.textContent = '';
+
+      try {
+        const isFounder = document.getElementById('isFounder').checked;
+        const founderNum = document.getElementById('founderNumber').value;
+
+        const payload = {
+          name: document.getElementById('name').value,
+          avatar_url: document.getElementById('avatarUrl').value,
+          hero_image_url: document.getElementById('heroUrl').value,
+          bio: document.getElementById('bio').value,
+          x_link: document.getElementById('xLink').value || null,
+          youtube_url: document.getElementById('youtubeUrl').value || null,
+          featured: true,
+          status: 'approved',
+          founder: isFounder,
+          founder_number: isFounder && founderNum ? parseInt(founderNum) : null,
+          work_1_image: document.getElementById('work1Image').value,
+          work_1_title: document.getElementById('work1Title').value || null,
+          work_1_link: document.getElementById('work1Link').value || null,
+          work_2_image: document.getElementById('work2Image').value || null,
+          work_2_title: document.getElementById('work2Title').value || null,
+          work_2_link: document.getElementById('work2Link').value || null
+        };
+
+        const { data, error } = await budaSupabase.client
+          .from('artists')
+          .insert([payload])
+          .select('id')
+          .single();
+
+        if (error) throw error;
+
+        statusMsg.className = 'status-success';
+        const profileUrl = `featured.html?id=${data.id}`;
+        statusMsg.innerHTML = `✨ Profile published successfully!<br><br><a href="${profileUrl}" target="_blank" class="live-link">View Live Profile ↗</a>`;
+
+        document.getElementById('featuredForm').reset();
+        document.getElementById('founderNumGroup').style.display = 'none';
+
+      } catch (err) {
+        console.error('Error publishing profile:', err);
+        statusMsg.className = 'status-error';
+        statusMsg.textContent = 'Error publishing profile. Please check your connection and try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publish Profile 🚀';
+      }
+    });
+  </script>
+</body>
+</html>
