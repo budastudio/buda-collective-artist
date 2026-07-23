@@ -57,7 +57,7 @@
       font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 1.2px;
-      color: #d4af37; /* Acento dorado característico de Buda */
+      color: #d4af37; /* Acento dorado Buda */
       border-bottom: 1px solid #222222;
       padding-bottom: 6px;
       margin: 28px 0 16px 0;
@@ -100,6 +100,24 @@
     textarea {
       resize: vertical;
       min-height: 90px;
+    }
+
+    /* Estilo personalizado para subir archivos */
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #0a0a0a;
+      border: 1px dashed #3a3a3a;
+      border-radius: 8px;
+      color: #aaaaaa;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    input[type="file"]:hover {
+      border-color: #d4af37;
+      color: #ffffff;
     }
 
     .checkbox-container {
@@ -179,12 +197,12 @@
   <div class="form-container">
     <div class="header-section">
       <h1>Featured Artist Profile</h1>
-      <p>Set up your profile, works, and banner to be published in Buda Collective.</p>
+      <p>Upload your images and set up your featured profile in Buda Collective.</p>
     </div>
 
     <form id="featuredForm">
       
-      <!-- General Info -->
+      <!-- Profile Info -->
       <div class="section-divider">Profile Information</div>
 
       <div class="form-group">
@@ -193,13 +211,13 @@
       </div>
 
       <div class="form-group">
-        <label for="avatarUrl">Avatar Image URL *</label>
-        <input type="url" id="avatarUrl" required placeholder="https://.../avatar.jpg">
+        <label for="avatarFile">Avatar Image File *</label>
+        <input type="file" id="avatarFile" accept="image/*" required>
       </div>
 
       <div class="form-group">
-        <label for="heroUrl">Hero / Header Background URL *</label>
-        <input type="url" id="heroUrl" required placeholder="https://.../header.jpg">
+        <label for="heroFile">Hero / Header Background File</label>
+        <input type="file" id="heroFile" accept="image/*">
       </div>
 
       <div class="form-group">
@@ -239,8 +257,8 @@
       <div class="section-divider">Featured Work #1</div>
 
       <div class="form-group">
-        <label for="work1Image">Work 1 Image URL *</label>
-        <input type="url" id="work1Image" required placeholder="https://.../work1.jpg">
+        <label for="work1File">Work 1 Image File *</label>
+        <input type="file" id="work1File" accept="image/*" required>
       </div>
 
       <div class="form-group">
@@ -256,8 +274,8 @@
       <div class="section-divider">Featured Work #2</div>
 
       <div class="form-group">
-        <label for="work2Image">Work 2 Image URL</label>
-        <input type="url" id="work2Image" placeholder="https://.../work2.jpg">
+        <label for="work2File">Work 2 Image File</label>
+        <input type="file" id="work2File" accept="image/*">
       </div>
 
       <div class="form-group">
@@ -291,18 +309,37 @@
       const statusMsg = document.getElementById('statusMsg');
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Publishing...';
+      submitBtn.textContent = 'Uploading images & publishing...';
       statusMsg.className = '';
       statusMsg.textContent = '';
 
       try {
+        const artistName = document.getElementById('name').value;
+
+        // 1. Subir archivos a Supabase Storage
+        const avatarFile = document.getElementById('avatarFile').files[0];
+        const heroFile = document.getElementById('heroFile').files[0];
+        const work1File = document.getElementById('work1File').files[0];
+        const work2File = document.getElementById('work2File').files[0];
+
+        let avatarUrl = null;
+        let heroUrl = null;
+        let work1Url = null;
+        let work2Url = null;
+
+        if (avatarFile) avatarUrl = await budaSupabase.uploadAvatar(avatarFile, `${artistName}-avatar`);
+        if (heroFile) heroUrl = await budaSupabase.uploadAvatar(heroFile, `${artistName}-hero`);
+        if (work1File) work1Url = await budaSupabase.uploadAvatar(work1File, `${artistName}-work1`);
+        if (work2File) work2Url = await budaSupabase.uploadAvatar(work2File, `${artistName}-work2`);
+
+        // 2. Armar el objeto payload para guardar en la BD
         const isFounder = document.getElementById('isFounder').checked;
         const founderNum = document.getElementById('founderNumber').value;
 
         const payload = {
-          name: document.getElementById('name').value,
-          avatar_url: document.getElementById('avatarUrl').value,
-          hero_image_url: document.getElementById('heroUrl').value,
+          name: artistName,
+          avatar_url: avatarUrl,
+          hero_image_url: heroUrl,
           bio: document.getElementById('bio').value,
           x_link: document.getElementById('xLink').value || null,
           youtube_url: document.getElementById('youtubeUrl').value || null,
@@ -310,14 +347,15 @@
           status: 'approved',
           founder: isFounder,
           founder_number: isFounder && founderNum ? parseInt(founderNum) : null,
-          work_1_image: document.getElementById('work1Image').value,
+          work_1_image: work1Url,
           work_1_title: document.getElementById('work1Title').value || null,
           work_1_link: document.getElementById('work1Link').value || null,
-          work_2_image: document.getElementById('work2Image').value || null,
+          work_2_image: work2Url,
           work_2_title: document.getElementById('work2Title').value || null,
           work_2_link: document.getElementById('work2Link').value || null
         };
 
+        // 3. Insertar registro en Supabase
         const { data, error } = await budaSupabase.client
           .from('artists')
           .insert([payload])
@@ -336,7 +374,7 @@
       } catch (err) {
         console.error('Error publishing profile:', err);
         statusMsg.className = 'status-error';
-        statusMsg.textContent = 'Error publishing profile. Please check your connection and try again.';
+        statusMsg.textContent = 'Error uploading or publishing profile. Please try again.';
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Publish Profile 🚀';
