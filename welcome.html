@@ -28,22 +28,58 @@ canvas{
     pointer-events: none;
 }
 
+/* ===== Top Nav Header ===== */
+.topnav{
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(9, 9, 9, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.topnav-links{
+    display: flex;
+    gap: 25px;
+    list-style: none;
+    align-items: center;
+}
+
+.topnav-links a{
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #a0a0a0;
+    transition: .3s;
+}
+
+.topnav-links a:hover,
+.topnav-links a.active{
+    color: #d4af37;
+    text-shadow: 0 0 10px rgba(212,175,55,0.4);
+}
+
 .hero{
     position: relative;
     z-index: 1;
-    min-height:100vh;
-    padding:30px 20px 40px; /* Reducido el padding inferior para optimizar espacio vertical */
+    min-height: calc(100vh - 70px);
+    padding: 20px 20px 40px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra todo el contenido horizontalmente */
+    align-items: center;
     text-align: center;
-    overflow-y:auto;
+    overflow-y: auto;
 }
 
 .logo{
     display: block;
-    margin: 0 auto 20px; /* Reducido margen inferior ligeramente */
-    width:140px; /* Ligeramente más compacto */
+    margin: 0 auto 20px;
+    width:140px;
     height:140px;
     border-radius:50%;
     box-shadow: 0 0 50px rgba(212,175,55,.18);
@@ -55,7 +91,7 @@ canvas{
 }
 
 h1{
-    font-size:36px; /* Ajuste sutil de tamaño */
+    font-size:36px;
     font-weight:200;
     letter-spacing:6px;
     margin-bottom: 10px;
@@ -66,12 +102,12 @@ h1{
     letter-spacing:3px;
     color:#d4af37;
     text-transform:uppercase;
-    margin-bottom: 20px; /* Reducido de 30px */
+    margin-bottom: 20px;
 }
 
 .choose{
-    margin-top:35px; /* Reducido de 60px para elevarlo significativamente */
-    margin-bottom:25px; /* Reducido de 35px */
+    margin-top:35px;
+    margin-bottom:25px;
     font-size:17px;
     opacity:.7;
     text-align: center;
@@ -79,8 +115,8 @@ h1{
 
 .cards{
     display:flex;
-    gap:30px; /* Reducido ligeramente de 35px */
-    max-width:950px;
+    gap:30px;
+    max-width:1220px;
     width:100%;
     justify-content:center;
     flex-wrap:wrap;
@@ -88,8 +124,8 @@ h1{
 
 .card{
     position:relative;
-    width:390px; /* Ligeramente más compacto para mejorar el espacio */
-    height:245px; /* Reducido de 260px */
+    width:380px;
+    height:245px;
     border:1px solid rgba(255,255,255,.08);
     border-radius:24px;
     overflow:hidden;
@@ -101,7 +137,7 @@ h1{
     cursor:pointer;
     display:flex;
     align-items:flex-end;
-    text-align: left; /* Mantiene el texto de las cartas alineado a la izquierda */
+    text-align: left;
 }
 
 .card:hover{
@@ -111,12 +147,12 @@ h1{
 }
 
 .content{
-    padding:25px; /* Reducido sutilmente de 30px para subir los botones dentro de la tarjeta */
+    padding:25px;
 }
 
 .card h2{
     font-weight:300;
-    font-size:26px; /* Reducido de 28px */
+    font-size:26px;
     line-height:1.1;
     margin-bottom:10px;
 }
@@ -125,18 +161,18 @@ h1{
     opacity:.75;
     line-height:1.5;
     font-size:13px;
-    margin-bottom:15px; /* Reducido de 20px para levantar el botón */
+    margin-bottom:15px;
 }
 
 .button{
     display:inline-flex;
-    padding:10px 22px; /* Ligeramente más compacto */
+    padding:10px 22px;
     border:1px solid #d4af37;
     border-radius:999px;
     color:#fff;
     text-decoration:none;
     transition:.35s;
-    cursor:pointer; /* Asegura que se muestre el cursor de mano al pasar por encima */
+    cursor:pointer;
 }
 
 .button:hover{
@@ -148,7 +184,7 @@ h1{
 .manifesto{
     width:100%;
     max-width:720px;
-    margin:20px auto; /* Reducido de 35px para ahorrar espacio vertical */
+    margin:20px auto;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -191,7 +227,7 @@ h1{
 }
 
 .manifesto-text p{
-    margin:10px auto; /* Reducido de 14px */
+    margin:10px auto;
     line-height:1.7;
     font-size:14px;
     font-weight:300;
@@ -225,6 +261,15 @@ h1{
 
 /* Responsive */
 @media (max-width: 768px) {
+    .topnav-links{
+        gap: 12px;
+        font-size: 10px;
+    }
+    .topnav-links a{
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
     .logo {
         width:110px;
         height:110px;
@@ -264,6 +309,19 @@ h1{
 <body>
 
 <canvas id="bg"></canvas>
+
+<!-- Top Navigation Header -->
+<nav class="topnav">
+    <ul class="topnav-links">
+        <li><a href="https://budastudio.github.io/buda-collective-artist/welcome" class="active">Home</a></li>
+        <li><span>|</span></li>
+        <li><a href="https://budastudio.github.io/buda-collective-artist/">Collective</a></li>
+        <li><span>|</span></li>
+        <li><a href="https://budastudio.github.io/buda-collective-artist/join.html">Featured Mint</a></li>
+        <li><span>|</span></li>
+        <li><a href="https://budastudio.github.io/buda-collective-artist/founders.html">Founders</a></li>
+    </ul>
+</nav>
 
 <section class="hero">
 
@@ -311,6 +369,14 @@ h1{
                 <a class="button">APPLY →</a>
             </div>
         </div>
+
+        <div class="card" style="--bg:url('featured-pass-tiny.jpg')" onclick="location.href='founders.html'">
+            <div class="content">
+                <h2>THE<br>FOUNDERS</h2>
+                <p>Discover the visionary supporters behind Buda Collective.</p>
+                <a class="button">EXPLORE →</a>
+            </div>
+        </div>
     </div>
 
 </section>
@@ -320,11 +386,10 @@ const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 
 let particles = [];
-const particleCount = 60; // Cantidad para mantener sutileza y alto rendimiento
+const particleCount = 60;
 let width = canvas.width = window.innerWidth;
 let height = canvas.height = window.innerHeight;
 
-// Ajuste dinámico de tamaño de pantalla
 window.addEventListener('resize', () => {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
@@ -333,23 +398,22 @@ window.addEventListener('resize', () => {
 class Particle {
     constructor() {
         this.reset();
-        this.y = Math.random() * height; // Distribución inicial en pantalla
+        this.y = Math.random() * height;
     }
 
     reset() {
         this.x = Math.random() * width;
-        this.y = height + 10; // Comienza justo debajo del límite visible
-        this.size = Math.random() * 1.5 + 0.5; // Polvo dorado diminuto y elegante
-        this.speedY = -(Math.random() * 0.4 + 0.1); // Flujo lento hacia arriba
-        this.speedX = (Math.random() - 0.5) * 0.2; // Ligera oscilación lateral
-        this.alpha = Math.random() * 0.5 + 0.1; // Opacidad suave y variable
+        this.y = height + 10;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedY = -(Math.random() * 0.4 + 0.1);
+        this.speedX = (Math.random() - 0.5) * 0.2;
+        this.alpha = Math.random() * 0.5 + 0.1;
     }
 
     update() {
         this.y += this.speedY;
         this.x += this.speedX;
 
-        // Resetear si sale de los límites de la pantalla
         if (this.y < -10 || this.x < -10 || this.x > width + 10) {
             this.reset();
         }
@@ -361,7 +425,6 @@ class Particle {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         
-        // Color dorado corporativo de Buda Collective Art
         ctx.fillStyle = '#d4af37'; 
         ctx.shadowBlur = 8;
         ctx.shadowColor = '#d4af37';
@@ -370,12 +433,10 @@ class Particle {
     }
 }
 
-// Inicializar partículas
 for (let i = 0; i < particleCount; i++) {
     particles.push(new Particle());
 }
 
-// Bucle de animación (Smooth 60fps)
 function animate() {
     ctx.clearRect(0, 0, width, height);
     
