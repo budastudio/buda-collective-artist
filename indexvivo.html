@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buda Collective - Interactive Mint Experience</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #0d0d0d;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+let frames = [];
+let totalSlots = 25;
+let cnv;
+let isMobile = false;
+
+// Assets locales (misma carpeta raíz)
+let imgBackground;
+let imgFrameGold, imgFrameLarge, imgFrameMedium, imgFrameSmall;
+let pfpImages = [];
+
+function preload() {
+  // Carga de marcos y fondo desde la carpeta raíz
+  imgBackground  = loadImage('background.png', () => {}, () => { imgBackground = null; });
+  imgFrameGold   = loadImage('frame_gold.png', () => {}, () => { imgFrameGold = null; });
+  imgFrameLarge  = loadImage('frame_large.png', () => {}, () => { imgFrameLarge = null; });
+  imgFrameMedium = loadImage('frame_medium.png', () => {}, () => { imgFrameMedium = null; });
+  imgFrameSmall  = loadImage('frame_small.png', () => {}, () => { imgFrameSmall = null; });
+
+  // Carga automática de las 25 imágenes de Buda Collective (1.png a 25.png)
+  for (let i = 1; i <= 25; i++) {
+    let img = loadImage(`${i}.png`, 
+      (loadedImg) => { pfpImages.push(loadedImg); },
+      () => { /* Si no encuentra la imagen local, ignorar */ }
+    );
+  }
+}
+
+function setup() {
+  cnv = createCanvas(windowWidth, windowHeight);
+  isMobile = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) && width < 767;
+  
+  cnv.elt.style.touchAction = 'none';
+  cnv.elt.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
+
+  imageMode(CENTER);
+  initChaos();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  layoutFrames();
+}
+
+function initChaos() {
+  frames = [];
+  for (let i = 0; i < totalSlots; i++) {
+    frames.push({
+      pfp: null,
+      rarity: "none",
+      score: 0,
+      t: random(1000),
+      floatSpeed: random(0.008, 0.025),
+      rot: random(-0.1, 0.1),
+      x: random(width * 0.1, width * 0.9),
+      y: random(height * 0.1, height * 0.9),
+      targetX: random(width * 0.1, width * 0.9),
+      targetY: random(height * 0.1, height * 0.9),
+      size: random(120, 220),
+      id: i + 1
+    });
+  }
+}
+
+function rarityScore(r) {
+  const scores = { common: 1, rare: 2, epic: 3, legendary: 5 };
+  return scores[r] || 0;
+}
+
+function getFrameImage(r) {
+  const framesImg = {
+    common: imgFrameSmall,
+    rare: imgFrameMedium,
+    epic: imgFrameLarge,
+    legendary: imgFrameGold
+  };
+  return framesImg[r] || null;
+}
+
+function getRarityColor(r) {
+  const colors = {
+    common: color(150, 150, 150, 100),
+    rare: color(0, 150, 255, 150),
+    epic: color(180, 0, 255, 150),
+    legendary: color(255, 215, 0, 220)
+  };
+  return colors[r] || color(40, 40, 40, 50);
+}
+
+function layoutFrames() {
+  for (let f of frames) {
+    f.targetX = random(width * 0.1, width * 0.9);
+    f.targetY = random(height * 0.1, height * 0.9);
+  }
+}
+
+function draw() {
+  if (imgBackground) {
+    let scale = max(width / imgBackground.width, height / imgBackground.height);
+    image(imgBackground, width / 2, height / 2, imgBackground.width * scale, imgBackground.height * scale);
+  } else {
+    background(15, 15, 20);
+  }
+
+  for (let f of frames) {
+    f.x = lerp(f.x, f.targetX, 0.02);
+    f.y = lerp(f.y, f.targetY, 0.02);
+    
+    f.t += f.floatSpeed;
+    let floatY = sin(f.t) * 15;
+    let floatX = cos(f.t * 0.8) * 10;
+    
+    drawFrame(f, floatX, floatY);
+  }
+  
+  drawUI();
+}
+
+function drawFrame(f, fx, fy) {
+  push();
+  translate(f.x + fx, f.y + fy);
+  rotate(f.rot + sin(f.t * 0.5) * 0.05);
+
+  let displayW = f.size;
+  let displayH = f.size;
+
+  if (f.score > 0) {
+    displayW *= (0.85 + f.score * 0.08);
+    displayH *= (0.85 + f.score * 0.08);
+  }
+
+  if (f.pfp) {
+    let frameImg = getFrameImage(f.rarity);
+    let rColor = getRarityColor(f.rarity);
+
+    if (f.score > 1) {
+      drawingContext.shadowBlur = f.score * 12;
+      drawingContext.shadowColor = rColor.toString();
+    }
+
+    if (frameImg) {
+      image(frameImg, 0, 0, displayW, displayH);
+    }
+
+    drawingContext.shadowBlur = 0;
+    image(f.pfp, 0, 0, displayW * 0.72, displayH * 0.72);
+  } else {
+    noStroke();
+    fill(255, 15);
+    rect(-displayW / 2, -displayH / 2, displayW, displayH, 15);
+    fill(255, 40);
+    ellipse(0, 0, 12, 12);
+  }
+
+  pop();
+}
+
+function drawUI() {
+  fill(255, 220);
+  noStroke();
+  textAlign(CENTER, BOTTOM);
+  textSize(18);
+  textStyle(BOLD);
+  
+  let mintedCount = frames.filter(f => f.pfp !== null).length;
+  let labelText = isMobile ? "Toca para mintear Buda Collective" : "Haz clic para mintear Buda Collective";
+  
+  text(`${labelText} (${mintedCount}/${totalSlots})`, width / 2, height - 30);
+}
+
+function handleClick() {
+  const rarities = ["common", "common", "common", "rare", "rare", "epic", "legendary"];
+  let chosenRarity = random(rarities);
+  simulateMint(chosenRarity);
+}
+
+function simulateMint(rarity) {
+  let f = frames.find(x => !x.pfp);
+  if (!f) f = random(frames);
+
+  if (pfpImages.length > 0) {
+    f.pfp = random(pfpImages);
+  }
+
+  f.rarity = rarity;
+  f.score = rarityScore(rarity);
+  f.size = random(150, 240);
+  f.targetX = random(width * 0.15, width * 0.85);
+  f.targetY = random(height * 0.15, height * 0.85);
+}
+
+function mouseClicked() { if (!isMobile) handleClick(); }
+function touchEnded() { if (isMobile) { handleClick(); return false; } }
+</script>
+
+</body>
+</html>
