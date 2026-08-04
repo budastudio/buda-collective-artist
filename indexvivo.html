@@ -1,219 +1,778 @@
-<!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buda Collective - Interactive Mint Experience</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #0d0d0d;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    canvas {
-      display: block;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Buda Collective Art | Founding Artists</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#090909;
+    font-family:Inter,sans-serif;
+    color:white;
+    overflow-x:hidden;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+}
+
+/* NAV */
+
+.topnav{
+    position:relative;
+    z-index:10;
+    width:100%;
+    padding:20px 30px;
+    display:flex;
+    justify-content:center;
+    background:rgba(9,9,9,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.topnav-links{
+    display:flex;
+    gap:25px;
+    list-style:none;
+    align-items:center;
+}
+
+.topnav-links a{
+    text-decoration:none;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#999;
+    transition:.3s;
+}
+
+.topnav-links a:hover,
+.topnav-links a.active{
+    color:#d4af37;
+}
+
+
+/* HERO */
+
+.hero{
+    position:relative;
+    z-index:1;
+    min-height:calc(100vh - 70px);
+    padding:25px 20px 50px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+}
+
+
+.logo{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    margin-bottom:25px;
+    box-shadow:0 0 50px rgba(212,175,55,.18);
+}
+
+
+h1{
+    font-size:38px;
+    font-weight:200;
+    letter-spacing:7px;
+    margin-bottom:15px;
+}
+
+
+.subtitle{
+
+    max-width:700px;
+    font-size:16px;
+    letter-spacing:2px;
+    line-height:1.7;
+    color:#d4af37;
+    text-transform:uppercase;
+
+}
+
+
+/* FOUNDERS COUNTER */
+
+.counter{
+
+    margin-top:25px;
+    padding:18px 40px;
+    border:1px solid rgba(212,175,55,.35);
+    border-radius:50px;
+
+}
+
+
+.counter strong{
+
+    display:block;
+    font-size:28px;
+    color:#d4af37;
+    letter-spacing:4px;
+
+}
+
+
+.counter span{
+
+    font-size:12px;
+    letter-spacing:3px;
+    color:#aaa;
+
+}
+
+
+/* MANIFESTO */
+
+.manifesto{
+
+    max-width:720px;
+    margin:35px auto;
+}
+
+
+.manifesto details{
+
+    text-align:center;
+
+}
+
+
+.manifesto summary{
+
+    cursor:pointer;
+    display:inline-block;
+    padding:12px 25px;
+    border-radius:50px;
+    border:1px solid rgba(212,175,55,.3);
+    color:#d4af37;
+    letter-spacing:4px;
+    font-size:13px;
+
+}
+
+
+.manifesto-text{
+
+    margin-top:25px;
+    line-height:1.8;
+    color:#ccc;
+    font-size:15px;
+
+}
+
+
+.manifesto-text strong{
+
+    color:white;
+
+}
+
+
+.manifesto-text em{
+
+    color:#d4af37;
+    font-style:normal;
+
+}
+
+
+/* CARDS */
+
+.choose{
+
+    margin:20px;
+    font-size:18px;
+    opacity:.7;
+
+}
+
+
+.cards{
+
+    display:flex;
+    gap:30px;
+    justify-content:center;
+    flex-wrap:wrap;
+    max-width:1200px;
+
+}
+
+
+.card{
+
+    width:380px;
+    height:245px;
+    border-radius:24px;
+    overflow:hidden;
+    background:
+    linear-gradient(
+    rgba(0,0,0,.45),
+    rgba(0,0,0,.9)
+    ),
+    var(--bg);
+
+    background-size:cover;
+    background-position:center;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    display:flex;
+    align-items:flex-end;
+
+    transition:.4s;
+    cursor:pointer;
+
+}
+
+
+.card:hover{
+
+    transform:translateY(-8px);
+    border-color:#d4af37;
+
+}
+
+
+.content{
+
+    padding:25px;
+
+}
+
+
+.card h2{
+
+    font-weight:300;
+    font-size:25px;
+    margin-bottom:12px;
+
+}
+
+
+.card p{
+
+    font-size:13px;
+    line-height:1.5;
+    color:#ccc;
+    margin-bottom:15px;
+
+}
+
+
+.button{
+
+    display:inline-flex;
+    padding:10px 22px;
+    border-radius:999px;
+    border:1px solid #d4af37;
+    color:white;
+    text-decoration:none;
+
+}
+
+
+.button:hover{
+
+    background:#d4af37;
+    color:black;
+
+}
+</style>
 </head>
+
 <body>
 
+<canvas id="bg"></canvas>
+
+
+<!-- NAVIGATION -->
+
+<nav class="topnav">
+
+<ul class="topnav-links">
+
+<li>
+<a href="welcome.html" class="active">
+Home
+</a>
+</li>
+
+<li>|</li>
+
+<li>
+<a href="index.html">
+Collective
+</a>
+</li>
+
+<li>|</li>
+
+<li>
+<a href="https://www.transient.xyz/mint/featured-pass">
+Featured Mint
+</a>
+</li>
+
+<li>|</li>
+
+<li>
+<a href="founders.html">
+Founders
+</a>
+</li>
+
+</ul>
+
+</nav>
+
+
+
+<section class="hero">
+
+
+<img src="logogold26_trans.png"
+class="logo"
+alt="Buda Collective Logo">
+
+
+
+<h1>
+BUDA COLLECTIVE ART
+</h1>
+
+
+
+<div class="subtitle">
+
+A permanent home for 50 pioneering digital artists.
+
+<br>
+
+Building a curated living gallery where artists become founders,
+collaborators and part of the first chapter.
+
+</div>
+
+
+
+<div class="counter">
+
+<strong>
+02 / 50
+</strong>
+
+<span>
+FOUNDING ARTISTS
+<br>
+48 FOUNDER POSITIONS REMAIN
+</span>
+
+</div>
+
+
+
+
+<div class="manifesto">
+
+
+<details>
+
+
+<summary>
+✦ THE FIRST CHAPTER ✦
+</summary>
+
+
+<div class="manifesto-text">
+
+
+<p>
+<em>
+Every movement begins with a small group of believers.
+</em>
+</p>
+
+
+<p>
+Buda Collective was created as a permanent home for digital artists from different cultures, chains and creative backgrounds.
+</p>
+
+
+<p>
+This is not just a collection.
+</p>
+
+
+<p>
+<strong>
+It is a living ecosystem built by artists, for artists.
+</strong>
+</p>
+
+
+<p>
+The first 50 Founding Artists will shape the identity,
+history and future of this collective.
+</p>
+
+
+<p>
+Artists are not only displayed here.
+</p>
+
+
+<p>
+<strong>
+They belong.
+</strong>
+</p>
+
+
+</div>
+
+
+</details>
+
+
+</div>
+
+
+
+
+
+<div class="choose">
+
+Choose your journey
+
+</div>
+
+
+
+
+<div class="cards">
+
+
+
+<!-- GALLERY -->
+
+<div class="card"
+style="--bg:url('gallery.jpg')"
+onclick="location.href='index.html'">
+
+
+<div class="content">
+
+
+<h2>
+ENTER THE
+<br>
+LIVING GALLERY
+</h2>
+
+
+<p>
+Explore the first generation of artists building this evolving digital exhibition.
+</p>
+
+
+<a class="button">
+ENTER →
+</a>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- FOUNDERS -->
+
+<div class="card"
+style="--bg:url('community.jpg')"
+onclick="location.href='join.html'">
+
+
+<div class="content">
+
+
+<h2>
+BECOME A
+<br>
+FOUNDING ARTIST
+</h2>
+
+
+<p>
+Join the first 50 creators shaping the future of digital culture.
+</p>
+
+
+<a class="button">
+BECOME A FOUNDER →
+</a>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- FOUNDERS PAGE -->
+
+
+<div class="card"
+style="--bg:url('featured-pass-tiny.jpg')"
+onclick="location.href='founders.html'">
+
+
+<div class="content">
+
+
+<h2>
+MEET THE
+<br>
+FOUNDERS
+</h2>
+
+
+<p>
+Discover the artists and supporters who started this journey.
+</p>
+
+
+<a class="button">
+EXPLORE →
+</a>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
 <script>
-let frames = [];
-let totalSlots = 25;
-let cnv;
-let isMobile = false;
 
-// Assets locales (misma carpeta raíz)
-let imgBackground;
-let imgFrameGold, imgFrameLarge, imgFrameMedium, imgFrameSmall;
-let pfpImages = [];
 
-function preload() {
-  // Carga de marcos y fondo desde la carpeta raíz
-  imgBackground  = loadImage('background.png', () => {}, () => { imgBackground = null; });
-  imgFrameGold   = loadImage('frame_gold.png', () => {}, () => { imgFrameGold = null; });
-  imgFrameLarge  = loadImage('frame_large.png', () => {}, () => { imgFrameLarge = null; });
-  imgFrameMedium = loadImage('frame_medium.png', () => {}, () => { imgFrameMedium = null; });
-  imgFrameSmall  = loadImage('frame_small.png', () => {}, () => { imgFrameSmall = null; });
+const canvas=document.getElementById('bg');
 
-  // Carga automática de las 25 imágenes de Buda Collective (1.png a 25.png)
-  for (let i = 1; i <= 25; i++) {
-    let img = loadImage(`${i}.png`, 
-      (loadedImg) => { pfpImages.push(loadedImg); },
-      () => { /* Si no encuentra la imagen local, ignorar */ }
-    );
-  }
+const ctx=canvas.getContext('2d');
+
+
+let particles=[];
+
+
+let width=
+canvas.width=
+window.innerWidth;
+
+
+let height=
+canvas.height=
+window.innerHeight;
+
+
+
+window.addEventListener(
+'resize',
+()=>{
+
+width=
+canvas.width=
+window.innerWidth;
+
+
+height=
+canvas.height=
+window.innerHeight;
+
+});
+
+
+
+
+
+class Particle{
+
+
+constructor(){
+
+this.reset();
+
+this.y=Math.random()*height;
+
 }
 
-function setup() {
-  cnv = createCanvas(windowWidth, windowHeight);
-  isMobile = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) && width < 767;
-  
-  cnv.elt.style.touchAction = 'none';
-  cnv.elt.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
 
-  imageMode(CENTER);
-  initChaos();
+
+reset(){
+
+this.x=Math.random()*width;
+
+this.y=height+10;
+
+this.size=Math.random()*1.5+.5;
+
+this.speedY=-(Math.random()*.4+.1);
+
+this.speedX=(Math.random()-.5)*.2;
+
+this.alpha=Math.random()*.5+.1;
+
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  layoutFrames();
+
+
+update(){
+
+this.y+=this.speedY;
+
+this.x+=this.speedX;
+
+
+if(
+this.y<-10 ||
+this.x<-10 ||
+this.x>width+10
+){
+
+this.reset();
+
 }
 
-function initChaos() {
-  frames = [];
-  for (let i = 0; i < totalSlots; i++) {
-    frames.push({
-      pfp: null,
-      rarity: "none",
-      score: 0,
-      t: random(1000),
-      floatSpeed: random(0.008, 0.025),
-      rot: random(-0.1, 0.1),
-      x: random(width * 0.1, width * 0.9),
-      y: random(height * 0.1, height * 0.9),
-      targetX: random(width * 0.1, width * 0.9),
-      targetY: random(height * 0.1, height * 0.9),
-      size: random(120, 220),
-      id: i + 1
-    });
-  }
 }
 
-function rarityScore(r) {
-  const scores = { common: 1, rare: 2, epic: 3, legendary: 5 };
-  return scores[r] || 0;
+
+
+draw(){
+
+ctx.save();
+
+
+ctx.globalAlpha=this.alpha;
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+this.x,
+this.y,
+this.size,
+0,
+Math.PI*2
+);
+
+
+
+ctx.fillStyle='#d4af37';
+
+ctx.shadowBlur=8;
+
+ctx.shadowColor='#d4af37';
+
+
+ctx.fill();
+
+
+ctx.restore();
+
+
 }
 
-function getFrameImage(r) {
-  const framesImg = {
-    common: imgFrameSmall,
-    rare: imgFrameMedium,
-    epic: imgFrameLarge,
-    legendary: imgFrameGold
-  };
-  return framesImg[r] || null;
+
 }
 
-function getRarityColor(r) {
-  const colors = {
-    common: color(150, 150, 150, 100),
-    rare: color(0, 150, 255, 150),
-    epic: color(180, 0, 255, 150),
-    legendary: color(255, 215, 0, 220)
-  };
-  return colors[r] || color(40, 40, 40, 50);
+
+
+
+for(
+let i=0;
+i<60;
+i++
+){
+
+particles.push(
+new Particle()
+);
+
 }
 
-function layoutFrames() {
-  for (let f of frames) {
-    f.targetX = random(width * 0.1, width * 0.9);
-    f.targetY = random(height * 0.1, height * 0.9);
-  }
+
+
+
+function animate(){
+
+
+ctx.clearRect(
+0,
+0,
+width,
+height
+);
+
+
+
+particles.forEach(
+p=>{
+
+p.update();
+
+p.draw();
+
+});
+
+
+requestAnimationFrame(
+animate
+);
+
+
 }
 
-function draw() {
-  if (imgBackground) {
-    let scale = max(width / imgBackground.width, height / imgBackground.height);
-    image(imgBackground, width / 2, height / 2, imgBackground.width * scale, imgBackground.height * scale);
-  } else {
-    background(15, 15, 20);
-  }
 
-  for (let f of frames) {
-    f.x = lerp(f.x, f.targetX, 0.02);
-    f.y = lerp(f.y, f.targetY, 0.02);
-    
-    f.t += f.floatSpeed;
-    let floatY = sin(f.t) * 15;
-    let floatX = cos(f.t * 0.8) * 10;
-    
-    drawFrame(f, floatX, floatY);
-  }
-  
-  drawUI();
-}
 
-function drawFrame(f, fx, fy) {
-  push();
-  translate(f.x + fx, f.y + fy);
-  rotate(f.rot + sin(f.t * 0.5) * 0.05);
+animate();
 
-  let displayW = f.size;
-  let displayH = f.size;
 
-  if (f.score > 0) {
-    displayW *= (0.85 + f.score * 0.08);
-    displayH *= (0.85 + f.score * 0.08);
-  }
 
-  if (f.pfp) {
-    let frameImg = getFrameImage(f.rarity);
-    let rColor = getRarityColor(f.rarity);
-
-    if (f.score > 1) {
-      drawingContext.shadowBlur = f.score * 12;
-      drawingContext.shadowColor = rColor.toString();
-    }
-
-    if (frameImg) {
-      image(frameImg, 0, 0, displayW, displayH);
-    }
-
-    drawingContext.shadowBlur = 0;
-    image(f.pfp, 0, 0, displayW * 0.72, displayH * 0.72);
-  } else {
-    noStroke();
-    fill(255, 15);
-    rect(-displayW / 2, -displayH / 2, displayW, displayH, 15);
-    fill(255, 40);
-    ellipse(0, 0, 12, 12);
-  }
-
-  pop();
-}
-
-function drawUI() {
-  fill(255, 220);
-  noStroke();
-  textAlign(CENTER, BOTTOM);
-  textSize(18);
-  textStyle(BOLD);
-  
-  let mintedCount = frames.filter(f => f.pfp !== null).length;
-  let labelText = isMobile ? "Toca para mintear Buda Collective" : "Haz clic para mintear Buda Collective";
-  
-  text(`${labelText} (${mintedCount}/${totalSlots})`, width / 2, height - 30);
-}
-
-function handleClick() {
-  const rarities = ["common", "common", "common", "rare", "rare", "epic", "legendary"];
-  let chosenRarity = random(rarities);
-  simulateMint(chosenRarity);
-}
-
-function simulateMint(rarity) {
-  let f = frames.find(x => !x.pfp);
-  if (!f) f = random(frames);
-
-  if (pfpImages.length > 0) {
-    f.pfp = random(pfpImages);
-  }
-
-  f.rarity = rarity;
-  f.score = rarityScore(rarity);
-  f.size = random(150, 240);
-  f.targetX = random(width * 0.15, width * 0.85);
-  f.targetY = random(height * 0.15, height * 0.85);
-}
-
-function mouseClicked() { if (!isMobile) handleClick(); }
-function touchEnded() { if (isMobile) { handleClick(); return false; } }
 </script>
 
+
 </body>
+
 </html>
