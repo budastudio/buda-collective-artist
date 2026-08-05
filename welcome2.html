@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buda Collective Artist — Welcome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           EXISTING BASE STYLES & DESIGN TOKENS
+           ========================================================================== */
+        :root {
+            --bg-dark: #070709;
+            --card-bg: rgba(18, 18, 24, 0.45);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-border-hover: rgba(255, 255, 255, 0.22);
+            --accent-glow: rgba(138, 92, 246, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.65);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Ambient Background Canvas & Glows */
+        .bg-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ambient-glow {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(120, 80, 220, 0.12) 0%, rgba(60, 20, 120, 0.04) 50%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(80px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        /* Existing Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(7, 7, 9, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background: #a78bfa;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #a78bfa;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        /* Hero Main Section */
+        main.hero-container {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .hero-content {
+            max-width: 720px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 24px;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 6vw, 4.8rem);
+            font-weight: 700;
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.65) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--text-secondary);
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 36px;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 100px;
+            background: #ffffff;
+            color: #000000;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+            background: #f0f0f0;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 28px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+
+        /* ==========================================================================
+           FLOATING CARDS LAYER — EDITORIAL / ETHOS ONBOARDING STYLE
+           ========================================================================== */
+        
+        /* Container overlay for floating cards */
+        .floating-cards-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            overflow: hidden;
+        }
+
+        /* Base Floating Card Style */
+        .fc-card {
+            position: absolute;
+            pointer-events: auto;
+            width: clamp(200px, 16vw, 250px);
+            padding: 14px 18px;
+            background: rgba(15, 15, 22, 0.42);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            user-select: none;
+            opacity: 0;
+            transform: scale(0.92) translate3d(0, 20px, 0);
+            animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+            will-change: transform;
+        }
+
+        .fc-card:hover {
+            border-color: var(--card-border-hover);
+            background: rgba(22, 22, 32, 0.65);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), 
+                        0 0 24px rgba(167, 139, 250, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Card Header & Badge */
+        .fc-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .fc-role-tag {
+            font-family: var(--font-heading);
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 3px 8px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .fc-role-tag::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #a78bfa;
+        }
+
+        .fc-arrow-icon {
+            color: rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, color 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .fc-card:hover .fc-arrow-icon {
+            color: rgba(255, 255, 255, 0.9);
+            transform: translate(2px, -2px);
+        }
+
+        /* Card Content Layout */
+        .fc-card-body {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .fc-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Abstract Avatar Placeholders (Editorial Look) */
+        .fc-avatar.founder { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+        .fc-avatar.artist { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .fc-avatar.project { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+        .fc-avatar.gallery { background: linear-gradient(135deg, #10b981, #059669); }
+        .fc-avatar.collector { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .fc-avatar.curator { background: linear-gradient(135deg, #6366f1, #a855f7); }
+
+        .fc-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .fc-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fc-subtitle {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Ethos-style Preview Footer Tag */
+        .fc-card-footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .fc-doc-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(167, 139, 250, 0.85);
+            font-weight: 500;
+        }
+
+        /* ==========================================================================
+           CARDS POSITIONS (Symmetrical Balanced Layout around Hero)
+           ========================================================================== */
+        
+        .fc-card-1 { /* Top Center */
+            top: 10%;
+            left: 50%;
+            margin-left: -115px;
+            animation-delay: 0.1s;
+        }
+
+        .fc-card-2 { /* Top Left */
+            top: 22%;
+            left: 10%;
+            animation-delay: 0.25s;
+        }
+
+        .fc-card-3 { /* Top Right */
+            top: 24%;
+            right: 10%;
+            animation-delay: 0.4s;
+        }
+
+        .fc-card-4 { /* Bottom Left */
+            bottom: 22%;
+            left: 12%;
+            animation-delay: 0.55s;
+        }
+
+        .fc-card-5 { /* Bottom Right */
+            bottom: 24%;
+            right: 12%;
+            animation-delay: 0.7s;
+        }
+
+        .fc-card-6 { /* Bottom Center */
+            bottom: 8%;
+            left: 50%;
+            margin-left: -115px;
+            animation-delay: 0.85s;
+        }
+
+        /* ==========================================================================
+           KEYFRAME ANIMATIONS & FLOATING LOOPS
+           ========================================================================== */
+
+        @keyframes fc-fade-in {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translate3d(0, 24px, 0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translate3d(0, 0, 0);
+            }
+        }
+
+        /* Unsynchronized Organic Floating Motion via CSS */
+        .fc-float-1 { animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards, fc-float-loop-1 12s ease-in-out infinite 1.3s; }
+        .fc-float-2 { animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards, fc-float-loop-2 9s ease-in-out infinite 1.45s; }
+        .fc-float-3 { animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards, fc-float-loop-3 11s ease-in-out infinite 1.6s; }
+        .fc-float-4 { animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards, fc-float-loop-4 13s ease-in-out infinite 1.75s; }
+        .fc-float-5 { animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards, fc-float-loop-5 10s ease-in-out infinite 1.9s; }
+        .fc-float-6 { animation: fc-fade-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards, fc-float-loop-6 14s ease-in-out infinite 2.05s; }
+
+        @keyframes fc-float-loop-1 {
+            0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+            50% { transform: translate3d(0, -8px, 0) rotate(1deg); }
+        }
+
+        @keyframes fc-float-loop-2 {
+            0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+            50% { transform: translate3d(0, 6px, 0) rotate(-1.5deg); }
+        }
+
+        @keyframes fc-float-loop-3 {
+            0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+            50% { transform: translate3d(0, -5px, 0) rotate(1.2deg); }
+        }
+
+        @keyframes fc-float-loop-4 {
+            0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+            50% { transform: translate3d(0, 7px, 0) rotate(-1deg); }
+        }
+
+        @keyframes fc-float-loop-5 {
+            0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+            50% { transform: translate3d(0, -9px, 0) rotate(0.8deg); }
+        }
+
+        @keyframes fc-float-loop-6 {
+            0%, 100% { transform: translate3d(0, 0px, 0) rotate(0deg); }
+            50% { transform: translate3d(0, 5px, 0) rotate(-1.2deg); }
+        }
+
+        /* ==========================================================================
+           RESPONSIVE BEHAVIOR (Adaptive for Mobile & Tablet)
+           ========================================================================== */
+        @media (max-width: 1024px) {
+            .fc-card { width: 200px; padding: 12px 14px; }
+            .fc-card-2 { left: 4%; top: 18%; }
+            .fc-card-3 { right: 4%; top: 18%; }
+            .fc-card-4 { left: 5%; bottom: 16%; }
+            .fc-card-5 { right: 5%; bottom: 16%; }
+        }
+
+        @media (max-width: 768px) {
+            .fc-card {
+                width: 180px;
+                padding: 10px 12px;
+            }
+            .fc-card-2, .fc-card-3, .fc-card-4, .fc-card-5 {
+                display: none;
+            }
+            .fc-card-1 {
+                top: 14%;
+                left: 50%;
+                margin-left: -90px;
+            }
+            .fc-card-6 {
+                bottom: 12%;
+                left: 50%;
+                margin-left: -90px;
+            }
+            .fc-card-footer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Background Canvas & Glow -->
+    <div class="bg-canvas-container">
+        <canvas id="bg-canvas"></canvas>
+        <div class="ambient-glow"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header>
+        <a href="#" class="logo">
+            <span class="logo-dot"></span>
+            Buda Collective
+        </a>
+        <nav>
+            <ul>
+                <li><a href="#about">Ecosystem</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#collectors">Collectors</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Hero Container -->
+    <main class="hero-container">
+        
+        <!-- Floating Cards Layer -->
+        <div class="floating-cards-layer" id="floatingCardsLayer">
+
+            <!-- Card 1: Founder -->
+            <div class="fc-card fc-card-1 fc-float-1" data-parallax-depth="0.05">
+                <div class="fc-card-header">
+                    <span class="fc-role-tag">Founder</span>
+                    <span class="fc-arrow-icon">↗</span>
+                </div>
+                <div class="fc-card-body">
+                    <div class="fc-avatar founder"></div>
+                    <div class="fc-info">
+                        <span class="fc-title">Leonardo M Scarcia</span>
+                        <span class="fc-subtitle">Creative Director</span>
+                    </div>
+                </div>
+                <div class="fc-card-footer">
+                    <span>Portfolio</span>
+                    <span class="fc-doc-link">View CV 📄</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Artist -->
+            <div class="fc-card fc-card-2 fc-float-2" data-parallax-depth="0.08">
+                <div class="fc-card-header">
+                    <span class="fc-role-tag">Artist</span>
+                    <span class="fc-arrow-icon">↗</span>
+                </div>
+                <div class="fc-card-body">
+                    <div class="fc-avatar artist"></div>
+                    <div class="fc-info">
+                        <span class="fc-title">3D & Stop Motion</span>
+                        <span class="fc-subtitle">Digital & Physical</span>
+                    </div>
+                </div>
+                <div class="fc-card-footer">
+                    <span>Selected Works</span>
+                    <span class="fc-doc-link">NFT NYC '25</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Project -->
+            <div class="fc-card fc-card-3 fc-float-3" data-parallax-depth="0.04">
+                <div class="fc-card-header">
+                    <span class="fc-role-tag">Project</span>
+                    <span class="fc-arrow-icon">↗</span>
+                </div>
+                <div class="fc-card-body">
+                    <div class="fc-avatar project"></div>
+                    <div class="fc-info">
+                        <span class="fc-title">Spatial Metaverse</span>
+                        <span class="fc-subtitle">Interactive World</span>
+                    </div>
+                </div>
+                <div class="fc-card-footer">
+                    <span>VR Experience</span>
+                    <span class="fc-doc-link">Explore</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Gallery -->
+            <div class="fc-card fc-card-4 fc-float-4" data-parallax-depth="0.07">
+                <div class="fc-card-header">
+                    <span class="fc-role-tag">Gallery</span>
+                    <span class="fc-arrow-icon">↗</span>
+                </div>
+                <div class="fc-card-body">
+                    <div class="fc-avatar gallery"></div>
+                    <div class="fc-info">
+                        <span class="fc-title">Teia & Objkt</span>
+                        <span class="fc-subtitle">Curated Vault</span>
+                    </div>
+                </div>
+                <div class="fc-card-footer">
+                    <span>On-Chain</span>
+                    <span class="fc-doc-link">Collections</span>
+                </div>
+            </div>
+
+            <!-- Card 5: Collector -->
+            <div class="fc-card fc-card-5 fc-float-5" data-parallax-depth="0.06">
+                <div class="fc-card-header">
+                    <span class="fc-role-tag">Collector</span>
+                    <span class="fc-arrow-icon">↗</span>
+                </div>
+                <div class="fc-card-body">
+                    <div class="fc-avatar collector"></div>
+                    <div class="fc-info">
+                        <span class="fc-title">Rare Pepes & ZeroOne</span>
+                        <span class="fc-subtitle">Patron Network</span>
+                    </div>
+                </div>
+                <div class="fc-card-footer">
+                    <span>Community</span>
+                    <span class="fc-doc-link">Access</span>
+                </div>
+            </div>
+
+            <!-- Card 6: Curator -->
+            <div class="fc-card fc-card-6 fc-float-6" data-parallax-depth="0.03">
+                <div class="fc-card-header">
+                    <span class="fc-role-tag">Curator</span>
+                    <span class="fc-arrow-icon">↗</span>
+                </div>
+                <div class="fc-card-body">
+                    <div class="fc-avatar curator"></div>
+                    <div class="fc-info">
+                        <span class="fc-title">Ethos Architecture</span>
+                        <span class="fc-subtitle">Digital Curation</span>
+                    </div>
+                </div>
+                <div class="fc-card-footer">
+                    <span>Onboarding</span>
+                    <span class="fc-doc-link">Profile</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Hero Text Content -->
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span>✦ Buda Collective Ecosystem</span>
+            </div>
+            <h1 class="hero-title">Where Digital Art & Human Consciousness Converge</h1>
+            <p class="hero-subtitle">
+                A collective studio crafting high-end digital experiences, 3D animations, metaverse installations, and curated fine art collections.
+            </p>
+            <div class="hero-actions">
+                <a href="#enter" class="btn-primary">Explore Ecosystem →</a>
+                <a href="#about" class="btn-secondary">Learn More</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Background Particle Canvas Script (Existing Background FX) -->
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(167, 139, 250, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 60; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        animateCanvas();
+    </script>
+
+    <!-- Floating Cards Interaction (Mouse Parallax & Smooth Interactivity) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.fc-card');
+            
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            // Track mouse movements relative to center of screen
+            window.addEventListener('mousemove', (e) => {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                
+                mouseX = (e.clientX - centerX);
+                mouseY = (e.clientY - centerY);
+            });
+
+            // Smooth RAF-based Parallax Interpolation
+            function updateParallax() {
+                targetX += (mouseX - targetX) * 0.05;
+                targetY += (mouseY - targetY) * 0.05;
+
+                cards.forEach(card => {
+                    const depth = parseFloat(card.getAttribute('data-parallax-depth')) || 0.05;
+                    const moveX = targetX * depth;
+                    const moveY = targetY * depth;
+
+                    card.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+                });
+
+                requestAnimationFrame(updateParallax);
+            }
+
+            updateParallax();
+        });
+    </script>
+
+</body>
+</html>
