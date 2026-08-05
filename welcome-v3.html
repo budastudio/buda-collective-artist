@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Buda Collective Art | Founding Artists</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#090909;
+    font-family:Inter,sans-serif;
+    color:white;
+    overflow-x:hidden;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+}
+
+/* NAV */
+
+.topnav{
+    position:relative;
+    z-index:10;
+    width:100%;
+    padding:20px 30px;
+    display:flex;
+    justify-content:center;
+    background:rgba(9,9,9,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.topnav-links{
+    display:flex;
+    gap:25px;
+    list-style:none;
+    align-items:center;
+}
+
+.topnav-links a{
+    text-decoration:none;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#999;
+    transition:.3s;
+}
+
+.topnav-links a:hover,
+.topnav-links a.active{
+    color:#d4af37;
+}
+
+
+/* HERO */
+
+.hero{
+    position:relative;
+    z-index:1;
+    min-height:calc(100vh - 70px);
+    padding:25px 20px 50px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+}
+
+
+.logo{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    margin-bottom:25px;
+    box-shadow:0 0 50px rgba(212,175,55,.18);
+}
+
+
+h1{
+    font-size:38px;
+    font-weight:200;
+    letter-spacing:7px;
+    margin-bottom:15px;
+}
+
+
+.subtitle{
+    max-width:700px;
+    font-size:16px;
+    letter-spacing:2px;
+    line-height:1.7;
+    color:#d4af37;
+    text-transform:uppercase;
+}
+
+
+/* FOUNDERS COUNTER */
+
+.counter{
+    margin-top:25px;
+    padding:18px 40px;
+    border:1px solid rgba(212,175,55,.35);
+    border-radius:50px;
+}
+
+
+.counter strong{
+    display:block;
+    font-size:28px;
+    color:#d4af37;
+    letter-spacing:4px;
+}
+
+
+.counter span{
+    font-size:12px;
+    letter-spacing:3px;
+    color:#aaa;
+}
+
+
+/* MANIFESTO */
+
+.manifesto{
+    max-width:720px;
+    margin:35px auto;
+}
+
+
+.manifesto details{
+    text-align:center;
+}
+
+
+.manifesto summary{
+    cursor:pointer;
+    display:inline-block;
+    padding:12px 25px;
+    border-radius:50px;
+    border:1px solid rgba(212,175,55,.3);
+    color:#d4af37;
+    letter-spacing:4px;
+    font-size:13px;
+}
+
+
+.manifesto-text{
+    margin-top:25px;
+    line-height:1.8;
+    color:#ccc;
+    font-size:15px;
+}
+
+
+.manifesto-text strong{
+    color:white;
+}
+
+
+.manifesto-text em{
+    color:#d4af37;
+    font-style:normal;
+}
+
+
+/* CARDS */
+
+.choose{
+    margin:20px;
+    font-size:18px;
+    opacity:.7;
+}
+
+
+.cards{
+    display:flex;
+    gap:30px;
+    justify-content:center;
+    flex-wrap:wrap;
+    max-width:1200px;
+}
+
+
+/* FLOATING FX EN LAS 3 CARDS */
+.card{
+    width:380px;
+    height:245px;
+    border-radius:24px;
+    overflow:hidden;
+    background:
+    linear-gradient(
+    rgba(0,0,0,.45),
+    rgba(0,0,0,.9)
+    ),
+    var(--bg);
+
+    background-size:cover;
+    background-position:center;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    display:flex;
+    align-items:flex-end;
+
+    transition: border-color .4s, box-shadow .4s, transform .1s ease-out;
+    cursor:pointer;
+    will-change: transform;
+}
+
+/* Animaciones flotantes independientes para cada card */
+.card-1 {
+    animation: float1 6s ease-in-out infinite;
+}
+
+.card-2 {
+    animation: float2 7s ease-in-out infinite;
+}
+
+.card-3 {
+    animation: float3 6.5s ease-in-out infinite;
+}
+
+@keyframes float1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(0.5deg); }
+}
+
+@keyframes float2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(-0.5deg); }
+}
+
+@keyframes float3 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(0.4deg); }
+}
+
+.card:hover{
+    border-color:#d4af37;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+}
+
+
+.content{
+    padding:25px;
+}
+
+
+.card h2{
+    font-weight:300;
+    font-size:25px;
+    margin-bottom:12px;
+}
+
+
+.card p{
+    font-size:13px;
+    line-height:1.5;
+    color:#ccc;
+    margin-bottom:15px;
+}
+
+
+.button{
+    display:inline-flex;
+    padding:10px 22px;
+    border-radius:999px;
+    border:1px solid #d4af37;
+    color:white;
+    text-decoration:none;
+    transition: .3s;
+}
+
+
+.button:hover{
+    background:#d4af37;
+    color:black;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+
+<!-- NAVIGATION -->
+
+<nav class="topnav">
+
+<ul class="topnav-links">
+
+<li>
+<a href="welcome.html" class="active">
+Home
+</a>
+</li>
+
+<li>|</li>
+
+<li>
+<a href="index.html">
+Collective
+</a>
+</li>
+
+<li>|</li>
+
+<li>
+<a href="https://www.transient.xyz/mint/featured-pass">
+Featured Mint
+</a>
+</li>
+
+<li>|</li>
+
+<li>
+<a href="founders.html">
+Founders
+</a>
+</li>
+
+</ul>
+
+</nav>
+
+
+
+<section class="hero">
+
+
+<img src="logogold26_trans.png"
+class="logo"
+alt="Buda Collective Logo">
+
+
+
+<h1>
+BUDA COLLECTIVE ART
+</h1>
+
+
+
+<div class="subtitle">
+
+A permanent home for 50 pioneering digital artists.
+
+<br>
+
+Building a curated living gallery where artists become founders,
+collaborators and part of the first chapter.
+
+</div>
+
+
+
+<div class="counter">
+
+<strong>
+02 / 50
+</strong>
+
+<span>
+FOUNDING ARTISTS
+<br>
+48 FOUNDER POSITIONS REMAIN
+</span>
+
+</div>
+
+
+
+
+<div class="manifesto">
+
+
+<details>
+
+
+<summary>
+✦ THE FIRST CHAPTER ✦
+</summary>
+
+
+<div class="manifesto-text">
+
+
+<p>
+<em>
+Every movement begins with a small group of believers.
+</em>
+</p>
+
+
+<p>
+Buda Collective was created as a permanent home for digital artists from different cultures, chains and creative backgrounds.
+</p>
+
+
+<p>
+This is not just a collection.
+</p>
+
+
+<p>
+<strong>
+It is a living ecosystem built by artists, for artists.
+</strong>
+</p>
+
+
+<p>
+The first 50 Founding Artists will shape the identity,
+history and future of this collective.
+</p>
+
+
+<p>
+Artists are not only displayed here.
+</p>
+
+
+<p>
+<strong>
+They belong.
+</strong>
+</p>
+
+
+</div>
+
+
+</details>
+
+
+</div>
+
+
+
+
+
+<div class="choose">
+
+Choose your journey
+
+</div>
+
+
+
+
+<div class="cards">
+
+
+
+<!-- GALLERY -->
+
+<div class="card card-1"
+style="--bg:url('gallery.jpg')"
+data-parallax="0.04"
+onclick="location.href='index.html'">
+
+
+<div class="content">
+
+
+<h2>
+ENTER THE
+<br>
+LIVING GALLERY
+</h2>
+
+
+<p>
+Explore the first generation of artists building this evolving digital exhibition.
+</p>
+
+
+<a class="button">
+ENTER →
+</a>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- FOUNDERS -->
+
+<div class="card card-2"
+style="--bg:url('community.jpg')"
+data-parallax="0.06"
+onclick="location.href='join.html'">
+
+
+<div class="content">
+
+
+<h2>
+BECOME A
+<br>
+FOUNDING ARTIST
+</h2>
+
+
+<p>
+Join the first 50 creators shaping the future of digital culture.
+</p>
+
+
+<a class="button">
+BECOME A FOUNDER →
+</a>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- FOUNDERS PAGE -->
+
+
+<div class="card card-3"
+style="--bg:url('featured-pass-tiny.jpg')"
+data-parallax="0.05"
+onclick="location.href='founders.html'">
+
+
+<div class="content">
+
+
+<h2>
+MEET THE
+<br>
+FOUNDERS
+</h2>
+
+
+<p>
+Discover the artists and supporters who started this journey.
+</p>
+
+
+<a class="button">
+EXPLORE →
+</a>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<script>
+
+
+const canvas=document.getElementById('bg');
+
+const ctx=canvas.getContext('2d');
+
+
+let particles=[];
+
+
+let width=
+canvas.width=
+window.innerWidth;
+
+
+let height=
+canvas.height=
+window.innerHeight;
+
+
+
+window.addEventListener(
+'resize',
+()=>{
+
+width=
+canvas.width=
+window.innerWidth;
+
+
+height=
+canvas.height=
+window.innerHeight;
+
+});
+
+
+
+
+
+class Particle{
+
+
+constructor(){
+
+this.reset();
+
+this.y=Math.random()*height;
+
+}
+
+
+
+reset(){
+
+this.x=Math.random()*width;
+
+this.y=height+10;
+
+this.size=Math.random()*1.5+.5;
+
+this.speedY=-(Math.random()*.4+.1);
+
+this.speedX=(Math.random()-.5)*.2;
+
+this.alpha=Math.random()*.5+.1;
+
+}
+
+
+
+update(){
+
+this.y+=this.speedY;
+
+this.x+=this.speedX;
+
+
+if(
+this.y<-10 ||
+this.x<-10 ||
+this.x>width+10
+){
+
+this.reset();
+
+}
+
+}
+
+
+
+draw(){
+
+ctx.save();
+
+
+ctx.globalAlpha=this.alpha;
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+this.x,
+this.y,
+this.size,
+0,
+Math.PI*2
+);
+
+
+
+ctx.fillStyle='#d4af37';
+
+ctx.shadowBlur=8;
+
+ctx.shadowColor='#d4af37';
+
+
+ctx.fill();
+
+
+ctx.restore();
+
+
+}
+
+
+}
+
+
+
+
+for(
+let i=0;
+i<60;
+i++
+){
+
+particles.push(
+new Particle()
+);
+
+}
+
+
+
+
+function animate(){
+
+
+ctx.clearRect(
+0,
+0,
+width,
+height
+);
+
+
+
+particles.forEach(
+p=>{
+
+p.update();
+
+p.draw();
+
+});
+
+
+requestAnimationFrame(
+animate
+);
+
+
+}
+
+
+
+animate();
+
+
+/* PARALLAX INTERACCION CON EL CURSOR PARA LAS CARDS */
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.card');
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2);
+        mouseY = (e.clientY - window.innerHeight / 2);
+    });
+
+    function animateParallax() {
+        targetX += (mouseX - targetX) * 0.04;
+        targetY += (mouseY - targetY) * 0.04;
+
+        cards.forEach(card => {
+            const depth = parseFloat(card.getAttribute('data-parallax')) || 0.04;
+            const offsetX = targetX * depth;
+            const offsetY = targetY * depth;
+            card.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+        });
+
+        requestAnimationFrame(animateParallax);
+    }
+
+    animateParallax();
+});
+
+</script>
+
+
+</body>
+
+</html>
