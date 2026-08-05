@@ -3,451 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Buda Collective Art | Founders</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:#090909;
-    font-family:Inter,sans-serif;
-    color:white;
-    overflow-x:hidden;
-}
-
-canvas{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-}
-
-/* NAV */
-
-.topnav{
-    position:relative;
-    z-index:10;
-    width:100%;
-    padding:20px 30px;
-    display:flex;
-    justify-content:center;
-    background:rgba(9,9,9,.85);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid rgba(255,255,255,.06);
-}
-
-.topnav-links{
-    display:flex;
-    gap:25px;
-    list-style:none;
-    align-items:center;
-}
-
-.topnav-links a{
-    text-decoration:none;
-    font-size:12px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-    color:#999;
-    transition:.3s;
-}
-
-.topnav-links a:hover,
-.topnav-links a.active{
-    color:#d4af37;
-}
-
-/* MAIN CONTENT */
-
-.container{
-    position:relative;
-    z-index:1;
-    max-width:1200px;
-    margin:0 auto;
-    padding:40px 20px 80px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
-
-.header-title{
-    font-size:32px;
-    font-weight:200;
-    letter-spacing:6px;
-    text-transform:uppercase;
-    text-align:center;
-    margin-bottom:10px;
-}
-
-.header-subtitle{
-    font-size:13px;
-    letter-spacing:3px;
-    color:#d4af37;
-    text-transform:uppercase;
-    text-align:center;
-    margin-bottom:50px;
-}
-
-/* SECTIONS & CARDS */
-
-.section-title{
-    font-size:14px;
-    letter-spacing:4px;
-    color:#888;
-    text-transform:uppercase;
-    margin-bottom:25px;
-    text-align:center;
-    width:100%;
-}
-
-.cards-grid{
-    display:flex;
-    gap:30px;
-    justify-content:center;
-    flex-wrap:wrap;
-    width:100%;
-    margin-bottom:60px;
-}
-
-/* CARDS STYLING WITH FLOATING FX */
-
-.creator-card, .founder-card{
-    background:rgba(255,255,255,.02);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:24px;
-    backdrop-filter:blur(10px);
-    overflow:hidden;
-    transition:border-color .4s, box-shadow .4s, transform .1s ease-out;
-    cursor:pointer;
-    will-change:transform;
-}
-
-/* THE CREATOR CARD */
-.creator-card{
-    width:100%;
-    max-width:780px;
-    display:flex;
-    flex-direction:row;
-    align-items:center;
-    padding:30px;
-    gap:30px;
-    margin-bottom:60px;
-    animation: floatCreator 6.5s ease-in-out infinite;
-}
-
-.creator-card:hover{
-    border-color:#d4af37;
-    box-shadow: 0 10px 35px rgba(212, 175, 55, 0.18);
-}
-
-.creator-avatar{
-    width:140px;
-    height:140px;
-    border-radius:50%;
-    object-fit:cover;
-    border:2px solid #d4af37;
-    box-shadow:0 0 30px rgba(212,175,55,.2);
-    flex-shrink:0;
-}
-
-.creator-info h2{
-    font-size:24px;
-    font-weight:300;
-    letter-spacing:3px;
-    margin-bottom:8px;
-    color:#ffffff;
-}
-
-.creator-info .role{
-    font-size:12px;
-    letter-spacing:2px;
-    color:#d4af37;
-    text-transform:uppercase;
-    margin-bottom:15px;
-}
-
-.creator-info p{
-    font-size:14px;
-    line-height:1.6;
-    color:#aaa;
-}
-
-/* FOUNDERS CARDS */
-.founder-card{
-    width:360px;
-    padding:25px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-}
-
-.founder-card:hover{
-    border-color:#d4af37;
-    box-shadow:0 10px 30px rgba(212, 175, 55, 0.15);
-}
-
-.founder-avatar{
-    width:100px;
-    height:100px;
-    border-radius:50%;
-    object-fit:cover;
-    margin-bottom:20px;
-    border:1px solid rgba(212,175,55,.4);
-}
-
-.founder-card h3{
-    font-size:20px;
-    font-weight:300;
-    letter-spacing:2px;
-    margin-bottom:6px;
-}
-
-.founder-card .role{
-    font-size:11px;
-    letter-spacing:2px;
-    color:#d4af37;
-    text-transform:uppercase;
-    margin-bottom:12px;
-}
-
-.founder-card p{
-    font-size:13px;
-    line-height:1.5;
-    color:#999;
-}
-
-/* ANIMACIONES INDEPENDIENTES PARA EFECTO FLOTANTE */
-
-@keyframes floatCreator {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-12px) rotate(0.3deg); }
-}
-
-.f-card-1 { animation: floatF1 6s ease-in-out infinite; }
-.f-card-2 { animation: floatF2 7s ease-in-out infinite; }
-.f-card-3 { animation: floatF3 6.2s ease-in-out infinite; }
-
-@keyframes floatF1 {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(-0.5deg); }
-}
-
-@keyframes floatF2 {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-11px) rotate(0.4deg); }
-}
-
-@keyframes floatF3 {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(-0.3deg); }
-}
-
-@media(max-width:768px){
-    .creator-card{
-        flex-direction:column;
-        text-align:center;
-    }
-}
-
-</style>
+<title>Founders - Buda Collective</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<canvas id="bg"></canvas>
+<canvas id="bg-canvas"></canvas>
 
-<!-- NAVIGATION -->
-
-<nav class="topnav">
-
-<ul class="topnav-links">
-
-<li>
-<a href="welcome.html">
-Home
-</a>
-</li>
-
+<nav class="main-nav">
+<ul>
+<li><a href="welcome.html">Home</a></li>
 <li>|</li>
-
-<li>
-<a href="index.html">
-Collective
-</a>
-</li>
-
+<li><a href="index.html">Collective</a></li>
 <li>|</li>
-
-<li>
-<a href="https://www.transient.xyz/mint/featured-pass">
-Featured Mint
-</a>
-</li>
-
+<li><a href="https://www.transient.xyz/mint/featured-pass">Featured Mint</a></li>
 <li>|</li>
-
-<li>
-<a href="founders.html" class="active">
-Founders
-</a>
-</li>
-
+<li><a href="founders.html">Founders</a></li>
 </ul>
-
 </nav>
 
-<div class="container">
+<div class="founders-container">
 
-<h1 class="header-title">THE FOUNDERS</h1>
-<div class="header-subtitle">Architects & Pillars of Buda Collective</div>
+<h1>THE FOUNDERS</h1>
+<div class="founders-subtitle">Architects & Pillars of Buda Collective</div>
 
-<!-- THE CREATOR (CARD FLOTANTE) -->
-<div class="section-title">✦ THE CREATOR ✦</div>
+<!-- THE CREATOR SECTION -->
+<div class="section-label">✦ THE CREATOR ✦</div>
 
-<div class="creator-card" data-parallax="0.06">
-    <img src="logogold26_trans.png" alt="Buda Studio" class="creator-avatar">
-    <div class="creator-info">
-        <h2>BUDA STUDIO</h2>
-        <div class="role">Founder & Visionary</div>
-        <p>Architect of the Buda Collective ecosystem, building a curated home for pioneering digital artists to collaborate, evolve, and shape the first chapter of digital culture.</p>
+<div class="creator-box">
+    <img src="perfil.jpg" alt="Leonardo M. Scarcia">
+    <div class="creator-details">
+        <h2>Leonardo M. Scarcia</h2>
+        <div class="creator-role">FOUNDER & CREATIVE DIRECTOR</div>
+        <p>Visual artist, animator and designer with extensive experience exploring the intersection between art, technology and digital culture.</p>
+        <p>From traditional exhibitions to digital experiences, Leonardo created Buda Collective Artist as a living ecosystem where pioneering artists can connect, exhibit and evolve together.</p>
     </div>
 </div>
 
-<!-- FOUNDERS GRID (CARDS FLOTANTES) -->
-<div class="section-title">✦ FOUNDING ARTISTS & MEMBERS ✦</div>
+<!-- FOUNDERS GRID SECTION -->
+<div class="section-label">✦ FOUNDING ARTISTS & MEMBERS ✦</div>
 
-<div class="cards-grid">
+<div class="founders-grid">
 
-    <div class="founder-card f-card-1" data-parallax="0.04">
-        <img src="community.jpg" alt="Founding Artist" class="founder-avatar">
-        <h3>FOUNDER #01</h3>
-        <div class="role">Founding Artist</div>
-        <p>Pioneering member contributing to the core collection and artistic narrative of Buda Collective.</p>
-    </div>
+    <!-- FOUNDER #01 -->
+    <a href="featured.html?id=3647ac3f-e27a-4960-93f8-84e36d21dbd3" class="founder-card-link">
+        <div class="founder-card">
+            <img src="https://ziautsdlspdojwwvwmfa.supabase.co/storage/v1/object/public/avatars/dorthe-s-joy-of-creation-1784509503376.png" alt="Dorthes">
+            <h3>FOUNDER #01</h3>
+            <div class="founder-name">Dorthes</div>
+            <div class="founder-role">Artist</div>
+            <p>View Profile →</p>
+        </div>
+    </a>
 
-    <div class="founder-card f-card-2" data-parallax="0.05">
-        <img src="gallery.jpg" alt="Founding Artist" class="founder-avatar">
-        <h3>FOUNDER #02</h3>
-        <div class="role">Founding Artist</div>
-        <p>Digital artist shaping the visual direction and future exhibitions in the living gallery.</p>
-    </div>
+    <!-- FOUNDER #02 -->
+    <a href="featured.html?id=585a1e6f-b6a0-4b44-bc60-5fabf24a4d8f" class="founder-card-link">
+        <div class="founder-card">
+            <img src="pfp15B.jpg" alt="Chris Landmann">
+            <h3>FOUNDER #02</h3>
+            <div class="founder-name">Chris Landmann</div>
+            <div class="founder-role">Artist</div>
+            <p>View Profile →</p>
+        </div>
+    </a>
 
-    <div class="founder-card f-card-3" data-parallax="0.04">
-        <img src="featured-pass-tiny.jpg" alt="Collector & Supporter" class="founder-avatar">
-        <h3>PASS HOLDER</h3>
-        <div class="role">Early Supporter</div>
-        <p>Key contributor empowering the ecosystem and backing the vision from the very beginning.</p>
-    </div>
+    <!-- FOUNDER #03 / PASS HOLDER -->
+    <a href="https://www.transient.xyz/mint/featured-pass" class="founder-card-link">
+        <div class="founder-card">
+            <img src="featured-pass-tiny.jpg" alt="Become Founder #03">
+            <h3>FOUNDER #03</h3>
+            <div class="founder-name">Become Founder #03</div>
+            <div class="founder-role">Open Position</div>
+            <p>Join The First Chapter →</p>
+        </div>
+    </a>
 
 </div>
 
 </div>
 
-<script>
-
-const canvas=document.getElementById('bg');
-const ctx=canvas.getContext('2d');
-
-let particles=[];
-
-let width=canvas.width=window.innerWidth;
-let height=canvas.height=window.innerHeight;
-
-window.addEventListener('resize',()=>{
-    width=canvas.width=window.innerWidth;
-    height=canvas.height=window.innerHeight;
-});
-
-class Particle{
-    constructor(){
-        this.reset();
-        this.y=Math.random()*height;
-    }
-
-    reset(){
-        this.x=Math.random()*width;
-        this.y=height+10;
-        this.size=Math.random()*1.5+.5;
-        this.speedY=-(Math.random()*.4+.1);
-        this.speedX=(Math.random()-.5)*.2;
-        this.alpha=Math.random()*.5+.1;
-    }
-
-    update(){
-        this.y+=this.speedY;
-        this.x+=this.speedX;
-
-        if(this.y<-10 || this.x<-10 || this.x>width+10){
-            this.reset();
-        }
-    }
-
-    draw(){
-        ctx.save();
-        ctx.globalAlpha=this.alpha;
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-        ctx.fillStyle='#d4af37';
-        ctx.shadowBlur=8;
-        ctx.shadowColor='#d4af37';
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-for(let i=0; i<60; i++){
-    particles.push(new Particle());
-}
-
-function animate(){
-    ctx.clearRect(0,0,width,height);
-    particles.forEach(p=>{
-        p.update();
-        p.draw();
-    });
-    requestAnimationFrame(animate);
-}
-
-animate();
-
-/* PARALLAX INTERACTION CON EL CURSOR PARA TODAS LAS CARDS INCLUYENDO CREATOR */
-document.addEventListener('DOMContentLoaded', () => {
-    const cards = document.querySelectorAll('.creator-card, .founder-card');
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2);
-        mouseY = (e.clientY - window.innerHeight / 2);
-    });
-
-    function animateParallax() {
-        targetX += (mouseX - targetX) * 0.04;
-        targetY += (mouseY - targetY) * 0.04;
-
-        cards.forEach(card => {
-            const depth = parseFloat(card.getAttribute('data-parallax')) || 0.04;
-            const offsetX = targetX * depth;
-            const offsetY = targetY * depth;
-            card.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
-        });
-
-        requestAnimationFrame(animateParallax);
-    }
-
-    animateParallax();
-});
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
