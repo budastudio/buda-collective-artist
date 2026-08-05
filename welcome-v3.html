@@ -1,802 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Buda Collective Art | Founding Artists</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:#090909;
-    font-family:Inter,sans-serif;
-    color:white;
-    overflow-x:hidden;
-}
-
-canvas{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-}
-
-/* NAV */
-
-.topnav{
-    position:relative;
-    z-index:10;
-    width:100%;
-    padding:20px 30px;
-    display:flex;
-    justify-content:center;
-    background:rgba(9,9,9,.85);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid rgba(255,255,255,.06);
-}
-
-.topnav-links{
-    display:flex;
-    gap:25px;
-    list-style:none;
-    align-items:center;
-}
-
-.topnav-links a{
-    text-decoration:none;
-    font-size:12px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-    color:#999;
-    transition:.3s;
-}
-
-.topnav-links a:hover,
-.topnav-links a.active{
-    color:#d4af37;
-}
-
-
-/* HERO */
-
-.hero{
-    position:relative;
-    z-index:1;
-    min-height:calc(100vh - 70px);
-    padding:25px 20px 50px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-}
-
-
-.logo{
-    width:140px;
-    height:140px;
-    border-radius:50%;
-    margin-bottom:25px;
-    box-shadow:0 0 50px rgba(212,175,55,.18);
-}
-
-
-h1{
-    font-size:38px;
-    font-weight:200;
-    letter-spacing:7px;
-    margin-bottom:15px;
-}
-
-
-.subtitle{
-    max-width:700px;
-    font-size:16px;
-    letter-spacing:2px;
-    line-height:1.7;
-    color:#d4af37;
-    text-transform:uppercase;
-}
-
-
-/* FOUNDERS COUNTER */
-
-.counter{
-    margin-top:25px;
-    padding:18px 40px;
-    border:1px solid rgba(212,175,55,.35);
-    border-radius:50px;
-}
-
-
-.counter strong{
-    display:block;
-    font-size:28px;
-    color:#d4af37;
-    letter-spacing:4px;
-}
-
-
-.counter span{
-    font-size:12px;
-    letter-spacing:3px;
-    color:#aaa;
-}
-
-
-/* MANIFESTO */
-
-.manifesto{
-    max-width:720px;
-    margin:35px auto;
-}
-
-
-.manifesto details{
-    text-align:center;
-}
-
-
-.manifesto summary{
-    cursor:pointer;
-    display:inline-block;
-    padding:12px 25px;
-    border-radius:50px;
-    border:1px solid rgba(212,175,55,.3);
-    color:#d4af37;
-    letter-spacing:4px;
-    font-size:13px;
-}
-
-
-.manifesto-text{
-    margin-top:25px;
-    line-height:1.8;
-    color:#ccc;
-    font-size:15px;
-}
-
-
-.manifesto-text strong{
-    color:white;
-}
-
-
-.manifesto-text em{
-    color:#d4af37;
-    font-style:normal;
-}
-
-
-/* CARDS */
-
-.choose{
-    margin:20px;
-    font-size:18px;
-    opacity:.7;
-}
-
-
-.cards{
-    display:flex;
-    gap:30px;
-    justify-content:center;
-    flex-wrap:wrap;
-    max-width:1200px;
-}
-
-
-/* FLOATING FX EN LAS 3 CARDS */
-.card{
-    width:380px;
-    height:245px;
-    border-radius:24px;
-    overflow:hidden;
-    background:
-    linear-gradient(
-    rgba(0,0,0,.45),
-    rgba(0,0,0,.9)
-    ),
-    var(--bg);
-
-    background-size:cover;
-    background-position:center;
-
-    border:1px solid rgba(255,255,255,.08);
-
-    display:flex;
-    align-items:flex-end;
-
-    transition: border-color .4s, box-shadow .4s, transform .1s ease-out;
-    cursor:pointer;
-    will-change: transform;
-}
-
-/* Animaciones flotantes independientes para cada card */
-.card-1 {
-    animation: float1 6s ease-in-out infinite;
-}
-
-.card-2 {
-    animation: float2 7s ease-in-out infinite;
-}
-
-.card-3 {
-    animation: float3 6.5s ease-in-out infinite;
-}
-
-@keyframes float1 {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(0.5deg); }
-}
-
-@keyframes float2 {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-12px) rotate(-0.5deg); }
-}
-
-@keyframes float3 {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(0.4deg); }
-}
-
-.card:hover{
-    border-color:#d4af37;
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
-}
-
-
-.content{
-    padding:25px;
-}
-
-
-.card h2{
-    font-weight:300;
-    font-size:25px;
-    margin-bottom:12px;
-}
-
-
-.card p{
-    font-size:13px;
-    line-height:1.5;
-    color:#ccc;
-    margin-bottom:15px;
-}
-
-
-.button{
-    display:inline-flex;
-    padding:10px 22px;
-    border-radius:999px;
-    border:1px solid #d4af37;
-    color:white;
-    text-decoration:none;
-    transition: .3s;
-}
-
-
-.button:hover{
-    background:#d4af37;
-    color:black;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buda Collective - Founders Hall</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos ajustados manteniendo el diseño v2 y tarjetas uniformes */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        nav {
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: inline-flex;
+            gap: 15px;
+        }
+
+        nav a {
+            color: #aaa;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1rem;
+            margin-bottom: 50px;
+        }
+
+        .section-tag {
+            color: #d4af37; /* Tono dorado/elegante */
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        /* Bloque The Creator estilo V2 */
+        .creator-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            text-align: left;
+            margin-bottom: 60px;
+            backdrop-filter: blur(10px);
+        }
+
+        .creator-card img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .creator-info h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+        }
+
+        .creator-role {
+            color: #d4af37;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .creator-info p {
+            color: #ccc;
+            line-height: 1.6;
+            margin: 0 0 10px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Grid de Founding Artists */
+        .founders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .founder-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s, border-color 0.3s, background 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .founder-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .founder-badge {
+            font-size: 0.75rem;
+            color: #d4af37;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .founder-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .founder-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+        }
+
+        .founder-role {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .view-btn {
+            margin-top: auto;
+            font-size: 0.85rem;
+            color: #d4af37;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .placeholder-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .creator-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<canvas id="bg"></canvas>
-
-
-<!-- NAVIGATION -->
-
-<nav class="topnav">
-
-<ul class="topnav-links">
-
-<li>
-<a href="https://budastudio.github.io/" class="active">
-Home
-</a>
-</li>
-
-<li>|</li>
-
-<li>
-<a href="welcome.html">
-Collective
-</a>
-</li>
-
-<li>|</li>
-
-<li>
-<a href="https://www.transient.xyz/mint/featured-pass">
-Featured Mint
-</a>
-</li>
-
-<li>|</li>
-
-<li>
-<a href="founders.html">
-Founders
-</a>
-</li>
-
-</ul>
-
-</nav>
-
-
-
-<section class="hero">
-
-
-<img src="logogold26_trans.png"
-class="logo"
-alt="Buda Collective Logo">
-
-
-
-<h1>
-BUDA COLLECTIVE ART
-</h1>
-
-
-
-<div class="subtitle">
-
-A permanent home for 50 pioneering digital artists.
-
-<br>
-
-Building a curated living gallery where artists become founders,
-collaborators and part of the first chapter.
-
-</div>
-
-
-
-<div class="counter">
-
-<strong>
-03 / 50
-</strong>
-
-<span>
-FOUNDING ARTISTS
-<br>
-47 FOUNDER POSITIONS REMAIN
-</span>
-
-</div>
-
-
-
-
-<div class="manifesto">
-
-
-<details>
-
-
-<summary>
-✦ THE FIRST CHAPTER ✦
-</summary>
-
-
-<div class="manifesto-text">
-
-
-<p>
-<em>
-Every movement begins with a small group of believers.
-</em>
-</p>
-
-
-<p>
-Buda Collective was created as a permanent home for digital artists from different cultures, chains and creative backgrounds.
-</p>
-
-
-<p>
-This is not just a collection.
-</p>
-
-
-<p>
-<strong>
-It is a living ecosystem built by artists, for artists.
-</strong>
-</p>
-
-
-<p>
-The first 50 Founding Artists will shape the identity,
-history and future of this collective.
-</p>
-
-
-<p>
-Artists are not only displayed here.
-</p>
-
-
-<p>
-<strong>
-They belong.
-</strong>
-</p>
-
-
-</div>
-
-
-</details>
-
-
-</div>
-
-
-
-
-
-<div class="choose">
-
-Choose your journey
-
-</div>
-
-
-
-
-<div class="cards">
-
-
-
-<!-- GALLERY -->
-
-<div class="card card-1"
-style="--bg:url('gallery.jpg')"
-data-parallax="0.04"
-onclick="location.href='index.html'">
-
-
-<div class="content">
-
-
-<h2>
-ENTER THE
-<br>
-LIVING GALLERY
-</h2>
-
-
-<p>
-Explore the first generation of artists building this evolving digital exhibition.
-</p>
-
-
-<a class="button">
-ENTER →
-</a>
-
-
-</div>
-
-</div>
-
-
-
-
-
-<!-- FOUNDERS -->
-
-<div class="card card-2"
-style="--bg:url('community.jpg')"
-data-parallax="0.06"
-onclick="location.href='join.html'">
-
-
-<div class="content">
-
-
-<h2>
-BECOME A
-<br>
-FOUNDING ARTIST
-</h2>
-
-
-<p>
-Join the first 50 creators shaping the future of digital culture.
-</p>
-
-
-<a class="button">
-BECOME A FOUNDER →
-</a>
-
-
-</div>
-
-</div>
-
-
-
-
-
-<!-- FOUNDERS PAGE -->
-
-
-<div class="card card-3"
-style="--bg:url('featured-pass-tiny.jpg')"
-data-parallax="0.05"
-onclick="location.href='founders.html'">
-
-
-<div class="content">
-
-
-<h2>
-MEET THE
-<br>
-FOUNDERS
-</h2>
-
-
-<p>
-Discover the artists and supporters who started this journey.
-</p>
-
-
-<a class="button">
-EXPLORE →
-</a>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-<script>
-
-
-const canvas=document.getElementById('bg');
-
-const ctx=canvas.getContext('2d');
-
-
-let particles=[];
-
-
-let width=
-canvas.width=
-window.innerWidth;
-
-
-let height=
-canvas.height=
-window.innerHeight;
-
-
-
-window.addEventListener(
-'resize',
-()=>{
-
-width=
-canvas.width=
-window.innerWidth;
-
-
-height=
-canvas.height=
-window.innerHeight;
-
-});
-
-
-
-
-
-class Particle{
-
-
-constructor(){
-
-this.reset();
-
-this.y=Math.random()*height;
-
-}
-
-
-
-reset(){
-
-this.x=Math.random()*width;
-
-this.y=height+10;
-
-this.size=Math.random()*1.5+.5;
-
-this.speedY=-(Math.random()*.4+.1);
-
-this.speedX=(Math.random()-.5)*.2;
-
-this.alpha=Math.random()*.5+.1;
-
-}
-
-
-
-update(){
-
-this.y+=this.speedY;
-
-this.x+=this.speedX;
-
-
-if(
-this.y<-10 ||
-this.x<-10 ||
-this.x>width+10
-){
-
-this.reset();
-
-}
-
-}
-
-
-
-draw(){
-
-ctx.save();
-
-
-ctx.globalAlpha=this.alpha;
-
-
-ctx.beginPath();
-
-
-ctx.arc(
-this.x,
-this.y,
-this.size,
-0,
-Math.PI*2
-);
-
-
-
-ctx.fillStyle='#d4af37';
-
-ctx.shadowBlur=8;
-
-ctx.shadowColor='#d4af37';
-
-
-ctx.fill();
-
-
-ctx.restore();
-
-
-}
-
-
-}
-
-
-
-
-for(
-let i=0;
-i<60;
-i++
-){
-
-particles.push(
-new Particle()
-);
-
-}
-
-
-
-
-function animate(){
-
-
-ctx.clearRect(
-0,
-0,
-width,
-height
-);
-
-
-
-particles.forEach(
-p=>{
-
-p.update();
-
-p.draw();
-
-});
-
-
-requestAnimationFrame(
-animate
-);
-
-
-}
-
-
-
-animate();
-
-
-/* PARALLAX INTERACCION CON EL CURSOR PARA LAS CARDS */
-document.addEventListener('DOMContentLoaded', () => {
-    const cards = document.querySelectorAll('.card');
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2);
-        mouseY = (e.clientY - window.innerHeight / 2);
-    });
-
-    function animateParallax() {
-        targetX += (mouseX - targetX) * 0.04;
-        targetY += (mouseY - targetY) * 0.04;
-
-        cards.forEach(card => {
-            const depth = parseFloat(card.getAttribute('data-parallax')) || 0.04;
-            const offsetX = targetX * depth;
-            const offsetY = targetY * depth;
-            card.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
-        });
-
-        requestAnimationFrame(animateParallax);
-    }
-
-    animateParallax();
-});
-
-</script>
-
+    <canvas></canvas>
+
+    <nav>
+        <ul>
+            <li><a href="welcome.html">Home</a></li>
+            <li>|</li>
+            <li><a href="index.html">Collective</a></li>
+            <li>|</li>
+            <li><a href="https://www.transient.xyz/mint/featured-pass">Featured Mint</a></li>
+            <li>|</li>
+            <li><a href="founders.html">Founders</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <h1>THE FOUNDERS</h1>
+        <div class="subtitle">Architects & Pillars of Buda Collective</div>
+
+        <div class="section-tag">✦ THE CREATOR ✦</div>
+
+        <div class="creator-card">
+            <img src="perfil.jpg" alt="Leonardo M. Scarcia">
+            <div class="creator-info">
+                <h2>Leonardo M. Scarcia</h2>
+                <span class="creator-role">FOUNDER & CREATIVE DIRECTOR</span>
+                <p>Visual artist, animator and designer with extensive experience exploring the intersection between art, technology and digital culture.</p>
+                <p>From traditional exhibitions to digital experiences, Leonardo created Buda Collective Artist as a living ecosystem where pioneering artists can connect, exhibit and evolve together.</p>
+            </div>
+        </div>
+
+        <div class="section-tag">✦ FOUNDING ARTISTS & MEMBERS ✦</div>
+
+        <div class="founders-grid">
+
+            <!-- Founder #01: Dorthes -->
+            <a href="featured.html?id=3647ac3f-e27a-4960-93f8-84e36d21dbd3" class="founder-card">
+                <div class="founder-badge">FOUNDING ARTIST #01</div>
+                <img src="https://ziautsdlspdojwwvwmfa.supabase.co/storage/v1/object/public/avatars/dorthe-s-joy-of-creation-1784509503376.png" alt="Dorthes">
+                <h3>Dorthes</h3>
+                <div class="founder-role">Artist</div>
+                <div class="view-btn">View Profile →</div>
+            </a>
+
+            <!-- Founder #02: Chris Landmann -->
+            <a href="featured.html?id=585a1e6f-b6a0-4b44-bc60-5fabf24a4d8f" class="founder-card">
+                <div class="founder-badge">FOUNDING ARTIST #02</div>
+                <img src="pfp15B.jpg" alt="Chris Landmann">
+                <h3>Chris Landmann</h3>
+                <div class="founder-role">Artist</div>
+                <div class="view-btn">View Profile →</div>
+            </a>
+
+            <!-- Founder #03: Open Position -->
+            <a href="https://www.transient.xyz/mint/featured-pass" class="founder-card">
+                <div class="founder-badge">FOUNDING ARTIST #03</div>
+                <div class="placeholder-icon">+</div>
+                <h3>Become Founder #03</h3>
+                <div class="founder-role">Open Position</div>
+                <div class="view-btn">Join The First Chapter →</div>
+            </a>
+
+        </div>
+
+    </div>
 
 </body>
-
 </html>
